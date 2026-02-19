@@ -9,9 +9,9 @@ export const defaultLandingPageData: LandingPageData = {
     { label: "Resultados", href: "#resultados" },
   ],
   navSocialLinks: [
-    { platform: "fb", url: "#" },
-    { platform: "ig", url: "#" },
-    { platform: "in", url: "#" },
+    { platform: "fb", url: "https://facebook.com" },
+    { platform: "ig", url: "https://instagram.com" },
+    { platform: "in", url: "https://linkedin.com" },
   ],
   navCta: { text: "Evaluar mi sitio web", variant: "purple" },
 
