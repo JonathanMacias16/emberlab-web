@@ -18,7 +18,13 @@ export const revalidate = 60; // Actualiza la página cada 60 segundos automáti
 export default async function Home() {
   let data: LandingPageData | null = null;
   try {
-    data = await client.fetch<LandingPageData | null>(LANDING_PAGE_QUERY);
+    data = await client.fetch<LandingPageData | null>(
+      LANDING_PAGE_QUERY,
+      {},
+      {
+        next: { revalidate: 60 },
+      }
+    );
   } catch {
     // Sanity not configured yet — use defaults
   }
