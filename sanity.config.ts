@@ -15,6 +15,7 @@ export default defineConfig({
   theme: {
     "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   },
+  subtitle: "Gestión de Contenidos - EmberLab",
   schema,
   plugins: [
     structureTool({
@@ -27,7 +28,7 @@ export default defineConfig({
               .icon(HomeIcon)
               .child(
                 S.document()
-                  .title("Editar Landing Page")
+                  .title("Editor Visual de Landing Page")
                   .schemaType("landingPage")
                   .documentId("landingPage")
               ),

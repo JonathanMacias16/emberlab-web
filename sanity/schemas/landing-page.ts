@@ -88,4 +88,12 @@ export const landingPage = defineType({
     { name: "footerBrandLine2", title: "Línea de Marca 2", type: "string", fieldset: "footer", group: "footer" },
     { name: "footerCopyright", title: "Copyright / Derechos Reservados", type: "string", fieldset: "footer", group: "footer" },
   ],
+  preview: {
+    prepare() {
+      return {
+        title: "Página de Inicio",
+        subtitle: "Editor General de Contenidos",
+      };
+    },
+  },
 });

@@ -13,6 +13,7 @@ export const problemCard = defineType({
       title: "Color de Fondo",
       type: "string",
       description: "Nombre de variable CSS, ej: var(--green-light)",
+      readOnly: true,
     },
     {
       name: "textColorVariant",
@@ -25,6 +26,7 @@ export const problemCard = defineType({
         ] 
       },
       initialValue: "purple",
+      readOnly: true,
     },
   ],
   preview: {
