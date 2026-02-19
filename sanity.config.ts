@@ -17,6 +17,11 @@ export default defineConfig({
   },
   subtitle: "Gestión de Contenidos - EmberLab",
   schema,
+  document: {
+    comments: {
+      enabled: false,
+    },
+  },
   plugins: [
     structureTool({
       structure: (S) =>
