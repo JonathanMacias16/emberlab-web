@@ -12,9 +12,6 @@ export default defineConfig({
   basePath: "/studio",
   projectId,
   dataset,
-  theme: {
-    "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-  },
   subtitle: "Gestión de Contenidos - EmberLab",
   schema,
   document: {
