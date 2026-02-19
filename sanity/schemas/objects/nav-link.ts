@@ -2,11 +2,11 @@ import { defineType } from "sanity";
 
 export const navLink = defineType({
   name: "navLink",
-  title: "Nav Link",
+  title: "Enlace de Navegación",
   type: "object",
   fields: [
-    { name: "label", title: "Label", type: "string", validation: (R) => R.required() },
-    { name: "href", title: "Href", type: "string", validation: (R) => R.required() },
+    { name: "label", title: "Etiqueta", type: "string", validation: (R) => R.required() },
+    { name: "href", title: "Enlace (URL o #ID)", type: "string", validation: (R) => R.required() },
   ],
   preview: {
     select: {

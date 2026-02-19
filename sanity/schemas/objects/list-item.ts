@@ -2,11 +2,11 @@ import { defineType } from "sanity";
 
 export const listItem = defineType({
   name: "listItem",
-  title: "List Item",
+  title: "Elemento de Lista",
   type: "object",
   fields: [
     { name: "emoji", title: "Emoji", type: "string", validation: (R) => R.required() },
-    { name: "text", title: "Text", type: "string", validation: (R) => R.required() },
+    { name: "text", title: "Texto", type: "string", validation: (R) => R.required() },
   ],
   preview: {
     select: {

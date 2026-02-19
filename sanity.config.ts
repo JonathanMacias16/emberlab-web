@@ -4,6 +4,7 @@ import React from "react";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
+import { HomeIcon } from "@sanity/icons";
 import { apiVersion, dataset, projectId } from "@/sanity/env";
 import { schema } from "@/sanity/schemas/index";
 
@@ -11,18 +12,22 @@ export default defineConfig({
   basePath: "/studio",
   projectId,
   dataset,
+  theme: {
+    "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+  },
   schema,
   plugins: [
     structureTool({
       structure: (S) =>
         S.list()
-          .title("Contenido")
+          .title("Panel de Control")
           .items([
             S.listItem()
-              .title("Landing Page")
-              .id("landingPage")
+              .title("Página de Inicio")
+              .icon(HomeIcon)
               .child(
                 S.document()
+                  .title("Editar Landing Page")
                   .schemaType("landingPage")
                   .documentId("landingPage")
               ),

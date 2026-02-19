@@ -2,23 +2,28 @@ import { defineType } from "sanity";
 
 export const problemCard = defineType({
   name: "problemCard",
-  title: "Problem Card",
+  title: "Tarjeta de Problema",
   type: "object",
   fields: [
-    { name: "text", title: "Text", type: "string", validation: (R) => R.required() },
-    { name: "image", title: "Image", type: "image", options: { hotspot: true } },
-    { name: "imageAlt", title: "Image Alt", type: "string" },
+    { name: "text", title: "Texto", type: "string", validation: (R) => R.required() },
+    { name: "image", title: "Imagen", type: "image", options: { hotspot: true } },
+    { name: "imageAlt", title: "Texto Alternativo (Alt)", type: "string" },
     {
       name: "bgColor",
-      title: "Background Color",
+      title: "Color de Fondo",
       type: "string",
-      description: "CSS variable name, e.g. var(--green-light)",
+      description: "Nombre de variable CSS, ej: var(--green-light)",
     },
     {
       name: "textColorVariant",
-      title: "Text Color Variant",
+      title: "Variante de Color de Texto",
       type: "string",
-      options: { list: ["purple", "white"] },
+      options: { 
+        list: [
+          { title: "Morado", value: "purple" },
+          { title: "Blanco", value: "white" }
+        ] 
+      },
       initialValue: "purple",
     },
   ],

@@ -2,10 +2,10 @@ import { defineType } from "sanity";
 
 export const processStep = defineType({
   name: "processStep",
-  title: "Process Step",
+  title: "Paso del Proceso",
   type: "object",
   fields: [
-    { name: "text", title: "Text", type: "string", validation: (R) => R.required() },
+    { name: "text", title: "Texto del Paso", type: "string", validation: (R) => R.required() },
   ],
   preview: {
     select: {

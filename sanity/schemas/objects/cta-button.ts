@@ -2,18 +2,23 @@ import { defineType } from "sanity";
 
 export const ctaButton = defineType({
   name: "ctaButton",
-  title: "CTA Button",
+  title: "Botón de Acción (CTA)",
   type: "object",
   fields: [
-    { name: "text", title: "Text", type: "string", validation: (R) => R.required() },
+    { name: "text", title: "Texto del Botón", type: "string", validation: (R) => R.required() },
     {
       name: "variant",
-      title: "Variant",
+      title: "Variante / Color",
       type: "string",
-      options: { list: ["purple", "red"] },
+      options: { 
+        list: [
+          { title: "Morado", value: "purple" },
+          { title: "Rojo", value: "red" }
+        ] 
+      },
       initialValue: "purple",
     },
-    { name: "href", title: "Link URL", type: "string" },
+    { name: "href", title: "Enlace (URL o #ID)", type: "string" },
   ],
   preview: {
     select: {
