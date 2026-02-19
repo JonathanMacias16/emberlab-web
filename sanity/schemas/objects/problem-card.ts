@@ -22,4 +22,10 @@ export const problemCard = defineType({
       initialValue: "purple",
     },
   ],
+  preview: {
+    select: {
+      title: "text",
+      media: "image",
+    },
+  },
 });

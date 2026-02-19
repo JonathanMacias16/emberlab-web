@@ -7,4 +7,9 @@ export const processStep = defineType({
   fields: [
     { name: "text", title: "Text", type: "string", validation: (R) => R.required() },
   ],
+  preview: {
+    select: {
+      title: "text",
+    },
+  },
 });

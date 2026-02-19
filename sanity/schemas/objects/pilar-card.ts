@@ -12,4 +12,10 @@ export const pilarCard = defineType({
     { name: "position", title: "Position", type: "string", description: "Tailwind position classes, e.g. left-[34.8%] top-[12.9%]" },
     { name: "rotation", title: "Rotation/Extra Classes", type: "string", description: "Tailwind rotate and z-index classes, e.g. -rotate-[9deg] z-30" },
   ],
+  preview: {
+    select: {
+      title: "title",
+      subtitle: "description",
+    },
+  },
 });

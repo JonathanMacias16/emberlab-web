@@ -15,4 +15,16 @@ export const ctaButton = defineType({
     },
     { name: "href", title: "Link URL", type: "string" },
   ],
+  preview: {
+    select: {
+      title: "text",
+      subtitle: "variant",
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || "Sin texto",
+        subtitle: `Botón: ${subtitle || "estándar"}`,
+      };
+    },
+  },
 });
