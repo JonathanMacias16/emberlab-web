@@ -13,6 +13,7 @@ import { client } from "@/sanity/lib/client";
 import { LANDING_PAGE_QUERY } from "@/sanity/lib/queries";
 import { defaultLandingPageData } from "@/sanity/lib/defaults";
 import type { LandingPageData } from "@/types/sanity";
+export const revalidate = 60; // Actualiza la página cada 60 segundos automáticamente en Vercel
 
 export default async function Home() {
   let data: LandingPageData | null = null;

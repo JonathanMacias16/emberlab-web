@@ -5,5 +5,5 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true,
+  useCdn: false, // Se cambió a false para que los cambios en Sanity se vean de inmediato en Vercel
 });
