@@ -1,6 +1,7 @@
 import PilarCard from "@/components/ui/PilarCard";
 import PilaresCarousel from "@/components/ui/PilaresCarousel";
 import type { PilarCardData } from "@/types/sanity";
+import { highlightText } from "@/lib/highlightText";
 
 interface PilaresProps {
   subtitle?: string;
@@ -14,12 +15,12 @@ export default function Pilares({ subtitle, title, pilares }: PilaresProps) {
       id="pilares"
       className="px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 mt-16 sm:mt-20 md:mt-24 lg:mt-32 max-w-[1728px] mx-auto"
     >
-      <p className="text-[var(--red)] text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal tracking-[-0.05em] leading-[0.85]">
+      <h2 className="text-[var(--purple)] text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[0.85]">
+        {highlightText(title)}
+      </h2>
+      <p className="text-[var(--red)] text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extralight tracking-[-0.05em] leading-[0.85] mt-2 sm:mt-3 md:mt-4">
         {subtitle}
       </p>
-      <h2 className="text-[var(--purple)] text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[0.85] mt-2 sm:mt-3 md:mt-4">
-        {title}
-      </h2>
 
       {/* Carrusel en móvil */}
       {pilares && pilares.length > 0 && (
