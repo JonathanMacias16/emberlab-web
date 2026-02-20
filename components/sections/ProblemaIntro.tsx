@@ -1,5 +1,6 @@
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import type { CtaButtonData } from "@/types/sanity";
+import { highlightText } from "@/lib/highlightText";
 
 interface ProblemaIntroProps {
   title?: string;
@@ -14,7 +15,7 @@ export default function ProblemaIntro({ title, cta }: ProblemaIntroProps) {
     >
       <div className="flex flex-col items-center">
         <h2 className="text-[var(--purple)] text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal tracking-[-0.05em] leading-[0.85] max-w-[800px] whitespace-pre-line">
-          {title}
+          {highlightText(title)}
         </h2>
         {cta && (
           <div className="mt-6 sm:mt-8 md:mt-10">
