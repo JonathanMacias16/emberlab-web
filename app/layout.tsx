@@ -12,6 +12,15 @@ export const metadata: Metadata = {
   title: "EmberLab — Diseño y Desarrollo Web Estratégico",
   description:
     "Diseñamos y desarrollamos sitios web claros, funcionales y personalizados, alineados a los objetivos reales de tu negocio.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", rel: "shortcut icon" },
+      { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
