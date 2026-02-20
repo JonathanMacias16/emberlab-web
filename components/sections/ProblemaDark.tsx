@@ -63,14 +63,14 @@ export default function ProblemaDark({ title, subtitle2, subtitle, cta, cards }:
             return (
               <div
                 key={i}
-                className={`rounded-2xl md:rounded-3xl lg:rounded-[46px] p-5 sm:p-6 md:p-8 lg:p-10 flex flex-col${isLast ? " sm:col-span-2 md:col-span-1" : ""}`}
+                className={`rounded-t-2xl md:rounded-t-3xl lg:rounded-t-[46px] flex flex-col overflow-hidden${isLast ? " sm:col-span-2 md:col-span-1" : ""}`}
                 style={{ backgroundColor: bg }}
               >
-                <p className={`${textClass} text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-[-0.04em] leading-[1.15]`}>
+                <p className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] lg:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[2.68rem] sm:p-[3.23rem] md:p-[4.30rem] lg:p-[5.37rem]`}>
                   {card.text}
                 </p>
-                <div className="mt-4 sm:mt-6 w-full aspect-[487/389] relative rounded-xl md:rounded-2xl overflow-hidden">
-                  <Image src={imgSrc} alt={card.imageAlt || ""} fill className="object-cover" />
+                <div className="mt-auto w-full aspect-[487/389] relative overflow-hidden">
+                  <Image src={imgSrc} alt={card.imageAlt || ""} fill className="object-fill" />
                 </div>
               </div>
             );

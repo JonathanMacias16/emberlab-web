@@ -68,11 +68,11 @@ export const landingPage = defineType({
 
     // --- Proceso ---
     { name: "procesoTitle", title: "Título", type: "text", rows: 2, fieldset: "proceso", group: "proceso" },
-    { name: "procesoSubtitle", title: "Subtítulo", type: "string", fieldset: "proceso", group: "proceso" },
+    { name: "procesoSubtitle", title: "Subtítulo", type: "text", rows: 2, fieldset: "proceso", group: "proceso" },
     { name: "procesoSteps", title: "Pasos del Proceso", type: "array", of: [{ type: "processStep" }], fieldset: "proceso", group: "proceso" },
 
     // --- Resultados ---
-    { name: "resultadosTitle", title: "Título", type: "string", fieldset: "resultados", group: "resultados" },
+    { name: "resultadosTitle", title: "Título", type: "text", rows: 2, fieldset: "resultados", group: "resultados" },
     { name: "resultadosSubtitle", title: "Subtítulo", type: "text", rows: 3, fieldset: "resultados", group: "resultados" },
 
     // --- Portfolio ---
