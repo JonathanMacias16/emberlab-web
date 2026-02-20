@@ -1,5 +1,6 @@
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import type { ListItemData, CtaButtonData } from "@/types/sanity";
+import { highlightText } from "@/lib/highlightText";
 
 interface ParaTiProps {
   paraTiTitle?: string;
@@ -16,10 +17,10 @@ export default function ParaTi({ paraTiTitle, paraTiItems, noParaTiTitle, noPara
         {/* Para ti */}
         <div className="flex flex-col">
           <h2 className="text-[var(--purple)] text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal tracking-[-0.05em] leading-[0.85] whitespace-pre-line">
-            {paraTiTitle}
+            {highlightText(paraTiTitle)}
           </h2>
-          <div className="mt-4 sm:mt-6 md:mt-8 rounded-2xl md:rounded-3xl lg:rounded-[46px] bg-[var(--green-light)]/50 p-5 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center flex-1">
-            <ul className="space-y-3 sm:space-y-4 md:space-y-5 text-[var(--purple)] text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-[-0.03em] leading-[1.1]">
+          <div className="mt-4 sm:mt-6 md:mt-8 rounded-2xl md:rounded-3xl lg:rounded-[46px] bg-[var(--green-light)]/50 px-5 py-[4.55rem] sm:px-6 sm:py-[5.2rem] md:px-8 md:py-[7.15rem] lg:px-10 lg:py-[8.45rem] flex flex-col justify-center flex-1">
+            <ul className="space-y-3 sm:space-y-4 md:space-y-5 text-[var(--purple)] text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-[-0.03em] leading-[1.1] max-w-[50%] mx-auto text-left">
               {paraTiItems?.map((item, i) => (
                 <li key={i} className="flex gap-2 sm:gap-3">
                   <span className="shrink-0">{item.emoji}</span>
@@ -32,10 +33,10 @@ export default function ParaTi({ paraTiTitle, paraTiItems, noParaTiTitle, noPara
         {/* No para ti */}
         <div className="flex flex-col">
           <h2 className="text-[var(--purple)] text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal tracking-[-0.05em] leading-[0.85] whitespace-pre-line">
-            {noParaTiTitle}
+            {highlightText(noParaTiTitle)}
           </h2>
-          <div className="mt-4 sm:mt-6 md:mt-8 rounded-2xl md:rounded-3xl lg:rounded-[46px] bg-[var(--red-light)]/50 p-5 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-center flex-1">
-            <ul className="space-y-3 sm:space-y-4 md:space-y-5 text-[var(--purple)] text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-[-0.03em] leading-[1.1]">
+          <div className="mt-4 sm:mt-6 md:mt-8 rounded-2xl md:rounded-3xl lg:rounded-[46px] bg-[var(--red-light)]/50 px-5 py-[4.55rem] sm:px-6 sm:py-[5.2rem] md:px-8 md:py-[7.15rem] lg:px-10 lg:py-[8.45rem] flex flex-col justify-center flex-1">
+            <ul className="space-y-3 sm:space-y-4 md:space-y-5 text-[var(--purple)] text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-[-0.03em] leading-[1.1] max-w-[50%] mx-auto text-left">
               {noParaTiItems?.map((item, i) => (
                 <li key={i} className="flex gap-2 sm:gap-3">
                   <span className="shrink-0">{item.emoji}</span>
