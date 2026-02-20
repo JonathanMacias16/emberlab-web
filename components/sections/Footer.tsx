@@ -1,4 +1,4 @@
-import Image from "next/image";
+import LogoIcon from "@/components/ui/LogoIcon";
 
 interface FooterProps {
   tagline?: string;
@@ -13,7 +13,7 @@ export default function Footer({ tagline, brandLine1, brandLine2, copyright }: F
       <div className="px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 max-w-[1728px] mx-auto">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
           <div className="flex items-center gap-4 sm:gap-5 md:gap-6">
-            <Image src="/logo.svg" alt="EmberLab" width={118} height={118} className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16" />
+            <LogoIcon className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16" />
             <p className="text-[var(--purple-light)] text-sm sm:text-base md:text-lg lg:text-xl font-light leading-[1.15] whitespace-pre-line">
               {tagline}
             </p>
