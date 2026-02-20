@@ -5,6 +5,7 @@ import ProblemaDark from "@/components/sections/ProblemaDark";
 import Pilares from "@/components/sections/Pilares";
 import ParaTi from "@/components/sections/ParaTi";
 import Proceso from "@/components/sections/Proceso";
+import PlataformasMarquee from "@/components/sections/PlataformasMarquee";
 import Resultados from "@/components/sections/Resultados";
 import Portfolio from "@/components/sections/Portfolio";
 import CTAFinal from "@/components/sections/CTAFinal";
@@ -72,6 +73,7 @@ export default async function Home() {
         subtitle={page.procesoSubtitle}
         steps={page.procesoSteps}
       />
+      <PlataformasMarquee />
       <Resultados
         title={page.resultadosTitle}
         subtitle={page.resultadosSubtitle}
