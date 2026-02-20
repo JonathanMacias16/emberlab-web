@@ -35,7 +35,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
           ))}
         </div>
         {cta && (
-          <ButtonPrimary variant={cta.variant} href={cta.href}>
+          <ButtonPrimary variant={cta.variant} href={cta.href} className="!py-3 !px-6 !text-[0.98rem] !rounded-xl">
             {cta.text}
           </ButtonPrimary>
         )}
