@@ -67,6 +67,7 @@ export interface LandingPageData {
 
   // Problema Dark
   problemaDarkTitle?: string;
+  problemaDarkSubtitle2?: string;
   problemaDarkSubtitle?: string;
   problemaDarkCta?: CtaButtonData;
   problemCards?: ProblemCardData[];

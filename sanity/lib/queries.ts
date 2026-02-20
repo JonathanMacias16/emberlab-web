@@ -20,6 +20,7 @@ export const LANDING_PAGE_QUERY = defineQuery(`
 
     // Problema Dark
     problemaDarkTitle,
+    problemaDarkSubtitle2,
     problemaDarkSubtitle,
     problemaDarkCta,
     problemCards[]{ text, image{ asset->{ _id, url, metadata } }, imageAlt, bgColor, textColorVariant },

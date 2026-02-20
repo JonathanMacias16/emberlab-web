@@ -49,6 +49,7 @@ export const landingPage = defineType({
 
     // --- Problema Dark ---
     { name: "problemaDarkTitle", title: "Título Principal", type: "text", rows: 3, fieldset: "problemaDark", group: "problema" },
+    { name: "problemaDarkSubtitle2", title: "Subtítulo 2 (rosa, debajo del título)", type: "text", rows: 2, fieldset: "problemaDark", group: "problema" },
     { name: "problemaDarkSubtitle", title: "Subtítulo", type: "text", rows: 3, fieldset: "problemaDark", group: "problema" },
     { name: "problemaDarkCta", title: "Botón de Acción (CTA)", type: "ctaButton", fieldset: "problemaDark", group: "problema" },
     { name: "problemCards", title: "Tarjetas de Problemas", type: "array", of: [{ type: "problemCard" }], fieldset: "problemaDark", group: "problema" },

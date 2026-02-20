@@ -27,8 +27,8 @@ export const defaultLandingPageData: LandingPageData = {
   problemaIntroCta: { text: "Cont\u00e1ctanos", variant: "red" },
 
   // Problema Dark
-  problemaDarkTitle:
-    "Muchas empresas crecen, cambian y evolucionan... pero sus sitios web se quedan atr\u00e1s.",
+  problemaDarkTitle: "Muchas empresas crecen, cambian y evolucionan...",
+  problemaDarkSubtitle2: "pero sus sitios web se quedan atrás.",
   problemaDarkSubtitle:
     "No comunican lo que son hoy, no ayudan a decidir, y no acompa\u00f1an la transformaci\u00f3n digital que necesitan.",
   problemaDarkCta: { text: "Hablemos de tu web", variant: "red" },

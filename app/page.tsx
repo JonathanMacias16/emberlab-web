@@ -50,6 +50,7 @@ export default async function Home() {
       />
       <ProblemaDark
         title={page.problemaDarkTitle}
+        subtitle2={page.problemaDarkSubtitle2}
         subtitle={page.problemaDarkSubtitle}
         cta={page.problemaDarkCta}
         cards={page.problemCards}
