@@ -1,4 +1,5 @@
 import type { ProcessStepData } from "@/types/sanity";
+import { highlightText } from "@/lib/highlightText";
 
 interface ProcesoProps {
   title?: string;
@@ -11,7 +12,7 @@ export default function Proceso({ title, subtitle, steps }: ProcesoProps) {
     <section className="px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 mt-16 sm:mt-20 md:mt-24 lg:mt-32 max-w-[1728px] mx-auto">
       <div className="ml-0 md:ml-[30%]">
         <h2 className="text-[var(--purple)] text-[2.05rem] sm:text-[2.75rem] md:text-[3.3rem] lg:text-[4.4rem] xl:text-[4.95rem] font-normal tracking-[-0.05em] leading-[0.85] whitespace-pre-line">
-          {title}
+          {highlightText(title)}
         </h2>
         <p className="text-[var(--red)] text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
           {subtitle?.split("\n").map((line, i) => (
