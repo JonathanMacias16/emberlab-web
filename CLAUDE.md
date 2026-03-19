@@ -15,6 +15,13 @@ No test runner is configured yet.
 
 **EmberLab** is a web design and development agency website. Currently a marketing landing page (`app/page.tsx`) with responsive design, custom color scheme, and Spanish language support (`lang="es"` in root layout).
 
+## Brand Identity
+
+- **Name meaning**: "Ember" refers to the spark released by a burning ember — that small spark is what ignites a great fire. EmberLab represents that initial creative spark that drives big results.
+- **Logo**: An asymmetric asterisk shape made of 4 bars (horizontal, vertical, and two diagonals) of different lengths/sizes, plus two small separated sparkle accents on the shorter bars. The asymmetry is intentional — it represents an organic, living spark rather than a rigid geometric shape.
+- **Logo file**: `public/logo.svg` — 7 SVG paths: 2 sparkle shapes + 4 bars (horizontal, vertical, 2 diagonals), all in `#E83F40` (brand red).
+- **Brand color**: Red (`--red: #e73f40`) is the primary brand/logo color.
+
 ## Architecture
 
 This is a **Next.js 16 App Router** project using **TypeScript (strict)**, **React 19**, and **Tailwind CSS v4**.
