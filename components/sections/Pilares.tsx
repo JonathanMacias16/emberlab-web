@@ -1,8 +1,8 @@
-import PilarCard from "@/components/ui/PilarCard";
 import PilaresCarousel from "@/components/ui/PilaresCarousel";
+import PilarsFan from "@/components/ui/PilarsFan";
 import type { PilarCardData } from "@/types/sanity";
 import { highlightText } from "@/lib/highlightText";
-import { FadeIn, ScaleIn } from "@/components/animations";
+import { FadeIn } from "@/components/animations";
 
 interface PilaresProps {
   subtitle?: string;
@@ -35,19 +35,9 @@ export default function Pilares({ subtitle, title, pilares }: PilaresProps) {
       )}
 
       {/* Collage en desktop */}
-      <ScaleIn initialScale={0.6} rotate={-3} className="hidden md:block relative w-full mt-10 lg:mt-0 pb-[71.2%]">
-        {pilares?.map((pilar) => (
-          <PilarCard
-            key={pilar.title}
-            title={pilar.title}
-            description={pilar.description}
-            bg={pilar.bgColor || "bg-[var(--purple)]"}
-            textColor={pilar.textColor || "text-[var(--white)]"}
-            position={pilar.position || "left-0 top-0"}
-            className={pilar.rotation || ""}
-          />
-        ))}
-      </ScaleIn>
+      {pilares && pilares.length > 0 && (
+        <PilarsFan pilares={pilares} />
+      )}
     </section>
   );
 }
