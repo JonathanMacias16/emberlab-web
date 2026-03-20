@@ -18,7 +18,7 @@ export default function StaggerContainer({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0 }}
+      viewport={{ once: false, amount: 0 }}
       variants={{
         hidden: {},
         visible: {

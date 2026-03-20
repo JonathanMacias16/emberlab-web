@@ -43,7 +43,7 @@ export default function FadeIn({
         ...(blur ? { filter: "blur(0px)" } : {}),
         ...(rotate ? { rotate: 0 } : {}),
       }}
-      viewport={{ once: true, amount: 0 }}
+      viewport={{ once: false, amount: 0 }}
       transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={className}
     >

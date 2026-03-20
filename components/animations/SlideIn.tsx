@@ -31,7 +31,7 @@ export default function SlideIn({
           ...(rotate ? { rotate } : {}),
         }}
         whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
-        viewport={{ once: true, amount: 0 }}
+        viewport={{ once: false, amount: 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         className={className}
       >
