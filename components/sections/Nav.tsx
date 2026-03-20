@@ -38,7 +38,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
           <EmberText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" aria-hidden />
           <LabText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" />
         </div>
-        <div className="hidden md:flex items-center gap-4 lg:gap-8 text-[var(--purple)] text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
+        <div className="hidden xl:flex items-center gap-4 lg:gap-8 text-[var(--purple)] text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
           {links?.map((link) => (
             <a
               key={link.href}
@@ -50,7 +50,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
           ))}
         </div>
         <div className="flex items-center gap-3 lg:gap-4">
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-2">
             {socialLinks?.map((social) => (
               <a
                 key={social.platform}
@@ -63,7 +63,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
             ))}
           </div>
           {cta && (
-            <div className="hidden md:block">
+            <div className="hidden xl:block">
               <ButtonPrimary
                 variant={cta.variant}
                 href={cta.href}
@@ -75,7 +75,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
           )}
           {/* Hamburger — mobile only */}
           <button
-            className="md:hidden flex flex-col justify-center gap-[8px] w-7 py-1"
+            className="xl:hidden flex flex-col justify-center gap-[8px] w-7 py-1"
             aria-label="Abrir menú"
             onClick={() => setOpen(true)}
           >
@@ -89,7 +89,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
       {/* Mobile menu overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-50 flex justify-end items-start md:hidden"
+          className="fixed inset-0 z-50 flex justify-end items-start xl:hidden"
           onClick={() => setOpen(false)}
         >
           {/* Panel */}

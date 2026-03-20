@@ -99,15 +99,17 @@ export default function ProblemaDark({
                 className={isLast ? "sm:col-span-2 md:col-span-1" : undefined}
               >
                 <div
-                  className="rounded-t-2xl md:rounded-t-3xl lg:rounded-t-[46px] flex flex-col overflow-hidden h-full"
+                  className="rounded-t-4xl md:rounded-t-4xl lg:rounded-t-4xl xl:rounded-t-4xl flex flex-col overflow-hidden h-full w-full"
                   style={{ backgroundColor: bg }}
                 >
-                  <p
-                    className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] lg:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[2.68rem] sm:p-[3.23rem] md:p-[4.30rem] lg:p-[5.37rem]`}
-                  >
-                    {card.text}
-                  </p>
-                  <div className="mt-auto w-full aspect-487/389 relative overflow-hidden rounded-t-[2.2rem] group">
+                  <div className={"2xl:h-60 lg:h-48  flex items-end"}>
+                    <p
+                      className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] xl:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[1.68rem] sm:p-[3.23rem] md:p-[3.30rem] lg:p-[2.37rem] xl:p-[5.37rem]`}
+                    >
+                      {card.text}
+                    </p>
+                  </div>
+                  <div className="mt-auto w-full aspect-487/389 relative overflow-hidden rounded-t-4xl group">
                     <Image
                       src={imgSrc}
                       alt={card.imageAlt || ""}
