@@ -2,6 +2,13 @@ import Image from "next/image";
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
 import type { CtaButtonData, ProblemCardData } from "@/types/sanity";
 import { urlFor } from "@/sanity/lib/image";
+import {
+  SlideIn,
+  FadeIn,
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/animations";
+import AnimatedLogoPhrase from "@/components/animations/AnimatedLogoPhrase";
 
 interface ProblemaDarkProps {
   title?: string;
@@ -12,70 +19,107 @@ interface ProblemaDarkProps {
 }
 
 const fallbackImages = ["/sitios 1.png", "/sitios 2.png", "/sitios 3.png"];
-const defaultBgColors = ["var(--green-light)", "var(--purple-soft)", "var(--purple-light)"];
+const defaultBgColors = [
+  "var(--green-light)",
+  "var(--purple-soft)",
+  "var(--purple-light)",
+];
 
-export default function ProblemaDark({ title, subtitle2, subtitle, cta, cards }: ProblemaDarkProps) {
+export default function ProblemaDark({
+  title,
+  subtitle2,
+  subtitle,
+  cta,
+  cards,
+}: ProblemaDarkProps) {
   return (
-    <section className="mt-16 sm:mt-20 md:mt-24 lg:mt-32 bg-[var(--purple)] py-10 sm:py-14 md:py-16 lg:py-20 xl:py-24">
-      <div className="px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 max-w-[1728px] mx-auto">
+    <section className="mt-16 sm:mt-20 md:mt-24 lg:mt-32 bg-(--purple) py-10 sm:py-14 md:py-16 lg:py-20 xl:py-24">
+      <div className="px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 max-w-432 mx-auto">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
-          <div className="lg:w-[40%]">
-            <h2 className="text-[var(--white)] text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.05em] leading-[0.85]">
-              {title}
-            </h2>
-            {subtitle2 && (
-              <p className="text-[var(--red-light)] text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.05em] leading-[0.85] mt-1">
-                {subtitle2}
-              </p>
-            )}
-            <p className="text-[var(--green-light)] text-[0.84rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
-              {subtitle}
-            </p>
-            {cta && (
-              <div className="mt-6 sm:mt-8 md:mt-10 w-[75%]">
-                <ButtonPrimary variant={cta.variant} href={cta.href} className="w-full">
-                  {cta.text}
-                </ButtonPrimary>
-              </div>
-            )}
+          <div className={"lg:w-[40%]"}>
+            <SlideIn from="left" rotate={-2} className="lg:w-w-full">
+              <h2 className="text-[var(--white)] text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.05em] leading-[0.85]">
+                {title}
+              </h2>
+              {subtitle2 && (
+                <p className="text-[var(--red-light)] text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.05em] leading-[0.85] mt-1">
+                  {subtitle2}
+                </p>
+              )}
+              <FadeIn direction="up" blur>
+                <p className="text-[var(--green-light)] text-[0.84rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
+                  {subtitle}
+                </p>
+              </FadeIn>
+              {cta && (
+                <FadeIn direction="up">
+                  <div className="mt-6 sm:mt-8 md:mt-10 w-[75%]">
+                    <ButtonPrimary
+                      variant={cta.variant}
+                      href={cta.href}
+                      className="w-full"
+                    >
+                      {cta.text}
+                    </ButtonPrimary>
+                  </div>
+                </FadeIn>
+              )}
+            </SlideIn>
           </div>
-          <div className="lg:w-[60%] flex items-center justify-center">
-            <div className="bg-[var(--white)] rounded-2xl md:rounded-3xl lg:rounded-[46px] w-full aspect-[856/760] flex items-center justify-center p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden">
-              <div className="relative w-full max-w-[480px]">
-                <Image src="/logo.svg" alt="" width={118} height={118} className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-[118px] xl:h-[118px]" aria-hidden />
-                <Image src="/Group-2.svg" alt="" width={590} height={92} className="w-full mt-2 sm:mt-3 md:mt-4" aria-hidden />
-                <Image src="/Group.svg" alt="" width={477} height={78} className="w-[80%] ml-auto mt-1 sm:mt-2" aria-hidden />
-                <Image src="/Group-3.svg" alt="" width={590} height={92} className="w-full mt-1 sm:mt-2" aria-hidden />
-                <Image src="/Group-1.svg" alt="" width={390} height={78} className="w-[66%] ml-auto mt-1 sm:mt-2" aria-hidden />
-              </div>
-            </div>
+          <div className={"lg:w-[60%]"}>
+            <FadeIn
+              direction="right"
+              className="lg:w-full flex items-center justify-center "
+            >
+              <AnimatedLogoPhrase />
+            </FadeIn>
           </div>
         </div>
 
         {/* Problem cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-10 sm:mt-14 md:mt-16 lg:mt-20">
+        <StaggerContainer
+          staggerDelay={0.2}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-10 sm:mt-14 md:mt-16 lg:mt-20"
+        >
           {cards?.map((card, i) => {
             const bg = card.bgColor || defaultBgColors[i] || defaultBgColors[0];
-            const textClass = card.textColorVariant === "white" ? "text-[var(--white)]" : "text-[var(--purple)]";
-            const imgSrc = card.image ? urlFor(card.image).width(487).height(389).url() : fallbackImages[i] || fallbackImages[0];
+            const textClass =
+              card.textColorVariant === "white"
+                ? "text-[var(--white)]"
+                : "text-[var(--purple)]";
+            const imgSrc = card.image
+              ? urlFor(card.image).width(487).height(389).url()
+              : fallbackImages[i] || fallbackImages[0];
             const isLast = cards.length > 2 && i === cards.length - 1;
 
             return (
-              <div
+              <StaggerItem
                 key={i}
-                className={`rounded-t-2xl md:rounded-t-3xl lg:rounded-t-[46px] flex flex-col overflow-hidden${isLast ? " sm:col-span-2 md:col-span-1" : ""}`}
-                style={{ backgroundColor: bg }}
+                scale
+                className={isLast ? "sm:col-span-2 md:col-span-1" : undefined}
               >
-                <p className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] lg:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[2.68rem] sm:p-[3.23rem] md:p-[4.30rem] lg:p-[5.37rem]`}>
-                  {card.text}
-                </p>
-                <div className="mt-auto w-full aspect-[487/389] relative overflow-hidden">
-                  <Image src={imgSrc} alt={card.imageAlt || ""} fill className="object-fill" />
+                <div
+                  className="rounded-t-2xl md:rounded-t-3xl lg:rounded-t-[46px] flex flex-col overflow-hidden h-full"
+                  style={{ backgroundColor: bg }}
+                >
+                  <p
+                    className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] lg:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[2.68rem] sm:p-[3.23rem] md:p-[4.30rem] lg:p-[5.37rem]`}
+                  >
+                    {card.text}
+                  </p>
+                  <div className="mt-auto w-full aspect-487/389 relative overflow-hidden rounded-t-[2.2rem] group">
+                    <Image
+                      src={imgSrc}
+                      alt={card.imageAlt || ""}
+                      fill
+                      className="transition-transform duration-300 ease-out scale-101 group-hover:scale-110"
+                    />
+                  </div>
                 </div>
-              </div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );

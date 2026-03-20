@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { PortfolioProjectData } from "@/types/sanity";
 import { urlFor } from "@/sanity/lib/image";
+import { StaggerContainer, StaggerItem } from "@/components/animations";
 
 const fallbackImages = [
   "/Rectangle 22.png",
@@ -16,7 +17,7 @@ interface PortfolioProps {
 export default function Portfolio({ projects }: PortfolioProps) {
   return (
     <section className="px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 mt-16 sm:mt-20 md:mt-24 lg:mt-32 max-w-[1400px] mx-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+      <StaggerContainer staggerDelay={0.2} className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
         {projects?.map((project, i) => {
           const imgSrc = project.image
             ? urlFor(project.image).width(700).height(700).url()
@@ -39,18 +40,20 @@ export default function Portfolio({ projects }: PortfolioProps) {
           );
 
           return (
-            <div key={i} className="relative group">
-              {project.link ? (
-                <a href={project.link} target="_blank" rel="noopener noreferrer">
-                  {content}
-                </a>
-              ) : (
-                content
-              )}
-            </div>
+            <StaggerItem key={i} scale>
+              <div className="relative group">
+                {project.link ? (
+                  <a href={project.link} target="_blank" rel="noopener noreferrer">
+                    {content}
+                  </a>
+                ) : (
+                  content
+                )}
+              </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
     </section>
   );
 }
