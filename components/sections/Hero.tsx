@@ -35,17 +35,17 @@ export default function Hero({
       className="mt-14 px-5 sm:px-8 md:px-12 lg:px-20 xl:px-28 max-w-432 mx-auto"
     >
       <div className="flex flex-col items-center">
-        <SlideIn from="left" rotate={-3}>
+        <SlideIn from="left" rotate={-3} initialDelay={1}>
           <h1 className="text-(--purple) text-center text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[0.85]">
             {highlightText(headline1)}
           </h1>
         </SlideIn>
-        <SlideIn from="right" rotate={3}>
+        <SlideIn from="right" rotate={3} initialDelay={1.15}>
           <h1 className="text-(--purple) text-center text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[1.15] mt-1 sm:mt-2">
             {highlightText(headline2)}
           </h1>
         </SlideIn>
-        <FadeIn direction="up" blur>
+        <FadeIn direction="up" blur initialDelay={1.3}>
           <p className="text-(--purple-soft) text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6 md:mt-8 max-w-[640px] lg:max-w-[800px]">
             {highlightText(subtitle)}
           </p>
@@ -53,6 +53,7 @@ export default function Hero({
         <ScaleIn
           initialScale={0.6}
           rotate={-2}
+          initialDelay={1.4}
           className="mt-6 sm:mt-8 md:mt-10 w-full max-w-[320px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]"
         >
           <FloatingElement amplitude={8}>

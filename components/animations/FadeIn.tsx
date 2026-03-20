@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
@@ -8,6 +9,8 @@ interface FadeInProps {
   direction?: "up" | "down" | "left" | "right";
   blur?: boolean;
   rotate?: number;
+  delay?: number;
+  initialDelay?: number;
   className?: string;
 }
 
@@ -23,8 +26,18 @@ export default function FadeIn({
   direction,
   blur = false,
   rotate = 0,
+  delay = 0,
+  initialDelay,
   className,
 }: FadeInProps) {
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const currentDelay =
+    initialDelay !== undefined && !hasAnimated ? initialDelay : delay;
+
+  const onComplete = useCallback(() => {
+    if (!hasAnimated) setHasAnimated(true);
+  }, [hasAnimated]);
+
   const offset = direction ? directionOffset[direction] : {};
   const isHorizontal = direction === "left" || direction === "right";
 
@@ -44,7 +57,8 @@ export default function FadeIn({
         ...(rotate ? { rotate: 0 } : {}),
       }}
       viewport={{ once: false, amount: 0 }}
-      transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.8, delay: currentDelay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      onAnimationComplete={onComplete}
       className={className}
     >
       {children}
