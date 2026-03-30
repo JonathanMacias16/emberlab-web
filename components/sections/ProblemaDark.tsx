@@ -47,7 +47,7 @@ export default function ProblemaDark({
                 </p>
               )}
               <FadeIn direction="up" blur>
-                <p className="text-[var(--green-light)] text-[0.84rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
+                <p className="text-[var(--green-light)] text-[0.84rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
                   {subtitle}
                 </p>
               </FadeIn>
@@ -80,7 +80,7 @@ export default function ProblemaDark({
         {/* Problem cards */}
         <StaggerContainer
           staggerDelay={0.2}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-10 sm:mt-14 md:mt-16 lg:mt-20"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-10 sm:mt-14 md:mt-16 lg:mt-20"
         >
           {cards?.map((card, i) => {
             const bg = card.bgColor || defaultBgColors[i] || defaultBgColors[0];
@@ -103,9 +103,9 @@ export default function ProblemaDark({
                   className="rounded-t-4xl md:rounded-t-4xl lg:rounded-t-4xl xl:rounded-t-4xl flex flex-col overflow-hidden h-full w-full"
                   style={{ backgroundColor: bg }}
                 >
-                  <div className={"2xl:h-60 lg:h-48  flex items-end"}>
+                  <div className={"2xl:h-60 flex items-end"}>
                     <p
-                      className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] xl:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[1.68rem] sm:p-[3.23rem] md:p-[3.30rem] lg:p-[2.37rem] xl:p-[5.37rem]`}
+                      className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] xl:text-[1.575rem] font-medium tracking-[-0.04em] leading-[1.15] p-[1.68rem] sm:p-[3.23rem] md:p-[3.30rem] lg:p-[2.37rem] 2xl:p-[5.37rem]`}
                     >
                       {card.text}
                     </p>

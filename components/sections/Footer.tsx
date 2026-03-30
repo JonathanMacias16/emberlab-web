@@ -16,7 +16,7 @@ export default function Footer({ tagline, brandLine1, brandLine2, copyright }: F
           <SlideIn from="left">
             <div className="flex items-center gap-4 sm:gap-5 md:gap-6">
               <LogoIcon className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16" />
-              <p className="text-[var(--purple-light)] text-sm sm:text-base md:text-lg lg:text-xl font-light leading-[1.15] whitespace-pre-line">
+              <p className="text-[var(--purple-light)] font-light leading-[1.15] whitespace-pre-line">
                 {tagline}
               </p>
             </div>

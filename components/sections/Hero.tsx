@@ -46,7 +46,7 @@ export default function Hero({
           </h1>
         </SlideIn>
         <FadeIn direction="up" blur initialDelay={1.3}>
-          <p className="text-(--purple-soft) text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6 md:mt-8 max-w-[640px] lg:max-w-[800px]">
+          <p className="text-(--purple-soft) text-center font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6 md:mt-8 max-w-[640px] lg:max-w-[800px]">
             {highlightText(subtitle)}
           </p>
         </FadeIn>

@@ -108,12 +108,12 @@ export default function PilarsFan({ pilares }: { pilares: PilarCardData[] }) {
             onClick={() => handleClick(i)}
           >
             <h3
-              className={`${textColor} text-xl sm:text-2xl md:text-3xl lg:text-[1.9rem] xl:text-[2.55rem] font-bold tracking-[-0.04em] leading-[1.1]`}
+              className={`${textColor} text-xl sm:text-2xl md:text-lg lg:text-[1.7rem] xl:text-[1.9rem] 2xl:text-[2.55rem] font-bold tracking-[-0.03em] leading-[1.1]`}
             >
               {pilar.title}
             </h3>
             <p
-              className={`${textColor} text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-[-0.04em] leading-[1.2] mt-4 lg:mt-[3.9rem]`}
+              className={`${textColor} text-sm sm:text-base md:text-base lg:text-lg xl:text-2xl font-semibold tracking-[-0.04em] leading-[1.2] mt-4 lg:mt-[3.9rem]`}
             >
               {pilar.description}
             </p>
