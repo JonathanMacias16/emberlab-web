@@ -43,7 +43,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
             <LabText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" />
           </div>
         </div>
-        <div className="hidden xl:flex items-center gap-4 lg:gap-8 text-[var(--purple)] text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
+        <div className="hidden xl:flex items-center gap-4 lg:gap-8 text-(--purple) text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
           {links?.map((link) => (
             <a
               key={link.href}
@@ -55,7 +55,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
           ))}
         </div>
         <div className="flex items-center gap-3 lg:gap-4">
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-2">
             {socialLinks?.map((social) => (
               <a
                 key={social.platform}
