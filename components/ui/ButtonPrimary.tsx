@@ -2,11 +2,13 @@ export default function ButtonPrimary({
   children,
   variant = "purple",
   href,
+  target,
   className = "",
 }: {
   children: React.ReactNode;
   variant?: "purple" | "red";
   href?: string;
+  target?: string;
   className?: string;
 }) {
   const bg =
@@ -17,7 +19,12 @@ export default function ButtonPrimary({
 
   if (href) {
     return (
-      <a href={href} className={classes}>
+      <a
+        href={href}
+        target={target}
+        rel={target === "_blank" ? "noopener noreferrer" : undefined}
+        className={classes}
+      >
         {children}
       </a>
     );

@@ -57,6 +57,7 @@ export default function ProblemaDark({
                     <ButtonPrimary
                       variant={cta.variant}
                       href={cta.href}
+                      target={cta.target}
                       className="w-full"
                     >
                       {cta.text}

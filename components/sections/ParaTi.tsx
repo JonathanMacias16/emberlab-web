@@ -55,7 +55,7 @@ export default function ParaTi({ paraTiTitle, paraTiItems, noParaTiTitle, noPara
       {cta && (
         <ScaleIn initialScale={0.5}>
           <div className="flex justify-center mt-8 sm:mt-10 md:mt-12">
-            <ButtonPrimary variant={cta.variant} href={cta.href}>
+            <ButtonPrimary variant={cta.variant} href={cta.href} target={cta.target}>
               {cta.text}
             </ButtonPrimary>
           </div>

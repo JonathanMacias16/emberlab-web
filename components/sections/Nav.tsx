@@ -35,8 +35,13 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
             className="w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12"
             aria-hidden
           />
-          <EmberText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" aria-hidden />
-          <LabText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" />
+          <div className="flex gap-1 items-center">
+            <EmberText
+              className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto"
+              aria-hidden
+            />
+            <LabText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" />
+          </div>
         </div>
         <div className="hidden xl:flex items-center gap-4 lg:gap-8 text-[var(--purple)] text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
           {links?.map((link) => (
@@ -50,7 +55,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
           ))}
         </div>
         <div className="flex items-center gap-3 lg:gap-4">
-          <div className="hidden xl:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
             {socialLinks?.map((social) => (
               <a
                 key={social.platform}
@@ -67,6 +72,7 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
               <ButtonPrimary
                 variant={cta.variant}
                 href={cta.href}
+                target={cta.target}
                 className="py-3! px-6! text-[0.98rem]! rounded-xl!"
               >
                 {cta.text}
@@ -143,18 +149,36 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
               ))}
             </nav>
 
-            {/* CTA button */}
-            {cta && (
-              <div className="mt-auto" onClick={() => setOpen(false)}>
-                <ButtonPrimary
-                  variant={cta.variant}
-                  href={cta.href}
-                  className="!py-[1.08rem] !px-[1.51rem] !text-[1.05rem] !rounded-[14px]"
-                >
-                  {cta.text}
-                </ButtonPrimary>
-              </div>
-            )}
+            {/* CTA button + social icons */}
+            <div className="mt-auto flex flex-col gap-6">
+              {cta && (
+                <div onClick={() => setOpen(false)}>
+                  <ButtonPrimary
+                    variant={cta.variant}
+                    href={cta.href}
+                    target={cta.target}
+                    className="!py-[1.08rem] !px-[1.51rem] !text-[1.05rem] !rounded-[14px]"
+                  >
+                    {cta.text}
+                  </ButtonPrimary>
+                </div>
+              )}
+              {socialLinks && socialLinks.length > 0 && (
+                <div className="flex items-center gap-4">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.platform}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setOpen(false)}
+                    >
+                      <SocialIcon icon={social.platform} />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
