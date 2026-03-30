@@ -79,15 +79,27 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
               </ButtonPrimary>
             </div>
           )}
-          {/* Hamburger — mobile only */}
+          {/* Hamburger / X toggle — mobile only */}
           <button
-            className="xl:hidden flex flex-col justify-center gap-[8px] w-7 py-1"
-            aria-label="Abrir menú"
-            onClick={() => setOpen(true)}
+            className="xl:hidden flex flex-col justify-center items-center gap-[8px] w-7 py-1 relative"
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            onClick={() => setOpen((o) => !o)}
           >
-            <span className="block h-[3px] w-full bg-[var(--purple)] rounded-full" />
-            <span className="block h-[3px] w-full bg-[var(--purple)] rounded-full" />
-            <span className="block h-[3px] w-full bg-[var(--purple)] rounded-full" />
+            <span
+              className={`block h-[3px] w-full bg-[var(--purple)] rounded-full transition-all duration-300 origin-center ${
+                open ? "translate-y-[11px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`block h-[3px] w-full bg-[var(--purple)] rounded-full transition-all duration-300 ${
+                open ? "opacity-0 scale-x-0" : ""
+              }`}
+            />
+            <span
+              className={`block h-[3px] w-full bg-[var(--purple)] rounded-full transition-all duration-300 origin-center ${
+                open ? "-translate-y-[11px] -rotate-45" : ""
+              }`}
+            />
           </button>
         </div>
       </motion.nav>

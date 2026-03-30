@@ -38,7 +38,7 @@
 
   /* Tamaño base de párrafos — +20% sobre la escala anterior (sm/base/lg/xl) */
   p {
-    font-size: 1.05rem;
+    font-size: 1.4rem;
 
     @media (min-width: 640px) {
       font-size: 1.2rem;

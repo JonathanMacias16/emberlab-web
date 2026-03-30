@@ -43,12 +43,12 @@ export default function ProblemaDark({
                 {title}
               </h2>
               {subtitle2 && (
-                <p className="text-[var(--red-light)] text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.05em] leading-[0.85] mt-1">
+                <p className="text-(--red-light) text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.04em] leading-[1.15] mt-1">
                   {subtitle2}
                 </p>
               )}
               <FadeIn direction="up" blur>
-                <p className="text-[var(--green-light)] text-[0.84rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
+                <p className="text-(--green-light) font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
                   {subtitle}
                 </p>
               </FadeIn>
