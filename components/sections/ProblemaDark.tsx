@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ButtonPrimary from "@/components/ui/ButtonPrimary";
+import ProblemaCarousel from "@/components/ui/ProblemaCarousel";
 import type { CtaButtonData, ProblemCardData } from "@/types/sanity";
 import { urlFor } from "@/sanity/lib/image";
 import {
@@ -42,12 +43,12 @@ export default function ProblemaDark({
                 {title}
               </h2>
               {subtitle2 && (
-                <p className="text-[var(--red-light)] text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.05em] leading-[0.85] mt-1">
+                <p className="text-(--red-light) text-[1.7rem] sm:text-[2.15rem] md:text-[2.9rem] lg:text-[3.6rem] font-normal tracking-[-0.04em] leading-[1.15] mt-1">
                   {subtitle2}
                 </p>
               )}
               <FadeIn direction="up" blur>
-                <p className="text-[var(--green-light)] text-[0.84rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
+                <p className="text-(--green-light) font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
                   {subtitle}
                 </p>
               </FadeIn>
@@ -57,6 +58,7 @@ export default function ProblemaDark({
                     <ButtonPrimary
                       variant={cta.variant}
                       href={cta.href}
+                      target={cta.target}
                       className="w-full"
                     >
                       {cta.text}
@@ -76,10 +78,31 @@ export default function ProblemaDark({
           </div>
         </div>
 
-        {/* Problem cards */}
+        {/* Carrusel en móvil */}
+        {cards && cards.length > 0 && (
+          <div className="md:hidden">
+            <ProblemaCarousel
+              cards={cards.map((card, i) => ({
+                text: card.text,
+                imageAlt: card.imageAlt || "",
+                bgColor:
+                  card.bgColor || defaultBgColors[i] || defaultBgColors[0],
+                textClass:
+                  card.textColorVariant === "white"
+                    ? "text-[var(--white)]"
+                    : "text-[var(--purple)]",
+                imgSrc: card.image
+                  ? urlFor(card.image).width(487).height(389).url()
+                  : fallbackImages[i] || fallbackImages[0],
+              }))}
+            />
+          </div>
+        )}
+
+        {/* Grid en desktop */}
         <StaggerContainer
           staggerDelay={0.2}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-10 sm:mt-14 md:mt-16 lg:mt-20"
+          className="hidden md:grid md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 md:gap-8 mt-10 sm:mt-14 md:mt-16 lg:mt-20"
         >
           {cards?.map((card, i) => {
             const bg = card.bgColor || defaultBgColors[i] || defaultBgColors[0];
@@ -99,12 +122,12 @@ export default function ProblemaDark({
                 className={isLast ? "sm:col-span-2 md:col-span-1" : undefined}
               >
                 <div
-                  className="rounded-t-4xl md:rounded-t-4xl lg:rounded-t-4xl xl:rounded-t-4xl flex flex-col overflow-hidden h-full w-full"
+                  className="rounded-t-4xl flex flex-col overflow-hidden h-full w-full"
                   style={{ backgroundColor: bg }}
                 >
-                  <div className={"2xl:h-60 lg:h-48  flex items-end"}>
+                  <div className="2xl:h-60 h-40 flex items-center">
                     <p
-                      className={`${textClass} text-[1.10rem] sm:text-[1.26rem] md:text-[1.42rem] xl:text-[1.575rem] font-bold tracking-[-0.04em] leading-[1.15] p-[1.68rem] sm:p-[3.23rem] md:p-[3.30rem] lg:p-[2.37rem] xl:p-[5.37rem]`}
+                      className={`${textClass} text-[1.10rem] lg:text-[1.26rem] md:text-[1.20rem] xl:text-[1.575rem] font-medium tracking-[-0.04em] leading-[1.15] p-[1.68rem] sm:p-[3.23rem] md:p-[3.30rem] lg:p-[2.37rem] 2xl:p-[5.37rem]`}
                     >
                       {card.text}
                     </p>

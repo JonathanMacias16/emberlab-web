@@ -36,17 +36,17 @@ export default function Hero({
     >
       <div className="flex flex-col items-center">
         <SlideIn from="left" rotate={-3} initialDelay={1}>
-          <h1 className="text-(--purple) text-center text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[0.85]">
+          <h1 className="text-(--purple) text-center text-5xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[0.85]">
             {highlightText(headline1)}
           </h1>
         </SlideIn>
         <SlideIn from="right" rotate={3} initialDelay={1.15}>
-          <h1 className="text-(--purple) text-center text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[1.15] mt-1 sm:mt-2">
+          <h1 className="text-(--purple) text-center text-5xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-normal tracking-[-0.05em] leading-[1.15] mt-1 sm:mt-2">
             {highlightText(headline2)}
           </h1>
         </SlideIn>
         <FadeIn direction="up" blur initialDelay={1.3}>
-          <p className="text-(--purple-soft) text-center text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6 md:mt-8 max-w-[640px] lg:max-w-[800px]">
+          <p className="text-(--purple-soft) text-center font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6 md:mt-8 max-w-[640px] lg:max-w-[800px]">
             {highlightText(subtitle)}
           </p>
         </FadeIn>

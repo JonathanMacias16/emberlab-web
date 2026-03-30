@@ -27,7 +27,7 @@ export default function CTAFinal({ title, description, cta }: CTAFinalProps) {
       {cta && (
         <ScaleIn initialScale={0.3} rotate={5}>
           <div className="mt-6 sm:mt-8 md:mt-10 flex justify-end">
-            <ButtonPrimary variant={cta.variant} href={cta.href}>
+            <ButtonPrimary variant={cta.variant} href={cta.href} target={cta.target}>
               {cta.text}
             </ButtonPrimary>
           </div>

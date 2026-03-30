@@ -19,7 +19,7 @@ export default function Resultados({ title, subtitle }: ResultadosProps) {
           </h2>
         </SlideIn>
         <FadeIn direction="up" blur>
-          <p className="text-[var(--red)] text-right text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
+          <p className="text-[var(--red)] text-right font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
             {subtitle?.split("\n").map((line, i) => (
               <span key={i} className="block">{line}</span>
             ))}

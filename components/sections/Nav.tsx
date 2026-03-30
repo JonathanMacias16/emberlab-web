@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LogoIcon from "@/components/ui/LogoIcon";
 import EmberText from "@/components/ui/EmberText";
@@ -21,6 +21,16 @@ interface NavProps {
 
 export default function Nav({ links, socialLinks, cta }: NavProps) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const threshold = document.documentElement.scrollHeight * 0.01;
+      setScrolled(window.scrollY > threshold);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -28,17 +38,26 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="sticky top-0 z-80 bg-(--white) flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6 md:px-12 lg:px-20 xl:px-28 lg:py-10 max-w-[1728px] mx-auto"
+        className={`sticky top-0 z-80 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6 md:px-12 lg:px-20 xl:px-28 lg:py-10 max-w-[1728px] mx-auto transition-[background-color,box-shadow] duration-300 ${
+          scrolled
+            ? "bg-(--white) shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
+            : "bg-transparent"
+        }`}
       >
         <div className="flex items-center gap-2 sm:gap-3">
           <LogoIcon
             className="w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12"
             aria-hidden
           />
-          <EmberText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" aria-hidden />
-          <LabText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" />
+          <div className="flex gap-1 items-center">
+            <EmberText
+              className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto"
+              aria-hidden
+            />
+            <LabText className="h-5 sm:h-6 md:h-7 lg:h-8 w-auto" />
+          </div>
         </div>
-        <div className="hidden xl:flex items-center gap-4 lg:gap-8 text-[var(--purple)] text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
+        <div className="hidden xl:flex items-center gap-4 lg:gap-8 text-(--purple) text-sm lg:text-base xl:text-lg font-light tracking-[-0.04em]">
           {links?.map((link) => (
             <a
               key={link.href}
@@ -67,21 +86,34 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
               <ButtonPrimary
                 variant={cta.variant}
                 href={cta.href}
+                target={cta.target}
                 className="py-3! px-6! text-[0.98rem]! rounded-xl!"
               >
                 {cta.text}
               </ButtonPrimary>
             </div>
           )}
-          {/* Hamburger — mobile only */}
+          {/* Hamburger / X toggle — mobile only */}
           <button
-            className="xl:hidden flex flex-col justify-center gap-[8px] w-7 py-1"
-            aria-label="Abrir menú"
-            onClick={() => setOpen(true)}
+            className="xl:hidden flex flex-col justify-center items-center gap-[8px] w-7 py-1 relative"
+            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            onClick={() => setOpen((o) => !o)}
           >
-            <span className="block h-[3px] w-full bg-[var(--purple)] rounded-full" />
-            <span className="block h-[3px] w-full bg-[var(--purple)] rounded-full" />
-            <span className="block h-[3px] w-full bg-[var(--purple)] rounded-full" />
+            <span
+              className={`block h-[3px] w-full bg-[var(--purple)] rounded-full transition-all duration-300 origin-center ${
+                open ? "translate-y-[11px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`block h-[3px] w-full bg-[var(--purple)] rounded-full transition-all duration-300 ${
+                open ? "opacity-0 scale-x-0" : ""
+              }`}
+            />
+            <span
+              className={`block h-[3px] w-full bg-[var(--purple)] rounded-full transition-all duration-300 origin-center ${
+                open ? "-translate-y-[11px] -rotate-45" : ""
+              }`}
+            />
           </button>
         </div>
       </motion.nav>
@@ -143,18 +175,36 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
               ))}
             </nav>
 
-            {/* CTA button */}
-            {cta && (
-              <div className="mt-auto" onClick={() => setOpen(false)}>
-                <ButtonPrimary
-                  variant={cta.variant}
-                  href={cta.href}
-                  className="!py-[1.08rem] !px-[1.51rem] !text-[1.05rem] !rounded-[14px]"
-                >
-                  {cta.text}
-                </ButtonPrimary>
-              </div>
-            )}
+            {/* CTA button + social icons */}
+            <div className="mt-auto flex flex-col gap-6">
+              {cta && (
+                <div onClick={() => setOpen(false)}>
+                  <ButtonPrimary
+                    variant={cta.variant}
+                    href={cta.href}
+                    target={cta.target}
+                    className="!py-[1.08rem] !px-[1.51rem] !text-[1.05rem] !rounded-[14px]"
+                  >
+                    {cta.text}
+                  </ButtonPrimary>
+                </div>
+              )}
+              {socialLinks && socialLinks.length > 0 && (
+                <div className="flex items-center gap-4">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.platform}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setOpen(false)}
+                    >
+                      <SocialIcon icon={social.platform} />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

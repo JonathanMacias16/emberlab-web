@@ -14,6 +14,7 @@ export interface CtaButtonData {
   text: string;
   variant?: "purple" | "red";
   href?: string;
+  target?: string;
 }
 
 export interface ProblemCardData {

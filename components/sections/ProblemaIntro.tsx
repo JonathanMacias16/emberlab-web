@@ -23,7 +23,7 @@ export default function ProblemaIntro({ title, cta }: ProblemaIntroProps) {
         {cta && (
           <ScaleIn initialScale={0.5}>
             <div className="mt-6 sm:mt-8 md:mt-10">
-              <ButtonPrimary variant={cta.variant} href={cta.href}>
+              <ButtonPrimary variant={cta.variant} href={cta.href} target={cta.target}>
                 {cta.text}
               </ButtonPrimary>
             </div>

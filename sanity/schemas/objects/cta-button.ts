@@ -19,6 +19,19 @@ export const ctaButton = defineType({
       initialValue: "purple",
     },
     { name: "href", title: "Enlace (URL o #ID)", type: "string" },
+    {
+      name: "target",
+      title: "Abrir en",
+      type: "string",
+      options: {
+        list: [
+          { title: "Misma pestaña", value: "_self" },
+          { title: "Nueva pestaña", value: "_blank" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "_self",
+    },
   ],
   preview: {
     select: {

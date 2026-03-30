@@ -18,7 +18,7 @@ export default function Proceso({ title, subtitle, steps }: ProcesoProps) {
           </h2>
         </SlideIn>
         <FadeIn direction="up" blur>
-          <p className="text-[var(--red)] text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
+          <p className="text-[var(--red)] font-light tracking-[-0.04em] leading-[1.15] mt-4 sm:mt-6">
             {subtitle?.split("\n").map((line, i) => (
               <span key={i} className="block">{line}</span>
             ))}
@@ -27,7 +27,7 @@ export default function Proceso({ title, subtitle, steps }: ProcesoProps) {
         <AnimatedDivider origin="left" className="mt-3 sm:mt-4 h-[3px] md:h-1 w-full bg-[var(--purple-light)]" />
         <div className="mt-6 sm:mt-8 md:mt-10 flex justify-end mr-[20%]">
           <StaggerContainer staggerDelay={0.18}>
-            <ol className="space-y-2 sm:space-y-3 text-[var(--purple)] text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-[-0.04em] leading-[1.8] list-decimal list-outside pl-6">
+            <ol className="space-y-2 sm:space-y-3 text-[var(--purple)] text-[1.05rem] sm:text-[1.2rem] md:text-[1.35rem] lg:text-[1.5rem] font-medium tracking-[-0.04em] leading-[1.8] list-decimal list-outside pl-6">
               {steps?.map((step, i) => (
                 <StaggerItem key={i}>
                   <li className="text-left">{step.text}</li>
