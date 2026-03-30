@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LogoIcon from "@/components/ui/LogoIcon";
 import EmberText from "@/components/ui/EmberText";
@@ -21,6 +21,16 @@ interface NavProps {
 
 export default function Nav({ links, socialLinks, cta }: NavProps) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const threshold = document.documentElement.scrollHeight * 0.01;
+      setScrolled(window.scrollY > threshold);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -28,7 +38,11 @@ export default function Nav({ links, socialLinks, cta }: NavProps) {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="sticky top-0 z-80 bg-(--white) flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6 md:px-12 lg:px-20 xl:px-28 lg:py-10 max-w-[1728px] mx-auto"
+        className={`sticky top-0 z-80 flex items-center justify-between px-5 py-4 sm:px-8 sm:py-6 md:px-12 lg:px-20 xl:px-28 lg:py-10 max-w-[1728px] mx-auto transition-[background-color,box-shadow] duration-300 ${
+          scrolled
+            ? "bg-(--white) shadow-[0_4px_24px_rgba(0,0,0,0.08)]"
+            : "bg-transparent"
+        }`}
       >
         <div className="flex items-center gap-2 sm:gap-3">
           <LogoIcon

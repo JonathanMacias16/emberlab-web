@@ -43,6 +43,38 @@ Path alias `@/*` maps to the project root (e.g., `@/app/...`, `@/components/...`
 - **ESLint**: Flat config format (`eslint.config.mjs`) with `next/core-web-vitals` and `next/typescript` rule sets.
 - **Dependencies**: `framer-motion` installed but not yet used; available for animations on future sections.
 
+## Routes
+
+- `app/page.tsx` — Coming soon page (root `/`). Dark purple background, BreathingFire animated logo, headline, "coming soon" text.
+- `app/web/page.tsx` — Full EmberLab landing page with all sections (Nav, Hero, Problema, Pilares, ParaTi, Proceso, Resultados, Portfolio, CTAFinal, Footer).
+- `app/logo-animations/page.tsx` — Internal playground showcasing all 9 animated logo variants (not linked publicly).
+- `app/studio/[[...tool]]/` — Sanity Studio route.
+
+## Animated Logo Variants
+
+All logo animations live in `app/logo-animations/page.tsx` and use the same 6 SVG paths (4 bars + 2 sparkles) from `public/logo.svg`. Each is a self-contained Framer Motion component that accepts a `playKey` prop to replay. Available animations:
+
+| Name | ID | Description |
+|---|---|---|
+| **Spark Ignite** | `spark-ignite` | Bars scale in from center staggered, sparkles pop with backOut |
+| **Ember Pulse** | `ember-pulse` | Continuous drop-shadow glow pulse, sparkles flicker opacity/scale |
+| **Staggered Spin** | `staggered-spin` | Each bar rotates from a different angle into position (used in SplashScreen) |
+| **Draw On** | `draw-on` | SVG pathLength stroke draws each bar, then fills with color |
+| **Flame Flicker** | `flame-flicker` | Organic x/y micro-movement simulating real flame motion |
+| **Scatter & Assemble** | `scatter-assemble` | Pieces fly in from 4 directions with spring physics |
+| **Breathing Fire** | `breathing-fire` | Scale oscillation [1→1.08→1] + color shift red→orange→red on bars, red→gold→red on sparkles. **Used on coming soon page (`/`).** |
+| **Rotate Reveal** | `rotate-reveal` | Full logo group spins -270° in with spring elastic |
+| **Sparkle Orbit** | `sparkle-orbit` | Sparkles orbit in opposite directions around the static logo |
+
+**Reusable animated logo components extracted so far:**
+- `components/animations/SplashScreen.tsx` — Uses Staggered Spin variant (looping), shown as splash gate on `/web`.
+- `components/animations/AnimatedLogoPhrase.tsx` — Logo + 4 SVG text lines animating with clipPath write-on effect, used in ProblemaDark section.
+
+**SVG path constants** (shared across all variants):
+- `BAR_H`, `BAR_V`, `BAR_DIAG_1`, `BAR_DIAG_2` — the 4 asymmetric bars
+- `SPARKLE_1` (transformOrigin `88px 28px`), `SPARKLE_2` (transformOrigin `20px 22px`) — the two sparkle accents
+- All paths use `viewBox="0 0 118 118"` with center at `59px 59px`
+
 ## Component Organization
 
-Currently, UI components (Logo, ButtonPrimary, SocialIcon) are co-located in `app/page.tsx`. As the site grows with multiple pages, consider extracting reusable components to a dedicated `components/` directory at the project root.
+UI components are in `components/` organized by type: `components/ui/`, `components/sections/`, `components/animations/`.
