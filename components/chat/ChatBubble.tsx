@@ -30,7 +30,7 @@ type Message = { role: "user" | "assistant"; content: string };
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
   content:
-    "¡Hola! 👋 Soy Ember, el asistente de diagnóstico web de EmberLab.\n\nEstoy aquí para ayudarte a entender cómo está tu sitio web y qué podemos hacer para mejorarlo. Al final recibirás un reporte personalizado con nuestras recomendaciones. 🔥\n\n¿Cómo te llamas?",
+    "¡Hola! 👋\nSoy Ember, asistente de Ember Lab.\nEn menos de 3 minutos te ayudaré a identificar oportunidades para mejorar tu sitio web y generar un diagnóstico inicial con recomendaciones prácticas.\nAl final podrás recibir el reporte completo directamente en tu correo.\n¿Comenzamos?",
 };
 
 function LogoIcon({
@@ -101,6 +101,7 @@ export default function ChatBubble() {
   const [reportReady, setReportReady] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [quickReplies, setQuickReplies] = useState<string[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -135,6 +136,7 @@ export default function ChatBubble() {
 
       setMessages([...withUser, { role: "assistant", content: "" }]);
       setInput("");
+      setQuickReplies([]);
       setIsLoading(true);
 
       try {
@@ -154,11 +156,20 @@ export default function ChatBubble() {
           const { done, value } = await reader.read();
           if (done) break;
           full += decoder.decode(value, { stream: true });
-          const display = full.replace("[DIAGNOSTICO_COMPLETO]", "").trim();
+          const display = full
+            .replace("[DIAGNOSTICO_COMPLETO]", "")
+            .replace(/\[OPCIONES:[^\]]*\]/g, "")
+            .trim();
           setMessages((prev) => [
             ...prev.slice(0, -1),
             { role: "assistant", content: display },
           ]);
+        }
+
+        // Parse quick reply options
+        const optMatch = full.match(/\[OPCIONES:([^\]]+)\]/);
+        if (optMatch) {
+          setQuickReplies(optMatch[1].split("|").map((o) => o.trim()));
         }
 
         if (full.includes("[DIAGNOSTICO_COMPLETO]")) setReportReady(true);
@@ -445,6 +456,43 @@ export default function ChatBubble() {
                       </>
                     )}
                   </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Quick reply options */}
+            <AnimatePresence>
+              {quickReplies.length > 0 && !isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 6 }}
+                  className="px-3 pb-2 flex flex-wrap gap-1.5 flex-shrink-0"
+                >
+                  {quickReplies.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => sendMessage(opt)}
+                      className="text-xs px-3 py-1.5 rounded-full font-dm transition-all"
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.07)",
+                        color: "rgba(255,255,255,0.85)",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--red)";
+                        e.currentTarget.style.borderColor = "var(--red)";
+                        e.currentTarget.style.color = "#fff";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.07)";
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                        e.currentTarget.style.color = "rgba(255,255,255,0.85)";
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
