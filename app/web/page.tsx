@@ -11,6 +11,7 @@ import Portfolio from "@/components/sections/Portfolio";
 import CTAFinal from "@/components/sections/CTAFinal";
 import Footer from "@/components/sections/Footer";
 import SplashGate from "@/components/animations/SplashGate";
+import ChatBubble from "@/components/chat/ChatBubble";
 import { client } from "@/sanity/lib/client";
 import { LANDING_PAGE_QUERY } from "@/sanity/lib/queries";
 import { defaultLandingPageData } from "@/sanity/lib/defaults";
@@ -93,6 +94,7 @@ export default async function Home() {
           copyright={page.footerCopyright}
         />
       </div>
+      <ChatBubble />
     </SplashGate>
   );
 }
