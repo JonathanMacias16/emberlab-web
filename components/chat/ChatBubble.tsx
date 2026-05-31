@@ -263,7 +263,7 @@ export default function ChatBubble() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 16 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed z-50 flex flex-col overflow-hidden rounded-2xl shadow-2xl font-dm"
+            className="fixed flex flex-col overflow-hidden rounded-2xl shadow-2xl font-dm"
             style={{
               bottom: 84,
               right: 16,
@@ -273,6 +273,7 @@ export default function ChatBubble() {
               transformOrigin: "bottom right",
               boxShadow:
                 "0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+              zIndex: 9999,
             }}
           >
             {/* Header */}
@@ -610,7 +611,7 @@ export default function ChatBubble() {
       {/* Floating button */}
       <motion.button
         onClick={() => setIsOpen((v) => !v)}
-        className="fixed z-50 flex items-center justify-center rounded-full cursor-pointer"
+        className="fixed flex items-center justify-center rounded-full cursor-pointer"
         style={{
           bottom: 24,
           right: 16,
@@ -618,6 +619,7 @@ export default function ChatBubble() {
           height: 56,
           backgroundColor: "var(--red)",
           boxShadow: "0 4px 20px rgba(231,63,64,0.45)",
+          zIndex: 9999,
         }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
