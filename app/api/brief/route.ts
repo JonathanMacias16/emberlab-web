@@ -22,9 +22,15 @@ const RED = "#e73f40";
 const PURPLE = "#301f4b";
 const CREAM = "#edeae7";
 
-function tier(percent: number): { label: string; emoji: string; color: string } {
-  if (percent >= 60) return { label: "Lead caliente", emoji: "🔥", color: "#22c55e" };
-  if (percent >= 30) return { label: "Lead tibio", emoji: "🟡", color: "#f59e0b" };
+function tier(percent: number): {
+  label: string;
+  emoji: string;
+  color: string;
+} {
+  if (percent >= 60)
+    return { label: "Lead caliente", emoji: "🔥", color: "#22c55e" };
+  if (percent >= 30)
+    return { label: "Lead tibio", emoji: "🟡", color: "#f59e0b" };
   return { label: "Lead frío", emoji: "❄️", color: RED };
 }
 
@@ -67,7 +73,7 @@ function buildEmailHtml(data: BriefPayload) {
 
       <p style="font-size:12px;letter-spacing:1px;color:${PURPLE};opacity:0.6;margin:0 0 8px 0;">RESPUESTAS COMPLETAS</p>
       <div style="background:#ffffff;border-radius:10px;border:1px solid #e5e0da;padding:16px 18px;font-size:13px;line-height:1.6;color:${PURPLE};white-space:pre-wrap;">${escapeHtml(
-        data.summaryText
+        data.summaryText,
       )}</div>
 
       <p style="margin:20px 0 0 0;font-size:11px;color:${PURPLE};opacity:0.5;">Enviado automáticamente desde el formulario de brief de emberlab.mx</p>
@@ -104,14 +110,14 @@ export async function POST(req: NextRequest) {
     // El SDK de Resend no lanza excepción en errores de la API (dominio no
     // verificado, remitente inválido, etc.) — los devuelve en result.error.
     if (result.error) {
-      console.error("Resend rechazó el correo del brief:", result.error);
+      console.error("Resend rechazó el correo del brief-web:", result.error);
       return new Response(JSON.stringify(result.error), {
         status: 502,
         headers: { "Content-Type": "application/json" },
       });
     }
   } catch (error) {
-    console.error("Error enviando el correo del brief:", error);
+    console.error("Error enviando el correo del brief-web:", error);
     return new Response("Error enviando el correo", { status: 500 });
   }
 
