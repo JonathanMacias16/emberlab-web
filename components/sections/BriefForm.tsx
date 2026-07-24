@@ -510,7 +510,6 @@ export default function BriefForm() {
   const [history, setHistory] = useState<number[]>([0]);
   const [done, setDone] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const [copied, setCopied] = useState(false);
 
   const currentIndex = history[history.length - 1];
   const currentQuestion = QUESTIONS[currentIndex];
@@ -540,13 +539,6 @@ export default function BriefForm() {
     setDirection(-1);
     setDone(false);
     setHistory((h) => h.slice(0, -1));
-  }
-
-  function handleRestart() {
-    setAnswers({});
-    setHistory([0]);
-    setDone(false);
-    setCopied(false);
   }
 
   // Solo se consideran las preguntas que el cliente realmente respondió
@@ -582,16 +574,6 @@ export default function BriefForm() {
       axisSummaryLines("Preparación", readinessScore),
       ...lines,
     ].join("\n\n");
-  }
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(summaryText());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // clipboard unavailable, ignore
-    }
   }
 
   const emailSentRef = useRef(false);
@@ -675,14 +657,7 @@ export default function BriefForm() {
               animate="center"
               transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
             >
-              <SummaryScreen
-                entries={summaryEntries}
-                qualityScore={qualityScore}
-                readinessScore={readinessScore}
-                onRestart={handleRestart}
-                onCopy={handleCopy}
-                copied={copied}
-              />
+              <SummaryScreen />
             </motion.div>
           )}
         </div>
@@ -904,60 +879,7 @@ function QuestionScreen({
   );
 }
 
-function ScoreBadge({ score }: { score: number }) {
-  const color = score > 0 ? "var(--green-light)" : score < 0 ? "var(--red-light)" : "var(--purple-light)";
-  const sign = score > 0 ? "+" : "";
-  return (
-    <span
-      className="flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tracking-[-0.02em]"
-      style={{ color, backgroundColor: "rgba(255,255,255,0.08)", border: `1px solid ${color}` }}
-    >
-      {sign}
-      {score}
-    </span>
-  );
-}
-
-function AxisScoreCard({ label, hint, axis }: { label: string; hint: string; axis: AxisScore }) {
-  const percentColor = axis.percent >= 60 ? "var(--green-light)" : axis.percent >= 30 ? "var(--white)" : "var(--red-light)";
-  return (
-    <div
-      className="flex-1 rounded-2xl px-5 py-4"
-      style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
-    >
-      <div className="flex items-baseline justify-between gap-2">
-        <div>
-          <p className="text-(--white) text-sm font-semibold">{label}</p>
-          <p className="text-(--purple-light) text-xs font-light">{hint}</p>
-        </div>
-        <span className="text-3xl font-bold tracking-[-0.03em]" style={{ color: percentColor }}>
-          {axis.percent}%
-        </span>
-      </div>
-      <div className="flex items-center gap-3 mt-3 text-xs">
-        <span className="text-(--purple-light) font-light">Máximo {axis.max} pts</span>
-        <span style={{ color: "var(--green-light)" }}>+{axis.positive}</span>
-        <span style={{ color: "var(--red-light)" }}>{axis.negative}</span>
-      </div>
-    </div>
-  );
-}
-
-function SummaryScreen({
-  entries,
-  qualityScore,
-  readinessScore,
-  onRestart,
-  onCopy,
-  copied,
-}: {
-  entries: SummaryEntry[];
-  qualityScore: AxisScore;
-  readinessScore: AxisScore;
-  onRestart: () => void;
-  onCopy: () => void;
-  copied: boolean;
-}) {
+function SummaryScreen() {
   return (
     <div>
       <h1 className="text-(--white) text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.04em] leading-[1.05]">
@@ -966,51 +888,6 @@ function SummaryScreen({
       <p className="text-(--purple-light) text-base sm:text-lg mt-3 font-light">
         Con tus respuestas revisaremos en qué etapa se encuentra tu proyecto y te contactaremos para recomendarte el mejor camino para tu sitio web.
       </p>
-
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <AxisScoreCard label="Calidad de lead" hint="¿Qué tan buen cliente es?" axis={qualityScore} />
-        <AxisScoreCard label="Preparación" hint="¿Qué tan listo llega?" axis={readinessScore} />
-      </div>
-      <p className="text-(--purple-light) text-xs font-light mt-3">
-        Calculado solo con las {entries.length} preguntas que el cliente respondió.
-      </p>
-
-      <div
-        className="mt-8 rounded-2xl p-5 sm:p-6 max-h-[50vh] overflow-y-auto flex flex-col gap-4"
-        style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
-      >
-        {entries.map(({ q, value, score }) => {
-          const display = Array.isArray(value)
-            ? value.map((v) => optionLabel(q, v)).join(", ")
-            : q.type === "single"
-              ? optionLabel(q, value as string)
-              : (value as string);
-          return (
-            <div key={q.id}>
-              <div className="flex items-center gap-2">
-                <p className="text-(--purple-light) text-sm font-light">{q.title}</p>
-                {score !== 0 && <ScoreBadge score={score} />}
-              </div>
-              <p className="text-(--white) text-lg">{display}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-4 mt-8">
-        <button
-          onClick={onCopy}
-          className="bg-(--red) hover:brightness-110 text-(--white) rounded-2xl px-7 py-3.5 text-base font-bold tracking-[-0.03em] transition-all cursor-pointer"
-        >
-          {copied ? "¡Copiado!" : "Copiar resumen"}
-        </button>
-        <button
-          onClick={onRestart}
-          className="text-(--purple-light) hover:text-(--white) text-base transition-colors cursor-pointer"
-        >
-          Empezar de nuevo
-        </button>
-      </div>
     </div>
   );
 }
