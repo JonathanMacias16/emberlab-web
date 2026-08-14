@@ -612,10 +612,17 @@ export default function BriefForm() {
         <div className="h-1.5 flex-1 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
           <div
             className="h-full rounded-full transition-[width] duration-400 ease-out"
-            style={{ backgroundColor: "var(--red)", width: `${progress}%` }}
+            style={{
+              backgroundColor: done ? "var(--green-light)" : "var(--red)",
+              width: `${progress}%`,
+            }}
           />
         </div>
-        <span className="text-(--purple-light) text-sm font-semibold tabular-nums w-11 text-right flex-shrink-0">
+        <span
+          className={`text-sm font-semibold tabular-nums w-11 text-right flex-shrink-0 transition-colors ${
+            done ? "text-(--green-light)" : "text-(--purple-light)"
+          }`}
+        >
           {progress}%
         </span>
       </div>
@@ -882,10 +889,30 @@ function QuestionScreen({
 function SummaryScreen() {
   return (
     <div>
-      <h1 className="text-(--white) text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.04em] leading-[1.05]">
+      {/* Palomita en verde: el mismo acento afirmativo que usa la marca, para que
+          se lea de inmediato que el formulario ya terminó. */}
+      <div
+        className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full mb-6"
+        style={{ backgroundColor: "rgba(199,221,163,0.15)", border: "1px solid var(--green-light)" }}
+      >
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--green-light)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+      <h1 className="text-(--green-light) text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.04em] leading-[1.05]">
         Gracias por compartirnos esta información.
       </h1>
-      <p className="text-(--purple-light) text-base sm:text-lg mt-3 font-light">
+      <p className="text-(--white) text-base sm:text-lg mt-3 font-light">
         Con tus respuestas revisaremos en qué etapa se encuentra tu proyecto y te contactaremos para recomendarte el mejor camino para tu sitio web.
       </p>
     </div>

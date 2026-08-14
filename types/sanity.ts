@@ -49,6 +49,106 @@ export interface PortfolioProjectData {
   link?: string;
 }
 
+export type ProjectTypeIcon = "landing" | "esencial" | "corporativo" | "rediseno";
+
+export interface ProjectTypeCardData {
+  title: string;
+  description?: string;
+  icon?: ProjectTypeIcon;
+}
+
+export interface ReasonItemData {
+  title: string;
+  description?: string;
+}
+
+export interface FaqItemData {
+  question: string;
+  answer?: string;
+}
+
+export interface SimpleStepData {
+  number: string;
+  title: string;
+  description?: string;
+}
+
+export interface CaseStudyData {
+  title: string;
+  description?: string;
+  image?: SanityImageSource;
+  imageAlt?: string;
+  link?: string;
+  linkLabel?: string;
+}
+
+/** Documento de la landing web (`/landing`). Independiente de `landingPage` (`/web`). */
+export interface LandingWebData {
+  // Nav
+  navLinks?: NavLinkData[];
+  navSocialLinks?: SocialLinkData[];
+
+  // Hero
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroCta?: CtaButtonData;
+  heroNote?: string;
+  heroImage?: SanityImageSource;
+  heroImageAlt?: string;
+
+  // Intro
+  introText?: string;
+  introCta?: CtaButtonData;
+
+  // Tipos de proyecto
+  projectTypesTitle?: string;
+  projectTypes?: ProjectTypeCardData[];
+  projectTypesNote?: string;
+  projectTypesCta?: CtaButtonData;
+
+  // Por qué
+  whyTitle?: string;
+  whyReasons?: ReasonItemData[];
+
+  // Así de simple
+  stepsTitle?: string;
+  steps?: SimpleStepData[];
+  stepsCta?: CtaButtonData;
+
+  // FAQ
+  faqTitle?: string;
+  faqItems?: FaqItemData[];
+
+  // Qué incluye
+  includesTitle?: string;
+  includesItems?: string[];
+
+  // Casos
+  casesTitle?: string;
+  cases?: CaseStudyData[];
+
+  // Banda verde
+  ctaBandText?: string;
+  ctaBandButton?: CtaButtonData;
+
+  // Analizador
+  analyzerTitle?: string;
+  analyzerDescription?: string;
+  analyzerCta?: CtaButtonData;
+  analyzerNote?: string;
+
+  // Hablar directo
+  contactTitle?: string;
+  contactDescription?: string;
+  contactCta?: CtaButtonData;
+
+  // Footer
+  footerTagline?: string;
+  footerBrandLine1?: string;
+  footerBrandLine2?: string;
+  footerCopyright?: string;
+}
+
 export interface LandingPageData {
   // Nav
   navLinks?: NavLinkData[];
