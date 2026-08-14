@@ -1,5 +1,73 @@
 import { defineQuery } from "next-sanity";
 
+export const LANDING_WEB_QUERY = defineQuery(`
+  *[_type == "landingWeb" && _id == "landingWeb"][0]{
+    // Nav
+    navLinks,
+    navSocialLinks,
+
+    // Hero
+    heroTitle,
+    heroSubtitle,
+    heroCta,
+    heroNote,
+    heroImage{ asset->{ _id, url, metadata } },
+    heroImageAlt,
+
+    // Intro
+    introText,
+    introCta,
+
+    // Tipos de proyecto
+    projectTypesTitle,
+    projectTypes[]{ title, description, icon },
+    projectTypesNote,
+    projectTypesCta,
+
+    // Por qué
+    whyTitle,
+    whyReasons[]{ title, description },
+
+    // Así de simple
+    stepsTitle,
+    steps[]{ number, title, description },
+    stepsCta,
+
+    // Preguntas
+    faqTitle,
+    faqItems[]{ question, answer },
+
+    // Qué incluye
+    includesTitle,
+    includesItems,
+
+    // Casos
+    casesTitle,
+    cases[]{ title, description, image{ asset->{ _id, url, metadata } }, imageAlt, link, linkLabel },
+
+    // Banda verde
+    ctaBandText,
+    ctaBandButton,
+
+    // Analizador
+    analyzerTitle,
+    analyzerDescription,
+    analyzerCta,
+    analyzerNote,
+
+    // Hablar directo
+    contactTitle,
+    contactDescription,
+    contactCta,
+
+    // Footer
+    footerTagline,
+    footerBrandLine1,
+    footerBrandLine2,
+    footerCopyright
+  }
+`);
+
 export const LANDING_PAGE_QUERY = defineQuery(`
   *[_type == "landingPage" && _id == "landingPage"][0]{
     // Nav
