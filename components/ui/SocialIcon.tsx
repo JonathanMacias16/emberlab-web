@@ -1,4 +1,10 @@
-export default function SocialIcon({icon}: { icon: "fb" | "ig" | "in" }) {
+export default function SocialIcon({
+    icon,
+    className = "h-5 w-5 text-(--purple)",
+}: {
+    icon: "fb" | "ig" | "in";
+    className?: string;
+}) {
     const paths: Record<string, React.ReactNode> = {
         fb: (
             <>
@@ -24,7 +30,7 @@ export default function SocialIcon({icon}: { icon: "fb" | "ig" | "in" }) {
                 width={32}
                 height={32}
                 viewBox="0 0 32 32"
-                className="h-5 w-5 text-(--purple)"
+                className={className}
                 fill="none"
             >
                 {paths[icon]}

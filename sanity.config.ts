@@ -4,7 +4,7 @@ import React from "react";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
-import { HomeIcon } from "@sanity/icons";
+import { HomeIcon, DesktopIcon } from "@sanity/icons";
 import { apiVersion, dataset, projectId } from "@/sanity/env";
 import { schema } from "@/sanity/schemas/index";
 
@@ -33,6 +33,15 @@ export default defineConfig({
                   .title("Editor Visual de Landing Page")
                   .schemaType("landingPage")
                   .documentId("landingPage")
+              ),
+            S.listItem()
+              .title("Landing Web")
+              .icon(DesktopIcon)
+              .child(
+                S.document()
+                  .title("Editor de Landing Web")
+                  .schemaType("landingWeb")
+                  .documentId("landingWeb")
               ),
           ]),
     }),
