@@ -5,14 +5,12 @@
       "name": "Next.js Dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "cwd": "/Users/jonathanmacias/WebstormProjects/emberlab",
       "port": 3000
     },
     {
       "name": "Next.js Production",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start"],
-      "cwd": "/Users/jonathanmacias/WebstormProjects/emberlab",
       "port": 3000
     }
   ]
