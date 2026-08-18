@@ -34,15 +34,28 @@ function tier(percent: number): {
   return { label: "Lead frío", emoji: "❄️", color: RED };
 }
 
-function scoreBlock(label: string, axis: AxisScore) {
+/**
+ * Una de las dos tarjetas de puntaje. Va en una celda al 50% de una tabla con
+ * `table-layout:fixed`; la separación entre columnas se hace con el padding de
+ * la celda exterior (no con `border-spacing`, que Outlook ignora) y la tarjeta
+ * en sí es una tabla anidada al 100% para que ambas midan exactamente igual.
+ */
+function scoreBlock(label: string, axis: AxisScore, side: "left" | "right") {
   const t = tier(axis.percent);
+  const gutter = side === "left" ? "padding:0 8px 0 0;" : "padding:0 0 0 8px;";
   return `
-    <td style="padding:16px 18px;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;width:50%;">
-      <p style="margin:0 0 4px 0;font-size:12px;color:${PURPLE};opacity:0.6;font-family:sans-serif;">${label}</p>
-      <p style="margin:0;font-size:28px;font-weight:700;color:${t.color};font-family:sans-serif;">${axis.percent}%</p>
-      <p style="margin:6px 0 0 0;font-size:12px;color:${PURPLE};font-family:sans-serif;">
-        ${t.emoji} ${t.label} &middot; máx ${axis.max} pts &middot; <span style="color:#16a34a;">+${axis.positive}</span> / <span style="color:${RED};">${axis.negative}</span>
-      </p>
+    <td width="50%" valign="top" style="width:50%;${gutter}">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;">
+        <tr>
+          <td style="padding:16px 18px;">
+            <p style="margin:0 0 4px 0;font-size:12px;color:${PURPLE};opacity:0.6;font-family:sans-serif;">${label}</p>
+            <p style="margin:0;font-size:28px;font-weight:700;color:${t.color};font-family:sans-serif;">${axis.percent}%</p>
+            <p style="margin:6px 0 0 0;font-size:12px;color:${PURPLE};font-family:sans-serif;">
+              ${t.emoji} ${t.label} &middot; máx ${axis.max} pts &middot; <span style="color:#16a34a;">+${axis.positive}</span> / <span style="color:${RED};">${axis.negative}</span>
+            </p>
+          </td>
+        </tr>
+      </table>
     </td>`;
 }
 
@@ -54,14 +67,14 @@ function buildEmailHtml(data: BriefPayload) {
       <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:2px;color:${RED};font-weight:700;">EMBER LAB · NUEVO LEAD</p>
       <h1 style="margin:0 0 18px 0;font-size:24px;color:${PURPLE};">${data.name || "Sin nombre"} ${t.emoji}</h1>
 
-      <table role="presentation" width="100%" style="border-collapse:separate;border-spacing:12px 0;margin:0 0 18px -12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;table-layout:fixed;border-collapse:collapse;margin:0 0 18px 0;">
         <tr>
-          ${scoreBlock("Calidad de lead", data.qualityScore)}
-          ${scoreBlock("Preparación", data.readinessScore)}
+          ${scoreBlock("Calidad de lead", data.qualityScore, "left")}
+          ${scoreBlock("Preparación", data.readinessScore, "right")}
         </tr>
       </table>
 
-      <table role="presentation" width="100%" style="background:#ffffff;border-radius:10px;border:1px solid #e5e0da;margin-bottom:18px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;margin-bottom:18px;">
         <tr>
           <td style="padding:14px 18px;font-size:14px;color:${PURPLE};">
             <p style="margin:0 0 6px 0;"><strong>Empresa:</strong> ${data.business || "—"}</p>
