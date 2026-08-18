@@ -22,6 +22,17 @@ const RED = "#e73f40";
 const PURPLE = "#301f4b";
 const CREAM = "#edeae7";
 
+/**
+ * Origen público del sitio. Los clientes de correo no resuelven rutas relativas,
+ * así que el logo de la firma necesita una URL absoluta.
+ */
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://emberlab.mx")
+).replace(/\/$/, "");
+
 function tier(percent: number): {
   label: string;
   emoji: string;
@@ -90,6 +101,15 @@ function buildEmailHtml(data: BriefPayload) {
       )}</div>
 
       <p style="margin:20px 0 0 0;font-size:11px;color:${PURPLE};opacity:0.5;">Enviado automáticamente desde el formulario de brief de emberlab.mx</p>
+
+      <!-- Firma -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-top:24px;border-top:1px solid #d9d3cd;">
+        <tr>
+          <td align="center" style="padding-top:20px;">
+            <img src="${SITE_URL}/logo-ember.png" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
+          </td>
+        </tr>
+      </table>
     </div>
   </div>`;
 }
