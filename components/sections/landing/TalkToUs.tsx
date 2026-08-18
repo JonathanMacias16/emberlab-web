@@ -16,11 +16,11 @@ export default function TalkToUs({ title, description, cta }: TalkToUsProps) {
       <div className={CONTAINER}>
         <div className="flex flex-col items-center text-center">
           <FadeIn direction="up">
-            <SectionTitle className="text-(--white) max-w-[56rem]">{title}</SectionTitle>
+            <SectionTitle className="text-(--purple) max-w-[56rem]">{title}</SectionTitle>
           </FadeIn>
           <FadeIn direction="up" delay={0.1}>
             <p
-              className={`mt-4 sm:mt-6 md:mt-8 max-w-[44rem] text-(--white) font-light tracking-[-0.04em] leading-[1.15] ${TEXT_BODY}`}
+              className={`mt-4 sm:mt-6 md:mt-8 max-w-[44rem] text-(--purple) font-light tracking-[-0.04em] leading-[1.15] ${TEXT_BODY}`}
             >
               {description}
             </p>
