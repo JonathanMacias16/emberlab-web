@@ -23,15 +23,16 @@ const PURPLE = "#301f4b";
 const CREAM = "#edeae7";
 
 /**
- * Origen público del sitio. Los clientes de correo no resuelven rutas relativas,
- * así que el logo de la firma necesita una URL absoluta.
+ * Logo de la firma. Los clientes de correo no resuelven rutas relativas, así que
+ * necesita una URL absoluta y accesible públicamente.
+ *
+ * TEMPORAL: apunta al deploy de preview mientras `logo-ember.png` no esté en el
+ * dominio de producción. Al publicar, cambiar por `https://emberlab.mx/logo-ember.png`
+ * o definir `LOGO_EMAIL_URL` en las variables de entorno.
  */
-const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "https://emberlab.mx")
-).replace(/\/$/, "");
+const LOGO_URL =
+  process.env.LOGO_EMAIL_URL ||
+  "https://emberlab-web-git-develoip-jonathan-macias-projects.vercel.app/logo-ember.png";
 
 function tier(percent: number): {
   label: string;
@@ -106,7 +107,7 @@ function buildEmailHtml(data: BriefPayload) {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-top:24px;border-top:1px solid #d9d3cd;">
         <tr>
           <td align="center" style="padding-top:20px;">
-            <img src="${SITE_URL}/logo-ember.png" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
+            <img src="${LOGO_URL}" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
           </td>
         </tr>
       </table>
@@ -149,7 +150,7 @@ function buildClientEmailHtml(data: BriefPayload) {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-top:24px;border-top:1px solid #d9d3cd;">
         <tr>
           <td align="center" style="padding-top:20px;">
-            <img src="${SITE_URL}/logo-ember.png" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
+            <img src="${LOGO_URL}" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
           </td>
         </tr>
       </table>
