@@ -22,6 +22,18 @@ const RED = "#e73f40";
 const PURPLE = "#301f4b";
 const CREAM = "#edeae7";
 
+/**
+ * Logo de la firma. Los clientes de correo no resuelven rutas relativas, así que
+ * necesita una URL absoluta y accesible públicamente.
+ *
+ * TEMPORAL: apunta al deploy de preview mientras `logo-ember.png` no esté en el
+ * dominio de producción. Al publicar, cambiar por `https://emberlab.mx/logo-ember.png`
+ * o definir `LOGO_EMAIL_URL` en las variables de entorno.
+ */
+const LOGO_URL =
+  process.env.LOGO_EMAIL_URL ||
+  "https://emberlab-web-git-develoip-jonathan-macias-projects.vercel.app/logo-ember.png";
+
 function tier(percent: number): {
   label: string;
   emoji: string;
@@ -34,15 +46,28 @@ function tier(percent: number): {
   return { label: "Lead frío", emoji: "❄️", color: RED };
 }
 
-function scoreBlock(label: string, axis: AxisScore) {
+/**
+ * Una de las dos tarjetas de puntaje. Va en una celda al 50% de una tabla con
+ * `table-layout:fixed`; la separación entre columnas se hace con el padding de
+ * la celda exterior (no con `border-spacing`, que Outlook ignora) y la tarjeta
+ * en sí es una tabla anidada al 100% para que ambas midan exactamente igual.
+ */
+function scoreBlock(label: string, axis: AxisScore, side: "left" | "right") {
   const t = tier(axis.percent);
+  const gutter = side === "left" ? "padding:0 8px 0 0;" : "padding:0 0 0 8px;";
   return `
-    <td style="padding:16px 18px;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;width:50%;">
-      <p style="margin:0 0 4px 0;font-size:12px;color:${PURPLE};opacity:0.6;font-family:sans-serif;">${label}</p>
-      <p style="margin:0;font-size:28px;font-weight:700;color:${t.color};font-family:sans-serif;">${axis.percent}%</p>
-      <p style="margin:6px 0 0 0;font-size:12px;color:${PURPLE};font-family:sans-serif;">
-        ${t.emoji} ${t.label} &middot; máx ${axis.max} pts &middot; <span style="color:#16a34a;">+${axis.positive}</span> / <span style="color:${RED};">${axis.negative}</span>
-      </p>
+    <td width="50%" valign="top" style="width:50%;${gutter}">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;">
+        <tr>
+          <td style="padding:16px 18px;">
+            <p style="margin:0 0 4px 0;font-size:12px;color:${PURPLE};opacity:0.6;font-family:sans-serif;">${label}</p>
+            <p style="margin:0;font-size:28px;font-weight:700;color:${t.color};font-family:sans-serif;">${axis.percent}%</p>
+            <p style="margin:6px 0 0 0;font-size:12px;color:${PURPLE};font-family:sans-serif;">
+              ${t.emoji} ${t.label} &middot; máx ${axis.max} pts &middot; <span style="color:#16a34a;">+${axis.positive}</span> / <span style="color:${RED};">${axis.negative}</span>
+            </p>
+          </td>
+        </tr>
+      </table>
     </td>`;
 }
 
@@ -54,14 +79,14 @@ function buildEmailHtml(data: BriefPayload) {
       <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:2px;color:${RED};font-weight:700;">EMBER LAB · NUEVO LEAD</p>
       <h1 style="margin:0 0 18px 0;font-size:24px;color:${PURPLE};">${data.name || "Sin nombre"} ${t.emoji}</h1>
 
-      <table role="presentation" width="100%" style="border-collapse:separate;border-spacing:12px 0;margin:0 0 18px -12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;table-layout:fixed;border-collapse:collapse;margin:0 0 18px 0;">
         <tr>
-          ${scoreBlock("Calidad de lead", data.qualityScore)}
-          ${scoreBlock("Preparación", data.readinessScore)}
+          ${scoreBlock("Calidad de lead", data.qualityScore, "left")}
+          ${scoreBlock("Preparación", data.readinessScore, "right")}
         </tr>
       </table>
 
-      <table role="presentation" width="100%" style="background:#ffffff;border-radius:10px;border:1px solid #e5e0da;margin-bottom:18px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;margin-bottom:18px;">
         <tr>
           <td style="padding:14px 18px;font-size:14px;color:${PURPLE};">
             <p style="margin:0 0 6px 0;"><strong>Empresa:</strong> ${data.business || "—"}</p>
@@ -77,6 +102,58 @@ function buildEmailHtml(data: BriefPayload) {
       )}</div>
 
       <p style="margin:20px 0 0 0;font-size:11px;color:${PURPLE};opacity:0.5;">Enviado automáticamente desde el formulario de brief de emberlab.mx</p>
+
+      <!-- Firma -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-top:24px;border-top:1px solid #d9d3cd;">
+        <tr>
+          <td align="center" style="padding-top:20px;">
+            <img src="${LOGO_URL}" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>`;
+}
+
+/**
+ * Acuse de recibo que se envía a quien completó el brief. No incluye puntajes
+ * ni datos internos: sólo confirma la recepción y explica qué sigue.
+ */
+function buildClientEmailHtml(data: BriefPayload) {
+  const firstName = (data.name || "").trim().split(/\s+/)[0];
+  return `
+  <div style="background:${CREAM};padding:28px 16px;font-family:sans-serif;">
+    <div style="max-width:560px;margin:0 auto;">
+      <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:2px;color:${RED};font-weight:700;">EMBER LAB</p>
+      <h1 style="margin:0 0 18px 0;font-size:24px;color:${PURPLE};">${firstName ? `Gracias, ${escapeHtml(firstName)}` : "Gracias por escribirnos"} 🔥</h1>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;margin-bottom:18px;">
+        <tr>
+          <td style="padding:18px;font-size:15px;line-height:1.6;color:${PURPLE};">
+            <p style="margin:0 0 12px 0;">Recibimos tu formulario${data.business ? ` de <strong>${escapeHtml(data.business)}</strong>` : ""}. Ya lo estamos revisando.</p>
+            <p style="margin:0 0 12px 0;"><strong>¿Qué sigue?</strong></p>
+            <p style="margin:0 0 8px 0;">1. Revisamos tus respuestas a detalle.</p>
+            <p style="margin:0 0 8px 0;">2. Te contactamos en las próximas 24 a 48 horas hábiles${data.whatsapp ? " por WhatsApp o correo" : " por correo"}.</p>
+            <p style="margin:0;">3. Agendamos una llamada de diagnóstico, sin costo ni compromiso.</p>
+          </td>
+        </tr>
+      </table>
+
+      <p style="margin:0 0 18px 0;font-size:14px;line-height:1.6;color:${PURPLE};">
+        Si mientras tanto quieres adelantar algo, respóndenos este correo o escríbenos por
+        <a href="https://wa.me/525554964439" style="color:${RED};text-decoration:underline;">WhatsApp</a>.
+      </p>
+
+      <p style="margin:0;font-size:11px;color:${PURPLE};opacity:0.5;">Este correo confirma la recepción de tu formulario en emberlab.mx</p>
+
+      <!-- Firma -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-top:24px;border-top:1px solid #d9d3cd;">
+        <tr>
+          <td align="center" style="padding-top:20px;">
+            <img src="${LOGO_URL}" alt="EmberLab" width="140" height="49" style="display:block;width:140px;height:auto;border:0;outline:none;text-decoration:none;" />
+          </td>
+        </tr>
+      </table>
     </div>
   </div>`;
 }
@@ -140,23 +217,22 @@ export async function POST(req: NextRequest) {
     return new Response("Error enviando el correo", { status: 500 });
   }
 
+  // Acuse de recibo al cliente. Si falla no se rompe el flujo: la notificación
+  // interna —lo importante— ya salió.
   if (data.email) {
     try {
-      const confirmationResult = await resend.emails.send({
-        from: "Ember Lab <hola@emberlab.mx>",
+      const ack = await resend.emails.send({
+        from: "EmberLab <hola@emberlab.mx>",
         to: data.email,
-        subject: "Recibimos tu información — Ember Lab",
-        html: buildLeadConfirmationHtml(data),
+        replyTo: to,
+        subject: "Recibimos tu formulario — EmberLab",
+        html: buildClientEmailHtml(data),
       });
-
-      if (confirmationResult.error) {
-        console.error(
-          "Resend rechazó el correo de confirmación al lead:",
-          confirmationResult.error,
-        );
+      if (ack.error) {
+        console.error("Resend rechazó el acuse al cliente:", ack.error);
       }
     } catch (error) {
-      console.error("Error enviando el correo de confirmación al lead:", error);
+      console.error("Error enviando el acuse al cliente:", error);
     }
   }
 
