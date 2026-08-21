@@ -18,13 +18,13 @@ import type { CaseStudyData } from "@/types/sanity";
  * Viven en `public/videos/` y se reproducen en bucle, silenciados.
  */
 const CASE_VIDEOS = [
-  "/videos/CPF.mp4",
-  "/videos/estate-taurus.mp4",
-  "/videos/grizlie.mp4",
-  "/videos/Pixeron.mp4",
-  "/videos/Batwitz.mp4",
-  "/videos/casa-morgandez.mp4",
-  "/videos/JCToriz.mp4",
+  "/videos/CPF.webm",
+  "/videos/estate-taurus.webm",
+  "/videos/grizlie.webm",
+  "/videos/Pixeron.webm",
+  "/videos/Batwitz.webm",
+  "/videos/casa-morgandez.webm",
+  "/videos/JCToriz.webm",
   "/videos/LilianCazares.mp4",
 ];
 
