@@ -15,9 +15,9 @@ export const defaultLandingWebData: LandingWebData = {
     { label: "Contacto", href: "#contacto" },
   ],
   navSocialLinks: [
-    { platform: "fb", url: "https://facebook.com" },
-    { platform: "ig", url: "https://instagram.com" },
-    { platform: "in", url: "https://linkedin.com" },
+    { platform: "fb", url: "https://www.facebook.com/emberlabmx" },
+    { platform: "ig", url: "https://www.instagram.com/emberlab.mx/" },
+    { platform: "in", url: "https://www.linkedin.com/company/emberlabmx/" },
   ],
 
   // --- Hero ---

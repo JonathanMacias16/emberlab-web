@@ -9,9 +9,9 @@ export const defaultLandingPageData: LandingPageData = {
     { label: "Resultados", href: "#resultados" },
   ],
   navSocialLinks: [
-    { platform: "fb", url: "https://facebook.com" },
-    { platform: "ig", url: "https://instagram.com" },
-    { platform: "in", url: "https://linkedin.com" },
+    { platform: "fb", url: "https://www.facebook.com/emberlabmx" },
+    { platform: "ig", url: "https://www.instagram.com/emberlab.mx/" },
+    { platform: "in", url: "https://www.linkedin.com/company/emberlabmx/" },
   ],
   navCta: { text: "Evaluar mi sitio web", variant: "purple", href: "https://wa.me/525554964439", target: "_blank" },
 
