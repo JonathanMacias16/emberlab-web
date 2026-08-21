@@ -153,29 +153,57 @@ export const defaultLandingWebData: LandingWebData = {
     {
       title: "Carolina Performance Fabrics",
       description:
-        "Más de cuatro años acompañando su evolución digital con estrategia, contenido y desarrollo continuo.",
-      imageAlt: "Sitio de Carolina Performance Fabrics en una laptop",
+        "Desarrollamos un sitio bilingüe para organizar una arquitectura amplia de unidades de negocio, productos y soluciones técnicas. Integramos fichas técnicas actualizadas, disponibilidad de productos, certificaciones y formularios conectados directamente con su CRM. Más que un sitio web, construimos una plataforma que forma parte de la operación comercial de la empresa.",
+      imageAlt: "Sitio de Carolina Performance Fabrics",
       linkLabel: "Ver sitio",
     },
     {
-      title: "Estate Taurus",
+      title: "Estate Tauros",
       description:
-        "Más de cuatro años acompañando su evolución digital con estrategia, contenido y desarrollo continuo.",
-      imageAlt: "Sitio de Estate Taurus",
+        "Estate Tauros llegó a nosotros sin identidad gráfica ni presencia digital. Creamos una identidad visual y un sitio web capaces de transmitir la majestuosidad y exclusividad de la propiedad. El resultado: logotipo, tipografías y experiencia web trabajando en conjunto para construir una marca sólida, elegante y coherente.",
+      imageAlt: "Sitio de Estate Tauros",
       linkLabel: "Ver sitio",
     },
     {
-      title: "Grizzly Adventure Outdoor",
+      title: "Grizzly Adventure",
       description:
-        "Más de cuatro años acompañando su evolución digital con estrategia, contenido y desarrollo continuo.",
-      imageAlt: "Sitio de Grizzly Adventure Outdoor",
+        "Desarrollamos un sitio para organizar y presentar de forma clara su catálogo de experiencias outdoor, con galerías, información clave e indicaciones para cada actividad. Además, construimos una presencia digital sólida que respalda su oferta comercial y facilita la colaboración con clientes corporativos.",
+      imageAlt: "Sitio de Grizzly Adventure",
       linkLabel: "Ver sitio",
     },
     {
       title: "Pixeron",
       description:
-        "Su sitio comunicaba una versión antigua del negocio. Rediseñamos, reestructuramos el contenido e integramos IA para captar leads automáticamente.",
-      imageAlt: "Sitio de Pixeron en un teléfono",
+        "El sitio de Pixeron ya no reflejaba la evolución de sus servicios ni comunicaba con claridad su propuesta de valor. Reorganizamos su oferta y desarrollamos una experiencia minimalista, 100% tipográfica, donde la estructura y la jerarquía visual hacen el trabajo. El resultado: un sitio breve, claro y fácil de entender.",
+      imageAlt: "Sitio de Pixeron",
+      linkLabel: "Ver sitio",
+    },
+    {
+      title: "Batwitz",
+      description:
+        "Creamos una experiencia digital para dar vida al universo de Batwitz: un sitio colorido, dinámico y lleno de personajes, con animaciones y materiales descargables. Además, desarrollamos un panel interno para facilitar la carga y actualización de nuevos contenidos.",
+      imageAlt: "Sitio de Batwitz",
+      linkLabel: "Ver sitio",
+    },
+    {
+      title: "Casa Morgandez",
+      description:
+        "Desarrollamos un sitio que pone al centro la experiencia de Casa Morgandez: su arquitectura, diseño y los paisajes de Punta Mita. Creamos una galería visual amplia y optimizada para una carga rápida, con una navegación minimalista que facilita conocer cada espacio y realizar una reservación directamente desde el sitio.",
+      imageAlt: "Sitio de Casa Morgandez",
+      linkLabel: "Ver sitio",
+    },
+    {
+      title: "JCMR | Finanzas Saludables",
+      description:
+        "Acompañamos a JCMR desde el día cero, construyendo su estrategia, identidad y presencia digital. El sitio web integra su oferta comercial, alianzas y propuesta de valor dentro de una experiencia clara y profesional. Más que diseñar una página, creamos el ecosistema digital que necesitaban para comenzar a posicionar su marca.",
+      imageAlt: "Sitio de JCMR Finanzas Saludables",
+      linkLabel: "Ver sitio",
+    },
+    {
+      title: "Lilian Cazares",
+      description:
+        "Creamos un sitio pensado para evolucionar junto con una emprendedora en constante crecimiento. Lo que comenzó como una landing de servicios hoy es una plataforma robusta con contenido, recursos descargables, blog y una academia por suscripción. Un ecosistema digital flexible que crece al ritmo de su marca y de nuevas oportunidades de negocio.",
+      imageAlt: "Sitio de Lilian Cazares",
       linkLabel: "Ver sitio",
     },
   ],
