@@ -15,9 +15,14 @@ const WORDS = [
 
 const TOTAL_WIDTH = WORDS.reduce((sum, w) => sum + w.width, 0);
 
+/** Separación entre palabras, en % del ancho del contenedor. */
+const GAP = 0.5;
+/** Ancho disponible una vez descontados los 3 espacios entre las 4 palabras. */
+const AVAILABLE = 100 - GAP * (WORDS.length - 1);
+
 export default function CreativeWordmark({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex items-start w-full ${className}`}>
+    <div className={`flex items-start w-full ${className}`} style={{ gap: `${GAP}%` }}>
       {WORDS.map((word, i) => (
         <Image
           key={i}
@@ -25,7 +30,7 @@ export default function CreativeWordmark({ className = "" }: { className?: strin
           alt={word.alt}
           width={word.width}
           height={word.height}
-          style={{ width: `${(word.width / TOTAL_WIDTH) * 100}%`, height: "auto" }}
+          style={{ width: `${(word.width / TOTAL_WIDTH) * AVAILABLE}%`, height: "auto" }}
           className="block"
         />
       ))}

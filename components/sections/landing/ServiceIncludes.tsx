@@ -20,10 +20,15 @@ export default function ServiceIncludes({ title, items }: ServiceIncludesProps) 
         <div className="px-7 sm:px-8 md:px-12 lg:pl-8 lg:pr-20 xl:pl-16 xl:pr-28 mt-10 lg:mt-0">
           <FadeIn direction="up">
             <ul
-              className={`max-w-[30rem] text-(--white) font-light tracking-[-0.04em] leading-[1.15] ${TEXT_BODY}`}
+              className={`max-w-[24rem] flex flex-col gap-2 sm:gap-2.5 text-(--white) font-light tracking-[-0.04em] leading-[1.15] ${TEXT_BODY}`}
             >
               {items?.map((item, i) => (
-                <li key={i}>{item}</li>
+                <li key={i} className="flex gap-3 sm:gap-4">
+                  <span className="font-bold text-(--green-light) shrink-0 tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>{item}</span>
+                </li>
               ))}
             </ul>
           </FadeIn>

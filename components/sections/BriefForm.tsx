@@ -602,7 +602,7 @@ export default function BriefForm() {
     <main className="min-h-screen w-full bg-(--purple) flex flex-col">
       {/* Header */}
       <div className="flex items-center px-5 sm:px-8 md:px-12 py-5 sm:py-6 flex-shrink-0">
-        <Link href="/web" aria-label="Volver a EmberLab" className="flex items-center gap-2">
+        <Link href="/landing" aria-label="Volver a EmberLab" className="flex items-center gap-2">
           <LogoIcon className="w-8 h-8" />
         </Link>
       </div>
