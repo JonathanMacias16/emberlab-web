@@ -165,25 +165,6 @@ function escapeHtml(text: string) {
     .replace(/>/g, "&gt;");
 }
 
-function buildLeadConfirmationHtml(data: BriefPayload) {
-  const name = escapeHtml(data.name || "").trim();
-  const business = escapeHtml(data.business || "").trim();
-  return `
-  <div style="background:${CREAM};padding:28px 16px;font-family:sans-serif;">
-    <div style="max-width:520px;margin:0 auto;">
-      <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:2px;color:${RED};font-weight:700;">EMBER LAB</p>
-      <div style="background:#ffffff;border-radius:10px;border:1px solid #e5e0da;padding:24px;font-size:14px;line-height:1.7;color:${PURPLE};">
-        <p style="margin:0 0 16px 0;">Hola${name ? `, ${name}` : ""}:</p>
-        <p style="margin:0 0 16px 0;">Gracias por compartirnos información${business ? ` sobre ${business}` : ""}.</p>
-        <p style="margin:0 0 16px 0;">Ya estamos revisando tus respuestas para entender en qué etapa se encuentra tu proyecto y cuál puede ser el mejor camino para tu sitio web.</p>
-        <p style="margin:0 0 16px 0;">Te contactaremos en las próximas 24 horas hábiles por WhatsApp o correo.</p>
-        <p style="margin:0;">Saludos,<br/>Equipo Ember Lab</p>
-      </div>
-      <p style="margin:16px 0 0 0;font-size:12px;color:${PURPLE};opacity:0.7;">Si quieres adelantar algo, puedes responder este correo o escríbenos por WhatsApp.</p>
-    </div>
-  </div>`;
-}
-
 export async function POST(req: NextRequest) {
   if (!process.env.RESEND_API_KEY) {
     return new Response("RESEND_API_KEY no configurada", { status: 503 });
