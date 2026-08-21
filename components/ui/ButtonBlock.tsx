@@ -20,7 +20,7 @@ export default function ButtonBlock({
       ? "bg-(--red) hover:brightness-110"
       : "bg-(--purple-soft) hover:bg-(--purple)";
 
-  const classes = `${bg} text-(--white) inline-block text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all cursor-pointer ${className}`;
+  const classes = `${bg} text-(--white) inline-block whitespace-nowrap text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all cursor-pointer ${className}`;
 
   return (
     <a
