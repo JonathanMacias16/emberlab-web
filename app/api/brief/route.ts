@@ -117,7 +117,8 @@ function buildEmailHtml(data: BriefPayload) {
 
 /**
  * Acuse de recibo que se envía a quien completó el brief. No incluye puntajes
- * ni datos internos: sólo confirma la recepción y explica qué sigue.
+ * ni datos internos: recomienda ordenar las piezas base (identidad, textos,
+ * estructura) antes de arrancar el desarrollo.
  */
 function buildClientEmailHtml(data: BriefPayload) {
   const firstName = (data.name || "").trim().split(/\s+/)[0];
@@ -125,22 +126,22 @@ function buildClientEmailHtml(data: BriefPayload) {
   <div style="background:${CREAM};padding:28px 16px;font-family:sans-serif;">
     <div style="max-width:560px;margin:0 auto;">
       <p style="margin:0 0 4px 0;font-size:12px;letter-spacing:2px;color:${RED};font-weight:700;">EMBER LAB</p>
-      <h1 style="margin:0 0 18px 0;font-size:24px;color:${PURPLE};">${firstName ? `Gracias, ${escapeHtml(firstName)}` : "Gracias por escribirnos"} 🔥</h1>
+      <h1 style="margin:0 0 18px 0;font-size:24px;line-height:1.25;color:${PURPLE};">Antes de desarrollar tu sitio, conviene ordenar algunas piezas</h1>
 
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;border:1px solid #e5e0da;margin-bottom:18px;">
         <tr>
           <td style="padding:18px;font-size:15px;line-height:1.6;color:${PURPLE};">
-            <p style="margin:0 0 12px 0;">Recibimos tu formulario${data.business ? ` de <strong>${escapeHtml(data.business)}</strong>` : ""}. Ya lo estamos revisando.</p>
-            <p style="margin:0 0 12px 0;"><strong>¿Qué sigue?</strong></p>
-            <p style="margin:0 0 8px 0;">1. Revisamos tus respuestas a detalle.</p>
-            <p style="margin:0 0 8px 0;">2. Te contactamos en las próximas 24 a 48 horas hábiles${data.whatsapp ? " por WhatsApp o correo" : " por correo"}.</p>
-            <p style="margin:0;">3. Agendamos una llamada de diagnóstico, sin costo ni compromiso.</p>
+            <p style="margin:0 0 12px 0;">Hola${firstName ? `, ${escapeHtml(firstName)}` : ""}:</p>
+            <p style="margin:0 0 12px 0;">Gracias por compartirnos información sobre tu proyecto.</p>
+            <p style="margin:0 0 12px 0;">Por lo que nos cuentas, antes de iniciar el desarrollo de un sitio web conviene trabajar algunos elementos base como identidad, textos, estructura de servicios o recursos visuales.</p>
+            <p style="margin:0 0 12px 0;">Esto no es un problema; al contrario, hacerlo en este orden evita retrasos y ayuda a que el sitio realmente comunique bien tu marca.</p>
+            <p style="margin:0;">La ruta que te recomendamos es iniciar con una fase previa de estructura web o diagnóstico.</p>
           </td>
         </tr>
       </table>
 
       <p style="margin:0 0 18px 0;font-size:14px;line-height:1.6;color:${PURPLE};">
-        Si mientras tanto quieres adelantar algo, respóndenos este correo o escríbenos por
+        Si quieres adelantar algo, respóndenos este correo o escríbenos por
         <a href="https://wa.me/525554964439" style="color:${RED};text-decoration:underline;">WhatsApp</a>.
       </p>
 
@@ -206,7 +207,7 @@ export async function POST(req: NextRequest) {
         from: "EmberLab <hola@emberlab.mx>",
         to: data.email,
         replyTo: to,
-        subject: "Recibimos tu formulario — EmberLab",
+        subject: "Antes de desarrollar tu sitio, conviene ordenar algunas piezas",
         html: buildClientEmailHtml(data),
       });
       if (ack.error) {
