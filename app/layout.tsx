@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import Script from "next/script";
+import ClickTracking from "@/components/analytics/ClickTracking";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -67,6 +68,7 @@ fbq('track', 'PageView');`}
             src="https://www.facebook.com/tr?id=1349364213953477&ev=PageView&noscript=1"
           />
         </noscript>
+        <ClickTracking />
         {children}
       </body>
     </html>
