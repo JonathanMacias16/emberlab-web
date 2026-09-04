@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import useStaticMotion from "./useStaticMotion";
 
 interface SlideInProps {
   children: ReactNode;
@@ -23,6 +24,7 @@ export default function SlideIn({
   initialDelay,
   className,
 }: SlideInProps) {
+  const staticMotion = useStaticMotion();
   const [hasAnimated, setHasAnimated] = useState(false);
   const currentDelay =
     initialDelay !== undefined && !hasAnimated ? initialDelay : delay;
@@ -30,6 +32,11 @@ export default function SlideIn({
   const onComplete = useCallback(() => {
     if (!hasAnimated) setHasAnimated(true);
   }, [hasAnimated]);
+
+  // Ver la nota en FadeIn.
+  if (staticMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   const isHorizontal = from === "left" || from === "right";
   const sign = from === "left" || from === "top" ? -1 : 1;
@@ -46,7 +53,7 @@ export default function SlideIn({
           ...(rotate ? { rotate } : {}),
         }}
         whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
-        viewport={{ once: false, amount: 0 }}
+        viewport={{ once: true, amount: 0 }}
         transition={{ duration: 0.9, delay: currentDelay, ease: [0.16, 1, 0.3, 1] }}
         onAnimationComplete={onComplete}
         className={className}

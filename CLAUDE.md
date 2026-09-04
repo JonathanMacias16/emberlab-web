@@ -75,6 +75,26 @@ All logo animations live in `app/logo-animations/page.tsx` and use the same 6 SV
 - `SPARKLE_1` (transformOrigin `88px 28px`), `SPARKLE_2` (transformOrigin `20px 22px`) — the two sparkle accents
 - All paths use `viewBox="0 0 118 118"` with center at `59px 59px`
 
+## Modo sin animaciones (`?noanim=1`)
+
+Las secciones se revelan con `whileInView`, así que sus wrappers están en
+`opacity: 0` hasta entrar en viewport. La **Event Setup Tool de Meta** escanea el
+DOM una sola vez al cargar y descarta los elementos invisibles, por lo que no
+detectaba ninguno de los CTAs.
+
+`components/animations/useStaticMotion.ts` resuelve esto: con `?noanim=1` en la
+URL (o con `prefers-reduced-motion: reduce`) los componentes de animación
+devuelven un `div` plano en vez de un `motion.div`, así que ningún nodo pasa por
+`opacity: 0`. La bandera se guarda en `sessionStorage` para sobrevivir a la
+navegación de cliente (landing → `/brief-web`).
+
+Para configurar eventos en Meta hay que apuntar la herramienta a
+`https://tuweb.emberlab.mx/?noanim=1`.
+
+Lo usan: `FadeIn`, `SlideIn`, `ScaleIn`, `StaggerContainer`, `StaggerItem` y
+`BriefForm` (vía `StepTransition`). El `viewport` de esos componentes es
+`once: true`, para que los elementos no vuelvan a `opacity: 0` al salir de vista.
+
 ## Component Organization
 
 UI components are in `components/` organized by type: `components/ui/`, `components/sections/`, `components/animations/`.

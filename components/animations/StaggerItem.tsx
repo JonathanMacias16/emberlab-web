@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import useStaticMotion from "./useStaticMotion";
 
 interface StaggerItemProps {
   children: ReactNode;
@@ -10,6 +11,13 @@ interface StaggerItemProps {
 }
 
 export default function StaggerItem({ children, className, scale }: StaggerItemProps) {
+  const staticMotion = useStaticMotion();
+
+  // Ver la nota en FadeIn.
+  if (staticMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       variants={{

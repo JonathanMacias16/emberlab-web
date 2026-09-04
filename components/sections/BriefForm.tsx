@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import LogoIcon from "@/components/ui/LogoIcon";
 import { trackEvent } from "@/lib/analytics";
+import useStaticMotion from "@/components/animations/useStaticMotion";
 
 type Answers = Record<string, string | string[] | undefined>;
 
@@ -67,7 +68,8 @@ const QUESTIONS: Question[] = [
     id: "description",
     type: "text",
     title: "¿A qué se dedica tu empresa o proyecto?",
-    subtitle: "Aquí puedes contarnos brevemente qué vendes, qué ofreces o qué problema resuelves.",
+    subtitle:
+      "Aquí puedes contarnos brevemente qué vendes, qué ofreces o qué problema resuelves.",
     placeholder: "Cuéntanos brevemente...",
     validate: "minLength",
   },
@@ -85,7 +87,8 @@ const QUESTIONS: Question[] = [
   {
     id: "socialLinks",
     type: "text",
-    title: "Comparte tus links de Instagram, Facebook, LinkedIn, TikTok u otras redes",
+    title:
+      "Comparte tus links de Instagram, Facebook, LinkedIn, TikTok u otras redes",
     placeholder: "https://instagram.com/tunegocio",
     showIf: (a) => a.hasSocial === "si",
     category: "readiness",
@@ -143,11 +146,19 @@ const QUESTIONS: Question[] = [
       { label: "Velocidad", value: "velocidad", score: 1 },
       { label: "Experiencia en celular", value: "movil", score: 1 },
       { label: "Posicionamiento en Google", value: "seo", score: -1 },
-      { label: "Formularios o botones de contacto", value: "contacto", score: -1 },
+      {
+        label: "Formularios o botones de contacto",
+        value: "contacto",
+        score: -1,
+      },
       { label: "Integración con WhatsApp", value: "whatsapp", score: 1 },
       { label: "Tienda en línea", value: "tienda", score: -1 },
       { label: "Blog o sección de contenidos", value: "blog", score: 1 },
-      { label: "No sé exactamente, pero siento que necesita mejorar", value: "noseguro", score: -2 },
+      {
+        label: "No sé exactamente, pero siento que necesita mejorar",
+        value: "noseguro",
+        score: -2,
+      },
     ],
     showIf: (a) => a.hasWebsite === "si",
   },
@@ -158,8 +169,16 @@ const QUESTIONS: Question[] = [
     category: "readiness",
     options: [
       { label: "Sí, la información sigue vigente", value: "vigente", score: 2 },
-      { label: "Algunas cosas sí, pero necesita actualización", value: "parcial", score: 1 },
-      { label: "No, hay que replantear gran parte del contenido", value: "replantear", score: 0 },
+      {
+        label: "Algunas cosas sí, pero necesita actualización",
+        value: "parcial",
+        score: 1,
+      },
+      {
+        label: "No, hay que replantear gran parte del contenido",
+        value: "replantear",
+        score: 0,
+      },
       { label: "No estoy seguro/a", value: "noseguro", score: -2 },
     ],
     showIf: (a) => a.hasWebsite === "si",
@@ -168,12 +187,21 @@ const QUESTIONS: Question[] = [
     id: "graphicResources",
     type: "single",
     title: "¿Tus recursos gráficos están actualizados?",
-    subtitle: "Por ejemplo: logotipo, colores, tipografías, fotografías, íconos o manual de marca.",
+    subtitle:
+      "Por ejemplo: logotipo, colores, tipografías, fotografías, íconos o manual de marca.",
     category: "readiness",
     options: [
       { label: "Sí, tenemos todo actualizado", value: "listo", score: 2 },
-      { label: "Tenemos algunos recursos, pero habría que revisarlos", value: "parcial", score: 1 },
-      { label: "No, necesitamos actualizar la parte visual", value: "no", score: -1 },
+      {
+        label: "Tenemos algunos recursos, pero habría que revisarlos",
+        value: "parcial",
+        score: 1,
+      },
+      {
+        label: "No, necesitamos actualizar la parte visual",
+        value: "no",
+        score: -1,
+      },
       { label: "No estoy seguro/a", value: "noseguro", score: -2 },
     ],
     showIf: (a) => a.hasWebsite === "si",
@@ -181,13 +209,26 @@ const QUESTIONS: Question[] = [
   {
     id: "structureDecision",
     type: "single",
-    title: "¿Te gustaría conservar la estructura actual del sitio o replantearla?",
+    title:
+      "¿Te gustaría conservar la estructura actual del sitio o replantearla?",
     category: "readiness",
     options: [
-      { label: "Me gustaría conservarla y solo mejorarla", value: "conservar", score: 1 },
-      { label: "Me gustaría cambiar algunas secciones", value: "algunas", score: 1 },
+      {
+        label: "Me gustaría conservarla y solo mejorarla",
+        value: "conservar",
+        score: 1,
+      },
+      {
+        label: "Me gustaría cambiar algunas secciones",
+        value: "algunas",
+        score: 1,
+      },
       { label: "Quiero replantear todo el sitio", value: "todo", score: -1 },
-      { label: "Necesito recomendación de Ember Lab", value: "recomendacion", score: -1 },
+      {
+        label: "Necesito recomendación de Ember Lab",
+        value: "recomendacion",
+        score: -1,
+      },
     ],
     showIf: (a) => a.hasWebsite === "si",
   },
@@ -230,7 +271,11 @@ const QUESTIONS: Question[] = [
       { label: "Tipografías", value: "tipografias", score: 1 },
       { label: "Fotografías profesionales", value: "fotos", score: 1 },
       { label: "Textos sobre la empresa", value: "textos-empresa", score: 1 },
-      { label: "Textos de servicios o productos", value: "textos-servicios", score: 1 },
+      {
+        label: "Textos de servicios o productos",
+        value: "textos-servicios",
+        score: 1,
+      },
       { label: "Testimonios", value: "testimonios", score: 1 },
       { label: "Casos de éxito", value: "casos", score: 1 },
       { label: "Catálogo de productos", value: "catalogo", score: 1 },
@@ -258,7 +303,11 @@ const QUESTIONS: Question[] = [
       { label: "Agenda de citas", value: "agenda", score: -1 },
       { label: "Tienda en línea", value: "tienda", score: -1 },
       { label: "Descarga de catálogo", value: "catalogo", score: 0 },
-      { label: "No estoy seguro/a, necesito orientación", value: "noseguro", score: -2 },
+      {
+        label: "No estoy seguro/a, necesito orientación",
+        value: "noseguro",
+        score: -2,
+      },
     ],
     showIf: (a) => a.hasWebsite === "no",
   },
@@ -267,7 +316,8 @@ const QUESTIONS: Question[] = [
     id: "referenceLink",
     type: "text",
     title: "¿Tienes algún sitio web de referencia?",
-    subtitle: "Puede ser de tu industria o simplemente un sitio cuyo estilo, estructura o experiencia te guste.",
+    subtitle:
+      "Puede ser de tu industria o simplemente un sitio cuyo estilo, estructura o experiencia te guste.",
     placeholder: "www.ejemplo.com",
     category: "readiness",
     validate: "url",
@@ -279,27 +329,49 @@ const QUESTIONS: Question[] = [
     id: "mainGoal",
     type: "multi",
     title: "¿Cuál es el objetivo principal de tu sitio web?",
-    subtitle: "Selecciona las opciones más importantes, puedes seleccionar hasta 3.",
+    subtitle:
+      "Selecciona las opciones más importantes, puedes seleccionar hasta 3.",
     maxSelect: 3,
     category: "quality",
     options: [
-      { label: "Tener presencia digital profesional", value: "presencia", score: 1 },
-      { label: "Explicar mis servicios", value: "explicar-servicios", score: 1 },
+      {
+        label: "Tener presencia digital profesional",
+        value: "presencia",
+        score: 1,
+      },
+      {
+        label: "Explicar mis servicios",
+        value: "explicar-servicios",
+        score: 1,
+      },
       { label: "Vender productos", value: "vender-productos", score: 1 },
       { label: "Vender servicios", value: "vender-servicios", score: 1 },
       { label: "Captar prospectos", value: "prospectos", score: 1 },
       { label: "Agendar asesorías o citas", value: "citas", score: 1 },
       { label: "Lanzar una campaña de anuncios", value: "campana", score: 1 },
-      { label: "Llevar tráfico a mi negocio físico", value: "trafico", score: 1 },
+      {
+        label: "Llevar tráfico a mi negocio físico",
+        value: "trafico",
+        score: 1,
+      },
       { label: "Crear comunidad", value: "comunidad", score: 1 },
-      { label: "Mejorar la imagen actual de mi marca", value: "imagen", score: 1 },
-      { label: "No estoy seguro/a, necesito recomendación", value: "noseguro", score: -2 },
+      {
+        label: "Mejorar la imagen actual de mi marca",
+        value: "imagen",
+        score: 1,
+      },
+      {
+        label: "No estoy seguro/a, necesito recomendación",
+        value: "noseguro",
+        score: -2,
+      },
     ],
   },
   {
     id: "desiredAction",
     type: "single",
-    title: "¿Qué acción te gustaría que hicieran las personas al entrar a tu sitio?",
+    title:
+      "¿Qué acción te gustaría que hicieran las personas al entrar a tu sitio?",
     category: "quality",
     options: [
       { label: "Enviar mensaje por WhatsApp", value: "whatsapp", score: 1 },
@@ -320,11 +392,23 @@ const QUESTIONS: Question[] = [
     title: "¿En qué etapa estás actualmente?",
     category: "quality",
     options: [
-      { label: "Solo estoy explorando opciones", value: "explorando", score: -2 },
-      { label: "Ya sé que necesito un sitio web, pero quiero orientación", value: "orientacion", score: 0 },
+      {
+        label: "Solo estoy explorando opciones",
+        value: "explorando",
+        score: -2,
+      },
+      {
+        label: "Ya sé que necesito un sitio web, pero quiero orientación",
+        value: "orientacion",
+        score: 0,
+      },
       { label: "Ya tengo claro lo que necesito", value: "claro", score: 2 },
       { label: "Quiero iniciar lo antes posible", value: "iniciar", score: 2 },
-      { label: "Necesito cotización para presentar internamente", value: "cotizacion", score: 1 },
+      {
+        label: "Necesito cotización para presentar internamente",
+        value: "cotizacion",
+        score: 1,
+      },
       { label: "Estoy comparando proveedores", value: "comparando", score: 0 },
     ],
   },
@@ -350,8 +434,16 @@ const QUESTIONS: Question[] = [
       { label: "Menos de $8,000", value: "menos-8", score: 0 },
       { label: "Menos de $18,000 MXN", value: "menos-18", score: 1 },
       { label: "Menos de $25,000", value: "menos-25", score: 1 },
-      { label: "Aún no tengo presupuesto definido", value: "sin-definir", score: -1 },
-      { label: "Necesito una recomendación según el alcance", value: "recomendacion", score: 0 },
+      {
+        label: "Aún no tengo presupuesto definido",
+        value: "sin-definir",
+        score: -1,
+      },
+      {
+        label: "Necesito una recomendación según el alcance",
+        value: "recomendacion",
+        score: 0,
+      },
     ],
   },
   {
@@ -376,9 +468,21 @@ const QUESTIONS: Question[] = [
     type: "single",
     title: "¿Cuál es el mejor horario para contactarte?",
     options: [
-      { label: "Por la mañana (9:00 a.m. – 12:00 p.m.)", value: "manana", score: 0 },
-      { label: "Al medio día (12:00 p.m. – 2:00 p.m.)", value: "mediodia", score: 0 },
-      { label: "Por la tarde (2:00 p.m. – 6:00 p.m.)", value: "tarde", score: 0 },
+      {
+        label: "Por la mañana (9:00 a.m. – 12:00 p.m.)",
+        value: "manana",
+        score: 0,
+      },
+      {
+        label: "Al medio día (12:00 p.m. – 2:00 p.m.)",
+        value: "mediodia",
+        score: 0,
+      },
+      {
+        label: "Por la tarde (2:00 p.m. – 6:00 p.m.)",
+        value: "tarde",
+        score: 0,
+      },
       { label: "Cualquier horario", value: "cualquiera", score: 0 },
     ],
   },
@@ -438,7 +542,11 @@ function maxQuestionScore(question: Question) {
   return 0;
 }
 
-type SummaryEntry = { q: Question; value: string | string[] | undefined; score: number };
+type SummaryEntry = {
+  q: Question;
+  value: string | string[] | undefined;
+  score: number;
+};
 
 interface AxisScore {
   percent: number;
@@ -451,11 +559,20 @@ interface AxisScore {
  * Calcula el score de un eje (calidad o preparación) usando solo las preguntas
  * de esa categoría que el cliente realmente respondió.
  */
-function computeAxisScore(entries: SummaryEntry[], category: ScoreCategory): AxisScore {
+function computeAxisScore(
+  entries: SummaryEntry[],
+  category: ScoreCategory,
+): AxisScore {
   const axisEntries = entries.filter(({ q }) => q.category === category);
   const max = axisEntries.reduce((sum, { q }) => sum + maxQuestionScore(q), 0);
-  const positive = axisEntries.reduce((sum, { score }) => (score > 0 ? sum + score : sum), 0);
-  const negative = axisEntries.reduce((sum, { score }) => (score < 0 ? sum + score : sum), 0);
+  const positive = axisEntries.reduce(
+    (sum, { score }) => (score > 0 ? sum + score : sum),
+    0,
+  );
+  const negative = axisEntries.reduce(
+    (sum, { score }) => (score < 0 ? sum + score : sum),
+    0,
+  );
   const percent = max > 0 ? Math.round(((positive + negative) / max) * 100) : 0;
   return { percent, max, positive, negative };
 }
@@ -481,20 +598,29 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const URL_PATTERN = /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}([/?#].*)?$/i;
 
 /** Valida el texto de un campo (sin contar el código de país en los de teléfono) y devuelve un mensaje de error o null si es válido. */
-function validateText(rule: Question["validate"], rawValue: string): string | null {
+function validateText(
+  rule: Question["validate"],
+  rawValue: string,
+): string | null {
   const value = rawValue.trim();
   if (!value) return null;
   switch (rule) {
     case "minLength":
       return value.length >= 3 ? null : "Escribe al menos 3 caracteres.";
     case "email":
-      return EMAIL_PATTERN.test(value) ? null : "Escribe un correo válido, ej. tu@correo.com";
+      return EMAIL_PATTERN.test(value)
+        ? null
+        : "Escribe un correo válido, ej. tu@correo.com";
     case "tel": {
       const digits = value.replace(/\D/g, "");
-      return digits.length >= 7 && digits.length <= 15 ? null : "Escribe un número de teléfono válido.";
+      return digits.length >= 7 && digits.length <= 15
+        ? null
+        : "Escribe un número de teléfono válido.";
     }
     case "url":
-      return URL_PATTERN.test(value) ? null : "Escribe un sitio web válido, ej. www.tumarca.com";
+      return URL_PATTERN.test(value)
+        ? null
+        : "Escribe un sitio web válido, ej. www.tumarca.com";
     default:
       return null;
   }
@@ -506,7 +632,40 @@ const slideVariants = {
   exit: (direction: 1 | -1) => ({ opacity: 0, x: direction * -32 }),
 };
 
+/**
+ * Transición de entrada de cada pregunta. Con `?noanim=1` (ver `useStaticMotion`)
+ * devuelve un div plano: el nodo nunca pasa por `opacity: 0`, así que la Event
+ * Setup Tool de Meta detecta el botón "Continuar" aunque escanee el DOM justo
+ * en el momento del montaje.
+ */
+function StepTransition({
+  staticMotion,
+  direction,
+  children,
+}: {
+  staticMotion: boolean;
+  direction: 1 | -1;
+  children: React.ReactNode;
+}) {
+  if (staticMotion) return <div>{children}</div>;
+
+  return (
+    <motion.div
+      custom={direction}
+      variants={slideVariants}
+      initial="enter"
+      animate="center"
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function BriefForm() {
+  // Con `?noanim=1` las preguntas se montan ya visibles, para que la Event Setup
+  // Tool de Meta no escanee el DOM en medio de la transición de entrada.
+  const staticMotion = useStaticMotion();
   const [answers, setAnswers] = useState<Answers>({});
   const [history, setHistory] = useState<number[]>([0]);
   const [done, setDone] = useState(false);
@@ -517,7 +676,7 @@ export default function BriefForm() {
 
   const visibleQuestions = useMemo(
     () => QUESTIONS.filter((q) => isVisible(q, answers)),
-    [answers]
+    [answers],
   );
   const totalSteps = Math.max(visibleQuestions.length, history.length);
   const stepNumber = Math.min(history.length, totalSteps);
@@ -547,8 +706,17 @@ export default function BriefForm() {
   // excluyen si se omitieron), para que el máximo posible no se infle con
   // preguntas que no aplicaron.
   const summaryEntries = visibleQuestions
-    .map((q) => ({ q, value: answers[q.id], score: answerScore(q, answers[q.id]) }))
-    .filter(({ value }) => value !== undefined && value !== "" && !(Array.isArray(value) && value.length === 0));
+    .map((q) => ({
+      q,
+      value: answers[q.id],
+      score: answerScore(q, answers[q.id]),
+    }))
+    .filter(
+      ({ value }) =>
+        value !== undefined &&
+        value !== "" &&
+        !(Array.isArray(value) && value.length === 0),
+    );
 
   const qualityScore = computeAxisScore(summaryEntries, "quality");
   const readinessScore = computeAxisScore(summaryEntries, "readiness");
@@ -609,14 +777,21 @@ export default function BriefForm() {
     <main className="min-h-screen w-full bg-(--purple) flex flex-col">
       {/* Header */}
       <div className="flex items-center px-5 sm:px-8 md:px-12 py-5 sm:py-6 flex-shrink-0">
-        <Link href="/landing" aria-label="Volver a EmberLab" className="flex items-center gap-2">
+        <Link
+          href="/landing"
+          aria-label="Volver a EmberLab"
+          className="flex items-center gap-2"
+        >
           <LogoIcon className="w-8 h-8" />
         </Link>
       </div>
 
       {/* Progress bar */}
       <div className="flex items-center gap-3 px-5 sm:px-8 md:px-12 flex-shrink-0">
-        <div className="h-1.5 flex-1 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+        <div
+          className="h-1.5 flex-1 rounded-full overflow-hidden"
+          style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+        >
           <div
             className="h-full rounded-full transition-[width] duration-400 ease-out"
             style={{
@@ -636,43 +811,61 @@ export default function BriefForm() {
 
       {/* Content */}
       <div className="flex-1 flex items-center justify-center px-5 sm:px-8 md:px-12 py-10 sm:py-14">
-        <div className={`w-full ${(currentQuestion.options?.length ?? 0) > 6 && !done ? "max-w-3xl" : "max-w-2xl"}`}>
+        <div
+          className={`w-full ${(currentQuestion.options?.length ?? 0) > 6 && !done ? "max-w-3xl" : "max-w-2xl"}`}
+        >
           {!done && history.length > 1 && (
             <button
               onClick={handleBack}
               className="flex items-center gap-1.5 mb-5 px-4 py-2 rounded-full text-sm font-semibold text-(--white) transition-colors cursor-pointer"
-              style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.14)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.16)")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)")}
+              style={{
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.14)",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.16)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "rgba(255,255,255,0.08)")
+              }
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M15 18l-6-6 6-6" />
               </svg>
               Atrás
             </button>
           )}
           {!done ? (
-            <motion.div
+            <StepTransition
               key={currentQuestion.id}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              staticMotion={staticMotion}
+              direction={direction}
             >
-              <QuestionScreen question={currentQuestion} value={answers[currentQuestion.id]} onAnswer={commit} />
-            </motion.div>
+              <QuestionScreen
+                question={currentQuestion}
+                value={answers[currentQuestion.id]}
+                onAnswer={commit}
+              />
+            </StepTransition>
           ) : (
-            <motion.div
+            <StepTransition
               key="summary"
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              staticMotion={staticMotion}
+              direction={direction}
             >
               <SummaryScreen />
-            </motion.div>
+            </StepTransition>
           )}
         </div>
       </div>
@@ -690,11 +883,24 @@ function QuestionScreen({
   onAnswer: (value: string | string[]) => void;
 }) {
   const isPhone = question.inputType === "tel";
-  const initialPhone = isPhone && typeof value === "string" ? parsePhone(value) : null;
-  const [text, setText] = useState(typeof value === "string" ? (initialPhone ? initialPhone.number : value) : "");
-  const [countryCode, setCountryCode] = useState(initialPhone?.code ?? COUNTRY_CODES[0].code);
-  const [selected, setSelected] = useState<string[]>(Array.isArray(value) ? value : []);
-  const [singleValue, setSingleValue] = useState(typeof value === "string" ? value : "");
+  const initialPhone =
+    isPhone && typeof value === "string" ? parsePhone(value) : null;
+  const [text, setText] = useState(
+    typeof value === "string"
+      ? initialPhone
+        ? initialPhone.number
+        : value
+      : "",
+  );
+  const [countryCode, setCountryCode] = useState(
+    initialPhone?.code ?? COUNTRY_CODES[0].code,
+  );
+  const [selected, setSelected] = useState<string[]>(
+    Array.isArray(value) ? value : [],
+  );
+  const [singleValue, setSingleValue] = useState(
+    typeof value === "string" ? value : "",
+  );
   const [error, setError] = useState<string | null>(null);
 
   function submitText(e: React.FormEvent) {
@@ -731,12 +937,18 @@ function QuestionScreen({
         {question.title}
       </h1>
       {question.subtitle && (
-        <p className="text-(--purple-light) text-base sm:text-lg mt-3 font-light">{question.subtitle}</p>
+        <p className="text-(--purple-light) text-base sm:text-lg mt-3 font-light">
+          {question.subtitle}
+        </p>
       )}
 
       <div className="mt-8 sm:mt-10">
         {question.type === "text" && (
-          <form onSubmit={submitText} noValidate className="flex flex-col gap-4">
+          <form
+            onSubmit={submitText}
+            noValidate
+            className="flex flex-col gap-4"
+          >
             {isPhone ? (
               <div className="flex gap-3">
                 <select
@@ -746,7 +958,11 @@ function QuestionScreen({
                   style={{ borderColor: "rgba(255,255,255,0.2)" }}
                 >
                   {COUNTRY_CODES.map((c) => (
-                    <option key={c.code} value={c.code} style={{ color: "#000" }}>
+                    <option
+                      key={c.code}
+                      value={c.code}
+                      style={{ color: "#000" }}
+                    >
                       {c.code} {c.label}
                     </option>
                   ))}
@@ -758,7 +974,11 @@ function QuestionScreen({
                   onChange={(e) => handleTextChange(e.target.value)}
                   placeholder={question.placeholder}
                   className="flex-1 bg-transparent border-b-2 pb-3 text-xl sm:text-2xl text-(--white) placeholder:text-(--purple-soft) outline-none transition-colors focus:border-(--red)"
-                  style={{ borderColor: error ? "var(--red-light)" : "rgba(255,255,255,0.2)" }}
+                  style={{
+                    borderColor: error
+                      ? "var(--red-light)"
+                      : "rgba(255,255,255,0.2)",
+                  }}
                 />
               </div>
             ) : (
@@ -770,11 +990,18 @@ function QuestionScreen({
                 onChange={(e) => handleTextChange(e.target.value)}
                 placeholder={question.placeholder}
                 className="w-full bg-transparent border-b-2 pb-3 text-xl sm:text-2xl text-(--white) placeholder:text-(--purple-soft) outline-none transition-colors focus:border-(--red)"
-                style={{ borderColor: error ? "var(--red-light)" : "rgba(255,255,255,0.2)" }}
+                style={{
+                  borderColor: error
+                    ? "var(--red-light)"
+                    : "rgba(255,255,255,0.2)",
+                }}
               />
             )}
             {error && (
-              <p className="text-sm -mt-2" style={{ color: "var(--red-light)" }}>
+              <p
+                className="text-sm -mt-2"
+                style={{ color: "var(--red-light)" }}
+              >
                 {error}
               </p>
             )}
@@ -800,7 +1027,9 @@ function QuestionScreen({
 
         {question.type === "single" && (
           <div className="flex flex-col gap-4">
-            <div className={`grid gap-3 ${(question.options?.length ?? 0) > 6 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
+            <div
+              className={`grid gap-3 ${(question.options?.length ?? 0) > 6 ? "sm:grid-cols-2" : "grid-cols-1"}`}
+            >
               {question.options?.map((opt) => {
                 const isSelected = singleValue === opt.value;
                 return (
@@ -809,7 +1038,9 @@ function QuestionScreen({
                     onClick={() => setSingleValue(opt.value)}
                     className="flex items-center gap-3 text-left rounded-2xl px-5 py-4 text-lg sm:text-xl text-(--white) transition-all cursor-pointer"
                     style={{
-                      backgroundColor: isSelected ? "var(--red)" : "rgba(255,255,255,0.06)",
+                      backgroundColor: isSelected
+                        ? "var(--red)"
+                        : "rgba(255,255,255,0.06)",
                       border: `1px solid ${isSelected ? "var(--red)" : "rgba(255,255,255,0.1)"}`,
                     }}
                   >
@@ -823,7 +1054,12 @@ function QuestionScreen({
                     >
                       {isSelected && (
                         <span
-                          style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "var(--white)" }}
+                          style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: "50%",
+                            backgroundColor: "var(--white)",
+                          }}
                         />
                       )}
                     </span>
@@ -844,10 +1080,15 @@ function QuestionScreen({
 
         {question.type === "multi" && (
           <div className="flex flex-col gap-4">
-            <div className={`grid gap-3 ${(question.options?.length ?? 0) > 6 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
+            <div
+              className={`grid gap-3 ${(question.options?.length ?? 0) > 6 ? "sm:grid-cols-2" : "grid-cols-1"}`}
+            >
               {question.options?.map((opt) => {
                 const isSelected = selected.includes(opt.value);
-                const isMaxed = !isSelected && !!question.maxSelect && selected.length >= question.maxSelect;
+                const isMaxed =
+                  !isSelected &&
+                  !!question.maxSelect &&
+                  selected.length >= question.maxSelect;
                 return (
                   <button
                     key={opt.value}
@@ -855,7 +1096,9 @@ function QuestionScreen({
                     disabled={isMaxed}
                     className="flex items-center gap-3 text-left rounded-2xl px-5 py-4 text-lg sm:text-xl text-(--white) transition-all cursor-pointer disabled:opacity-35 disabled:cursor-not-allowed"
                     style={{
-                      backgroundColor: isSelected ? "var(--red)" : "rgba(255,255,255,0.06)",
+                      backgroundColor: isSelected
+                        ? "var(--red)"
+                        : "rgba(255,255,255,0.06)",
                       border: `1px solid ${isSelected ? "var(--red)" : "rgba(255,255,255,0.1)"}`,
                     }}
                   >
@@ -865,11 +1108,22 @@ function QuestionScreen({
                         width: 20,
                         height: 20,
                         border: `2px solid ${isSelected ? "var(--white)" : "rgba(255,255,255,0.35)"}`,
-                        backgroundColor: isSelected ? "var(--white)" : "transparent",
+                        backgroundColor: isSelected
+                          ? "var(--white)"
+                          : "transparent",
                       }}
                     >
                       {isSelected && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--red)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="var(--red)"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M20 6L9 17l-5-5" />
                         </svg>
                       )}
@@ -900,7 +1154,10 @@ function SummaryScreen() {
           se lea de inmediato que el formulario ya terminó. */}
       <div
         className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full mb-6"
-        style={{ backgroundColor: "rgba(199,221,163,0.15)", border: "1px solid var(--green-light)" }}
+        style={{
+          backgroundColor: "rgba(199,221,163,0.15)",
+          border: "1px solid var(--green-light)",
+        }}
       >
         <svg
           width="30"
@@ -920,7 +1177,8 @@ function SummaryScreen() {
         Gracias por compartirnos esta información.
       </h1>
       <p className="text-(--white) text-base sm:text-lg mt-3 font-light">
-        Con tus respuestas revisaremos en qué etapa se encuentra tu proyecto y te contactaremos para recomendarte el mejor camino para tu sitio web.
+        Con tus respuestas revisaremos en qué etapa se encuentra tu proyecto y
+        te contactaremos para recomendarte el mejor camino para tu sitio web.
       </p>
     </div>
   );

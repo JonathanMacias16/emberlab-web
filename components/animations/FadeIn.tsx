@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import useStaticMotion from "./useStaticMotion";
 
 interface FadeInProps {
   children: ReactNode;
@@ -30,6 +31,7 @@ export default function FadeIn({
   initialDelay,
   className,
 }: FadeInProps) {
+  const staticMotion = useStaticMotion();
   const [hasAnimated, setHasAnimated] = useState(false);
   const currentDelay =
     initialDelay !== undefined && !hasAnimated ? initialDelay : delay;
@@ -40,6 +42,12 @@ export default function FadeIn({
 
   const offset = direction ? directionOffset[direction] : {};
   const isHorizontal = direction === "left" || direction === "right";
+
+  // Sin animación: se renderiza un div plano, sin `motion`, para que el nodo
+  // nunca lleve `opacity: 0` ni dependa de que el motor de animación corra.
+  if (staticMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   const inner = (
     <motion.div
@@ -56,7 +64,7 @@ export default function FadeIn({
         ...(blur ? { filter: "blur(0px)" } : {}),
         ...(rotate ? { rotate: 0 } : {}),
       }}
-      viewport={{ once: false, amount: 0 }}
+      viewport={{ once: true, amount: 0 }}
       transition={{ duration: 0.8, delay: currentDelay, ease: [0.25, 0.46, 0.45, 0.94] }}
       onAnimationComplete={onComplete}
       className={className}

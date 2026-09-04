@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import useStaticMotion from "./useStaticMotion";
 
 interface ScaleInProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ export default function ScaleIn({
   initialDelay,
   className,
 }: ScaleInProps) {
+  const staticMotion = useStaticMotion();
   const [hasAnimated, setHasAnimated] = useState(false);
   const currentDelay =
     initialDelay !== undefined && !hasAnimated ? initialDelay : delay;
@@ -29,11 +31,16 @@ export default function ScaleIn({
     if (!hasAnimated) setHasAnimated(true);
   }, [hasAnimated]);
 
+  // Ver la nota en FadeIn.
+  if (staticMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: initialScale, ...(rotate ? { rotate } : {}) }}
       whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-      viewport={{ once: false, amount: 0 }}
+      viewport={{ once: true, amount: 0 }}
       transition={{ duration: 0.9, delay: currentDelay, ease: [0.16, 1, 0.3, 1] }}
       onAnimationComplete={onComplete}
       className={className}
