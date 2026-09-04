@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-export default function BackToTop() {
+export default function BackToTop({
+  side = "left",
+}: {
+  /** /web ya tiene el chat bubble en la esquina inferior derecha, así que se
+   * queda a la izquierda; /landing (sin chat bubble) va a la derecha. */
+  side?: "left" | "right";
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -17,7 +23,7 @@ export default function BackToTop() {
       type="button"
       aria-label="Volver arriba"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className={`fixed bottom-6 left-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-(--red) text-(--white) shadow-lg transition-all duration-300 hover:brightness-110 cursor-pointer ${
+      className={`fixed bottom-6 ${side === "right" ? "right-6" : "left-6"} z-50 flex h-11 w-11 items-center justify-center rounded-full bg-(--red) text-(--white) shadow-lg transition-all duration-300 hover:brightness-110 cursor-pointer ${
         visible
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-3 pointer-events-none"
