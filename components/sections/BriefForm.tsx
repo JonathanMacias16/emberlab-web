@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import LogoIcon from "@/components/ui/LogoIcon";
+import { trackEvent } from "@/lib/analytics";
 
 type Answers = Record<string, string | string[] | undefined>;
 
@@ -594,6 +595,12 @@ export default function BriefForm() {
         summaryText: summaryText(),
       }),
     }).catch(() => {});
+
+    // La conversión que optimizan los anuncios: brief completado.
+    trackEvent("Lead", {
+      content_name: "Brief web completado",
+      value: qualityScore.percent,
+    });
     // Solo debe dispararse una vez, al completar el formulario.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);

@@ -82,7 +82,7 @@ export default async function LandingWebPage() {
         brandLine2={page.footerBrandLine2}
         copyright={page.footerCopyright}
       />
-      <BackToTop />
+      <BackToTop side="right" />
     </div>
   );
 }
