@@ -112,7 +112,7 @@ export default function CaseStudies({ title, cases }: CaseStudiesProps) {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`${PILL_CLASSES} hover:bg-(--white)/15 transition-colors`}
+                      className={`${PILL_CLASSES} transition-all duration-200 hover:brightness-125`}
                     >
                       {item.linkLabel || "Ver sitio"}
                     </a>
