@@ -95,6 +95,22 @@ Lo usan: `FadeIn`, `SlideIn`, `ScaleIn`, `StaggerContainer`, `StaggerItem` y
 `BriefForm` (vía `StepTransition`). El `viewport` de esos componentes es
 `once: true`, para que los elementos no vuelvan a `opacity: 0` al salir de vista.
 
+## Análisis de sitios (`lib/audit/`, `POST /api/analyze`)
+
+Análisis real del sitio de un prospecto, a partir de su HTML. Regla del módulo:
+**si no se midió, no hay número** — cada dato es `{ status: "ok", value }` o
+`{ status: "unavailable", reason }`, y un score sin evidencia suficiente sale
+como no medido en vez de inventarse.
+
+- `safeFetch.ts` — fetch con guard anti-SSRF. Toda URL viene de un desconocido:
+  no relajar sus reglas (IPs privadas, puertos, redirects, tamaño, tiempo).
+- `parse.ts` — señales del HTML con `cheerio`. Los patrones de CTA usan formas
+  concretas, no raíces sueltas, para evitar falsos positivos.
+- `score.ts` — rúbricas deterministas de `seoBasico` y `conversion`.
+  `experienciaUsuario` queda no medido hasta integrar PageSpeed Insights.
+- Sitios armados con JavaScript en el navegador (SPA) salen como no medidos:
+  su HTML no representa lo que ve el visitante.
+
 ## Component Organization
 
 UI components are in `components/` organized by type: `components/ui/`, `components/sections/`, `components/animations/`.

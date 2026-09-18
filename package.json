@@ -12,6 +12,7 @@
     "@react-pdf/renderer": "^4.5.1",
     "@sanity/image-url": "^2.0.3",
     "@sanity/vision": "^5.10.0",
+    "cheerio": "^1.2.0",
     "framer-motion": "^12.34.2",
     "next": "16.1.6",
     "next-sanity": "^12.1.0",
