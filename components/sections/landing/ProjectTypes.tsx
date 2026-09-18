@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { stegaClean } from "next-sanity";
 import SectionTitle from "@/components/ui/SectionTitle";
 import ButtonBlock from "@/components/ui/ButtonBlock";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations";
@@ -59,7 +60,7 @@ export default function ProjectTypes({ title, types, note, cta }: ProjectTypesPr
           className={`${GAP_TITLE} grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-8 gap-y-12`}
         >
           {types?.map((type, i) => {
-            const icon = ICONS[type.icon ?? "landing"];
+            const icon = ICONS[stegaClean(type.icon) ?? "landing"];
             return (
               <StaggerItem key={i}>
                 <div className="flex flex-col max-w-[22.3rem]">

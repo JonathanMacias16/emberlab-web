@@ -4,9 +4,11 @@ import React from "react";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
+import { presentationTool } from "sanity/presentation";
 import { HomeIcon, DesktopIcon } from "@sanity/icons";
 import { apiVersion, dataset, projectId } from "@/sanity/env";
 import { schema } from "@/sanity/schemas/index";
+import { resolve } from "@/sanity/presentation/resolve";
 
 export default defineConfig({
   basePath: "/studio",
@@ -44,6 +46,15 @@ export default defineConfig({
                   .documentId("landingWeb")
               ),
           ]),
+    }),
+    presentationTool({
+      title: "Vista Previa",
+      resolve,
+      previewUrl: {
+        previewMode: {
+          enable: "/api/draft-mode/enable",
+        },
+      },
     }),
     visionTool({ defaultApiVersion: apiVersion }),
   ],

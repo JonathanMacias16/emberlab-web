@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import Script from "next/script";
+import { draftMode } from "next/headers";
 import ClickTracking from "@/components/analytics/ClickTracking";
+import DisableDraftMode from "@/components/ui/DisableDraftMode";
+import VisualEditingLoader from "@/components/ui/VisualEditingLoader";
+import { SanityLive } from "@/sanity/lib/live";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -25,11 +29,13 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { isEnabled: isDraftMode } = await draftMode();
+
   return (
     <html lang="es">
       <head>
@@ -70,6 +76,13 @@ fbq('track', 'PageView');`}
         </noscript>
         <ClickTracking />
         {children}
+        <SanityLive />
+        {isDraftMode && (
+          <>
+            <DisableDraftMode />
+            <VisualEditingLoader />
+          </>
+        )}
       </body>
     </html>
   );

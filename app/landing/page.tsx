@@ -13,12 +13,10 @@ import Analyzer from "@/components/sections/landing/Analyzer";
 import TalkToUs from "@/components/sections/landing/TalkToUs";
 import LandingFooter from "@/components/sections/landing/LandingFooter";
 import BackToTop from "@/components/ui/BackToTop";
-import { client } from "@/sanity/lib/client";
+import { sanityFetch } from "@/sanity/lib/live";
 import { LANDING_WEB_QUERY } from "@/sanity/lib/queries";
 import { defaultLandingWebData } from "@/sanity/lib/landing-web-defaults";
 import type { LandingWebData } from "@/types/sanity";
-
-export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Cuéntanos qué necesita tu sitio web | EmberLab",
@@ -29,13 +27,8 @@ export const metadata: Metadata = {
 export default async function LandingWebPage() {
   let data: LandingWebData | null = null;
   try {
-    data = await client.fetch<LandingWebData | null>(
-      LANDING_WEB_QUERY,
-      {},
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const result = await sanityFetch({ query: LANDING_WEB_QUERY });
+    data = result.data as LandingWebData | null;
   } catch {
     // Sanity not configured yet — use defaults
   }
