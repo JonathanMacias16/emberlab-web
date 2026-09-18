@@ -13,22 +13,16 @@ import Footer from "@/components/sections/Footer";
 import SplashGate from "@/components/animations/SplashGate";
 import ChatBubble from "@/components/chat/ChatBubble";
 import BackToTop from "@/components/ui/BackToTop";
-import { client } from "@/sanity/lib/client";
+import { sanityFetch } from "@/sanity/lib/live";
 import { LANDING_PAGE_QUERY } from "@/sanity/lib/queries";
 import { defaultLandingPageData } from "@/sanity/lib/defaults";
 import type { LandingPageData } from "@/types/sanity";
-export const revalidate = 60;
 
 export default async function Home() {
   let data: LandingPageData | null = null;
   try {
-    data = await client.fetch<LandingPageData | null>(
-      LANDING_PAGE_QUERY,
-      {},
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const result = await sanityFetch({ query: LANDING_PAGE_QUERY });
+    data = result.data as LandingPageData | null;
   } catch {
     // Sanity not configured yet — use defaults
   }

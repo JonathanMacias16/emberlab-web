@@ -1,3 +1,5 @@
+import { stegaClean } from "next-sanity";
+
 export default function SocialIcon({
     icon,
     className = "h-5 w-5 text-(--purple)",
@@ -33,7 +35,7 @@ export default function SocialIcon({
                 className={className}
                 fill="none"
             >
-                {paths[icon]}
+                {paths[stegaClean(icon)]}
             </svg>
         </div>
     );
