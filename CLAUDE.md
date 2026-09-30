@@ -115,7 +115,9 @@ como no medido en vez de inventarse.
 
 ## Chat de diagnóstico y reporte (`lib/report/`, `POST /api/chat/report`)
 
-`ChatBubble` (en `/web` y `/landing`) hace ocho preguntas y pide el correo.
+`ChatBubble` hace ocho preguntas y pide el correo. En `/web` es burbuja
+flotante; en `/landing` es modal (`variant="modal"`, sin botón flotante) y lo
+abre "Analizar mi sitio".
 Al cerrar la conversación manda el historial a `/api/chat/report`, que responde
 `202` de inmediato y en segundo plano (`after`) analiza el sitio, genera el PDF
 y lo envía por Resend al prospecto, con copia al equipo
@@ -138,7 +140,8 @@ y lo envía por Resend al prospecto, con copia al equipo
 
 - `lib/contact.ts` — número de WhatsApp (442 676 2707) y correo. Los CTAs
   editables viven en Sanity; si cambia el número hay que actualizarlos allá.
-- `WhatsAppBubble` va apilado sobre el chat y se oculta mientras está abierto.
+- `WhatsAppBubble` se apila sobre el botón del chat con `aboveChat` (`/web`) o
+  va en la esquina (`/landing`); se oculta mientras el chat está abierto.
 - Un enlace a `#diagnostico` abre el chat en vez de navegar (sirve desde Sanity).
 
 ## Component Organization

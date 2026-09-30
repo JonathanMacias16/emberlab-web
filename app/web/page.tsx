@@ -90,7 +90,7 @@ export default async function Home() {
           copyright={page.footerCopyright}
         />
       </div>
-      <WhatsAppBubble />
+      <WhatsAppBubble aboveChat />
       <ChatBubble />
       <BackToTop />
     </SplashGate>

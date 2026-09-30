@@ -7,14 +7,15 @@ import { CHAT_TOGGLE_EVENT, type ChatToggleDetail } from "@/components/chat/even
 import { WHATSAPP_URL } from "@/lib/contact";
 
 /**
- * Botón flotante de WhatsApp, apilado sobre el del chat en la esquina inferior
- * derecha. Se quita mientras el chat está abierto: el panel lo taparía, pero
- * seguiría recibiendo el foco del teclado.
+ * Botón flotante de WhatsApp en la esquina inferior derecha. Con `aboveChat`
+ * se apila sobre el botón del chat (`/web`); sin él ocupa la esquina, donde el
+ * chat es modal y no tiene botón propio (`/landing`). Se quita mientras el chat
+ * está abierto: el panel lo taparía, pero seguiría recibiendo el foco.
  *
  * `initial={false}` no es cosmético: la Event Setup Tool de Meta descarta los
  * elementos invisibles al cargar, y este es un CTA de contacto que tiene que ver.
  */
-export default function WhatsAppBubble() {
+export default function WhatsAppBubble({ aboveChat = false }: { aboveChat?: boolean }) {
   const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
@@ -34,7 +35,11 @@ export default function WhatsAppBubble() {
           aria-label="Escríbenos por WhatsApp"
           title="Escríbenos por WhatsApp"
           className="fixed flex items-center justify-center rounded-full bg-(--whatsapp) text-white"
-          style={{ bottom: 92, right: 18, width: 52, height: 52, zIndex: 9998, boxShadow: "0 4px 16px rgba(0,0,0,0.25)" }}
+          style={{
+            ...(aboveChat ? { bottom: 92, right: 18, width: 52, height: 52 } : { bottom: 24, right: 16, width: 56, height: 56 }),
+            zIndex: 9998,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+          }}
           initial={{ opacity: 0, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.7 }}

@@ -78,7 +78,7 @@ export default async function LandingWebPage() {
         copyright={page.footerCopyright}
       />
       <WhatsAppBubble />
-      <ChatBubble />
+      <ChatBubble variant="modal" />
       <BackToTop />
     </div>
   );

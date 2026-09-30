@@ -48,7 +48,13 @@ function TypingDots() {
   );
 }
 
-export default function ChatBubble() {
+/**
+ * `bubble`: botón flotante en la esquina y el panel sale de ahí (`/web`).
+ * `modal`: sin botón flotante. Se abre desde un enlace a #diagnostico y queda
+ * centrado sobre la página, a pantalla completa en celular (`/landing`).
+ */
+export default function ChatBubble({ variant = "bubble" }: { variant?: "bubble" | "modal" }) {
+  const isModal = variant === "modal";
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
@@ -87,6 +93,27 @@ export default function ChatBubble() {
     );
     return () => clearTimeout(t);
   }, [isOpen]);
+
+  // Como modal: la página de atrás no se desplaza, Esc cierra y el cursor
+  // queda en el campo de texto (en celular no, para no tapar el saludo con el
+  // teclado).
+  useEffect(() => {
+    if (!isModal || !isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const t = setTimeout(() => {
+      if (window.matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
+    }, 200);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+    };
+  }, [isModal, isOpen]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -229,17 +256,25 @@ export default function ChatBubble() {
     }
   };
 
-  return (
-    <>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.88, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 16 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="fixed flex flex-col overflow-hidden rounded-2xl shadow-2xl font-dm"
-            style={{
+  const panel = (
+    <motion.div
+      key="panel"
+      initial={isModal ? { opacity: 0, scale: 0.96, y: 12 } : { opacity: 0, scale: 0.88, y: 16 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={isModal ? { opacity: 0, scale: 0.96, y: 12 } : { opacity: 0, scale: 0.88, y: 16 }}
+      transition={{ type: "spring", stiffness: 320, damping: 28 }}
+      className={
+        isModal
+          ? "relative flex flex-col overflow-hidden font-dm w-full h-full sm:h-[min(680px,calc(100svh-48px))] sm:max-w-[460px] sm:rounded-2xl"
+          : "fixed flex flex-col overflow-hidden rounded-2xl shadow-2xl font-dm"
+      }
+      style={
+        isModal
+          ? {
+              backgroundColor: "var(--purple)",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+            }
+          : {
               bottom: 84,
               right: 16,
               width: "min(380px, calc(100vw - 32px))",
@@ -248,239 +283,269 @@ export default function ChatBubble() {
               transformOrigin: "bottom right",
               boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
               zIndex: 9999,
-            }}
+            }
+      }
+      role={isModal ? "dialog" : undefined}
+      aria-modal={isModal || undefined}
+      aria-label="Diagnóstico web"
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-3 flex-shrink-0"
+        style={{ backgroundColor: "rgba(0,0,0,0.3)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div
+            className="flex items-center justify-center rounded-xl"
+            style={{ width: 34, height: 34, backgroundColor: "var(--red)", flexShrink: 0 }}
           >
-            {/* Header */}
-            <div
-              className="flex items-center justify-between px-4 py-3 flex-shrink-0"
-              style={{ backgroundColor: "rgba(0,0,0,0.3)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            <LogoIcon size={20} color="#fff" />
+          </div>
+          <div>
+            <p className="text-white font-semibold text-sm leading-tight">Ember Lab</p>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#4ade80" }} />
+              <p className="text-xs leading-tight" style={{ color: "rgba(255,255,255,0.45)" }}>
+                Diagnóstico Web · IA
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-0.5">
+        {IS_DEV && (
+          <button
+            onClick={loadDemo}
+            className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+            style={{ color: "rgba(255,255,255,0.4)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            title="Solo en desarrollo: llenar la conversación de prueba"
+            aria-label="Cargar conversación de prueba"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+            </svg>
+          </button>
+        )}
+        <button
+          onClick={() => setIsOpen(false)}
+          className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+          style={{ color: "rgba(255,255,255,0.4)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+          aria-label="Cerrar chat"
+        >
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M11 4L4 11M4 4l7 7" />
+          </svg>
+        </button>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div
+        className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+        style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}
+      >
+        {messages.map((msg, i) => {
+          const isLastAndLoading = i === messages.length - 1 && isLoading && msg.role === "assistant";
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22 }}
+              className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              <div className="flex items-center gap-2.5">
+              {msg.role === "assistant" && (
                 <div
-                  className="flex items-center justify-center rounded-xl"
-                  style={{ width: 34, height: 34, backgroundColor: "var(--red)", flexShrink: 0 }}
+                  className="flex items-center justify-center rounded-lg flex-shrink-0 mb-0.5"
+                  style={{ width: 26, height: 26, backgroundColor: "var(--red)", minWidth: 26 }}
                 >
-                  <LogoIcon size={20} color="#fff" />
+                  <LogoIcon size={15} color="#fff" />
                 </div>
-                <div>
-                  <p className="text-white font-semibold text-sm leading-tight">Ember Lab</p>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#4ade80" }} />
-                    <p className="text-xs leading-tight" style={{ color: "rgba(255,255,255,0.45)" }}>
-                      Diagnóstico Web · IA
-                    </p>
-                  </div>
-                </div>
+              )}
+              <div
+                className="max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap"
+                style={
+                  msg.role === "user"
+                    ? { backgroundColor: "var(--red)", color: "#fff", borderBottomRightRadius: 5 }
+                    : { backgroundColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.9)", borderBottomLeftRadius: 5, border: "1px solid rgba(255,255,255,0.06)" }
+                }
+              >
+                {isLastAndLoading && msg.content === "" ? <TypingDots /> : msg.content}
               </div>
-              <div className="flex items-center gap-0.5">
-              {IS_DEV && (
-                <button
-                  onClick={loadDemo}
-                  className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
-                  style={{ color: "rgba(255,255,255,0.4)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                  title="Solo en desarrollo: llenar la conversación de prueba"
-                  aria-label="Cargar conversación de prueba"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+            </motion.div>
+          );
+        })}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Reporte por correo */}
+      <AnimatePresence>
+        {reportStatus !== "idle" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-3 mb-2 rounded-xl overflow-hidden flex-shrink-0"
+            style={
+              reportStatus === "error"
+                ? { background: "linear-gradient(135deg, var(--red) 0%, #c62e2f 100%)", boxShadow: "0 4px 20px rgba(231,63,64,0.35)" }
+                : { backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }
+            }
+          >
+            {reportStatus === "error" ? (
+              <button
+                onClick={() => requestReport(messages)}
+                className="w-full flex items-center justify-center gap-2.5 px-4 py-3 font-semibold text-sm text-white"
+              >
+                No pudimos enviarlo. Reintentar
+              </button>
+            ) : (
+              <div className="flex items-center gap-2.5 px-4 py-3 text-sm text-white">
+                {reportStatus === "sending" ? (
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
+                    className="block w-4 h-4 flex-shrink-0 border-2 rounded-full"
+                    style={{ borderColor: "rgba(255,255,255,0.3)", borderTopColor: "#fff" }}
+                  />
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                    <path d="M20 6L9 17l-5-5" />
                   </svg>
-                </button>
-              )}
-              <button
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
-                style={{ color: "rgba(255,255,255,0.4)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                aria-label="Cerrar chat"
-              >
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                  <path d="M11 4L4 11M4 4l7 7" />
-                </svg>
-              </button>
+                )}
+                <span className="leading-snug">
+                  {reportStatus === "sending"
+                    ? "Enviando tu solicitud…"
+                    : "Estamos analizando tu sitio. Tu diagnóstico llegará a tu correo en unos minutos."}
+                </span>
               </div>
-            </div>
-
-            {/* Messages */}
-            <div
-              className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
-              style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}
-            >
-              {messages.map((msg, i) => {
-                const isLastAndLoading = i === messages.length - 1 && isLoading && msg.role === "assistant";
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.22 }}
-                    className={`flex items-end gap-2 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    {msg.role === "assistant" && (
-                      <div
-                        className="flex items-center justify-center rounded-lg flex-shrink-0 mb-0.5"
-                        style={{ width: 26, height: 26, backgroundColor: "var(--red)", minWidth: 26 }}
-                      >
-                        <LogoIcon size={15} color="#fff" />
-                      </div>
-                    )}
-                    <div
-                      className="max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap"
-                      style={
-                        msg.role === "user"
-                          ? { backgroundColor: "var(--red)", color: "#fff", borderBottomRightRadius: 5 }
-                          : { backgroundColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.9)", borderBottomLeftRadius: 5, border: "1px solid rgba(255,255,255,0.06)" }
-                      }
-                    >
-                      {isLastAndLoading && msg.content === "" ? <TypingDots /> : msg.content}
-                    </div>
-                  </motion.div>
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Reporte por correo */}
-            <AnimatePresence>
-              {reportStatus !== "idle" && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mx-3 mb-2 rounded-xl overflow-hidden flex-shrink-0"
-                  style={
-                    reportStatus === "error"
-                      ? { background: "linear-gradient(135deg, var(--red) 0%, #c62e2f 100%)", boxShadow: "0 4px 20px rgba(231,63,64,0.35)" }
-                      : { backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }
-                  }
-                >
-                  {reportStatus === "error" ? (
-                    <button
-                      onClick={() => requestReport(messages)}
-                      className="w-full flex items-center justify-center gap-2.5 px-4 py-3 font-semibold text-sm text-white"
-                    >
-                      No pudimos enviarlo. Reintentar
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-2.5 px-4 py-3 text-sm text-white">
-                      {reportStatus === "sending" ? (
-                        <motion.span
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-                          className="block w-4 h-4 flex-shrink-0 border-2 rounded-full"
-                          style={{ borderColor: "rgba(255,255,255,0.3)", borderTopColor: "#fff" }}
-                        />
-                      ) : (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                      )}
-                      <span className="leading-snug">
-                        {reportStatus === "sending"
-                          ? "Enviando tu solicitud…"
-                          : "Estamos analizando tu sitio. Tu diagnóstico llegará a tu correo en unos minutos."}
-                      </span>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Descarga directa del PDF, solo en desarrollo */}
-            {IS_DEV && reportReady && (
-              <button
-                onClick={downloadReport}
-                disabled={isGeneratingPDF}
-                className="mx-3 mb-2 flex-shrink-0 flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs text-white/70 transition-opacity disabled:opacity-60"
-                style={{ border: "1px dashed rgba(255,255,255,0.25)" }}
-              >
-                {isGeneratingPDF ? "Generando PDF (tarda hasta 2 min)…" : "Descargar PDF (solo desarrollo)"}
-              </button>
             )}
-
-            {/* Quick replies */}
-            <AnimatePresence>
-              {quickReplies.length > 0 && !isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 6 }}
-                  className="px-3 pb-2 flex flex-wrap gap-1.5 flex-shrink-0"
-                >
-                  {quickReplies.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => sendMessage(opt)}
-                      className="text-xs px-3 py-1.5 rounded-full font-dm transition-all"
-                      style={{ backgroundColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--red)"; e.currentTarget.style.borderColor = "var(--red)"; e.currentTarget.style.color = "#fff"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.85)"; }}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Input */}
-            <div
-              className="flex items-end gap-2 px-3 pb-3 pt-2 flex-shrink-0"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.07)", backgroundColor: "rgba(0,0,0,0.18)" }}
-            >
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) => { setInput(e.target.value); adjustHeight(e.target); }}
-                onKeyDown={handleKeyDown}
-                placeholder="Escribe tu mensaje..."
-                disabled={isLoading}
-                rows={1}
-                className="flex-1 resize-none rounded-xl px-3 py-2 text-sm outline-none transition-colors disabled:opacity-50"
-                style={{ backgroundColor: "rgba(255,255,255,0.07)", color: "#fff", maxHeight: 96, lineHeight: "1.5", border: "1px solid rgba(255,255,255,0.09)" }}
-              />
-              <button
-                onClick={() => sendMessage(input)}
-                disabled={!input.trim() || isLoading}
-                className="flex-shrink-0 flex items-center justify-center rounded-xl transition-all disabled:opacity-35 disabled:cursor-not-allowed"
-                style={{ width: 36, height: 36, backgroundColor: "var(--red)", color: "#fff" }}
-                aria-label="Enviar"
-              >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                </svg>
-              </button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Floating button */}
-      <motion.button
-        onClick={() => setIsOpen((v) => !v)}
-        className="fixed flex items-center justify-center rounded-full cursor-pointer"
-        style={{ bottom: 24, right: 16, width: 56, height: 56, backgroundColor: "var(--red)", boxShadow: "0 4px 20px rgba(231,63,64,0.45)", zIndex: 9999 }}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.94 }}
-        animate={isOpen ? {} : { boxShadow: ["0 4px 20px rgba(231,63,64,0.4)", "0 4px 32px rgba(231,63,64,0.7)", "0 4px 20px rgba(231,63,64,0.4)"] }}
-        transition={isOpen ? { type: "spring", stiffness: 300, damping: 20 } : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-        aria-label={isOpen ? "Cerrar chat" : "Abrir diagnóstico web"}
+      {/* Descarga directa del PDF, solo en desarrollo */}
+      {IS_DEV && reportReady && (
+        <button
+          onClick={downloadReport}
+          disabled={isGeneratingPDF}
+          className="mx-3 mb-2 flex-shrink-0 flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs text-white/70 transition-opacity disabled:opacity-60"
+          style={{ border: "1px dashed rgba(255,255,255,0.25)" }}
+        >
+          {isGeneratingPDF ? "Generando PDF (tarda hasta 2 min)…" : "Descargar PDF (solo desarrollo)"}
+        </button>
+      )}
+
+      {/* Quick replies */}
+      <AnimatePresence>
+        {quickReplies.length > 0 && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            className="px-3 pb-2 flex flex-wrap gap-1.5 flex-shrink-0"
+          >
+            {quickReplies.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => sendMessage(opt)}
+                className="text-xs px-3 py-1.5 rounded-full font-dm transition-all"
+                style={{ backgroundColor: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,255,255,0.15)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--red)"; e.currentTarget.style.borderColor = "var(--red)"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.color = "rgba(255,255,255,0.85)"; }}
+              >
+                {opt}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Input */}
+      <div
+        className="flex items-end gap-2 px-3 pb-3 pt-2 flex-shrink-0"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.07)", backgroundColor: "rgba(0,0,0,0.18)" }}
       >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div key="x" initial={{ opacity: 0, rotate: -80, scale: 0.7 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} exit={{ opacity: 0, rotate: 80, scale: 0.7 }} transition={{ duration: 0.18 }}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M15 5L5 15M5 5l10 10" />
-              </svg>
+        <textarea
+          ref={inputRef}
+          value={input}
+          onChange={(e) => { setInput(e.target.value); adjustHeight(e.target); }}
+          onKeyDown={handleKeyDown}
+          placeholder="Escribe tu mensaje..."
+          disabled={isLoading}
+          rows={1}
+          className="flex-1 resize-none rounded-xl px-3 py-2 text-sm outline-none transition-colors disabled:opacity-50"
+          style={{ backgroundColor: "rgba(255,255,255,0.07)", color: "#fff", maxHeight: 96, lineHeight: "1.5", border: "1px solid rgba(255,255,255,0.09)" }}
+        />
+        <button
+          onClick={() => sendMessage(input)}
+          disabled={!input.trim() || isLoading}
+          className="flex-shrink-0 flex items-center justify-center rounded-xl transition-all disabled:opacity-35 disabled:cursor-not-allowed"
+          style={{ width: 36, height: 36, backgroundColor: "var(--red)", color: "#fff" }}
+          aria-label="Enviar"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
+        </button>
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <>
+      <AnimatePresence>
+        {isOpen &&
+          (isModal ? (
+            <motion.div
+              key="overlay"
+              className="fixed inset-0 flex items-center justify-center sm:p-6"
+              style={{ zIndex: 9999, backgroundColor: "rgba(18,10,32,0.65)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              // Clic fuera del panel = cerrar, como cualquier modal.
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setIsOpen(false);
+              }}
+            >
+              {panel}
             </motion.div>
           ) : (
-            <motion.div key="logo" initial={{ opacity: 0, rotate: 80, scale: 0.7 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} exit={{ opacity: 0, rotate: -80, scale: 0.7 }} transition={{ duration: 0.18 }}>
-              <LogoIcon size={27} color="#fff" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+            panel
+          ))}
+      </AnimatePresence>
+
+      {/* Botón flotante: solo en la variante burbuja */}
+      {!isModal && (
+        <motion.button
+          onClick={() => setIsOpen((v) => !v)}
+          className="fixed flex items-center justify-center rounded-full cursor-pointer"
+          style={{ bottom: 24, right: 16, width: 56, height: 56, backgroundColor: "var(--red)", boxShadow: "0 4px 20px rgba(231,63,64,0.45)", zIndex: 9999 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.94 }}
+          animate={isOpen ? {} : { boxShadow: ["0 4px 20px rgba(231,63,64,0.4)", "0 4px 32px rgba(231,63,64,0.7)", "0 4px 20px rgba(231,63,64,0.4)"] }}
+          transition={isOpen ? { type: "spring", stiffness: 300, damping: 20 } : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          aria-label={isOpen ? "Cerrar chat" : "Abrir diagnóstico web"}
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div key="x" initial={{ opacity: 0, rotate: -80, scale: 0.7 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} exit={{ opacity: 0, rotate: 80, scale: 0.7 }} transition={{ duration: 0.18 }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M15 5L5 15M5 5l10 10" />
+                </svg>
+              </motion.div>
+            ) : (
+              <motion.div key="logo" initial={{ opacity: 0, rotate: 80, scale: 0.7 }} animate={{ opacity: 1, rotate: 0, scale: 1 }} exit={{ opacity: 0, rotate: -80, scale: 0.7 }} transition={{ duration: 0.18 }}>
+                <LogoIcon size={27} color="#fff" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      )}
     </>
   );
 }
