@@ -1,4 +1,12 @@
-import type { Check, Measured, PageSignals, RobotsInfo, Score, SitemapInfo } from "./types";
+import type {
+  Check,
+  Measured,
+  PageSignals,
+  PageSpeedInsights,
+  RobotsInfo,
+  Score,
+  SitemapInfo,
+} from "./types";
 
 /**
  * Rúbricas fijas. Los pesos son una decisión editorial de Ember Lab, pero son
@@ -246,8 +254,56 @@ export function scoreConversion(page: Measured<PageSignals>): Score {
   return toScore(checks);
 }
 
-export const EXPERIENCIA_USUARIO_PENDIENTE: Score = {
-  status: "unavailable",
-  reason:
-    "Velocidad, estabilidad visual y accesibilidad solo se miden cargando la página en un navegador. Pendiente de integrar PageSpeed Insights.",
-};
+function formatMs(ms: number): string {
+  return ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${Math.round(ms)} ms`;
+}
+
+/**
+ * Los umbrales son los de Google para Core Web Vitals, no criterio nuestro.
+ * Se puntúa el laboratorio porque siempre está y es comparable entre sitios;
+ * los datos de usuarios reales van en el reporte aparte (ver `pagespeed.ts`).
+ */
+export function scoreExperienciaUsuario(psi: Measured<PageSpeedInsights>): Score {
+  if (psi.status === "unavailable") return { status: "unavailable", reason: psi.reason };
+  const lab = psi.value.lab;
+
+  const checks: Check[] = [
+    {
+      id: "lcp",
+      label: "El contenido principal aparece rápido (2.5 s o menos)",
+      passed: lab.lcpMs === null ? null : lab.lcpMs <= 2500,
+      points: 25,
+      detail: lab.lcpMs === null ? "No se pudo medir." : `Tarda ${formatMs(lab.lcpMs)}.`,
+    },
+    {
+      id: "cls",
+      label: "El contenido no se mueve mientras carga (CLS de 0.1 o menos)",
+      passed: lab.cls === null ? null : lab.cls <= 0.1,
+      points: 20,
+      detail: lab.cls === null ? "No se pudo medir." : `CLS de ${lab.cls.toFixed(2)}.`,
+    },
+    {
+      id: "tbt",
+      label: "La página responde pronto al primer toque (200 ms o menos bloqueada)",
+      passed: lab.tbtMs === null ? null : lab.tbtMs <= 200,
+      points: 15,
+      detail: lab.tbtMs === null ? "No se pudo medir." : `${formatMs(lab.tbtMs)} bloqueada.`,
+    },
+    {
+      id: "accessibility",
+      label: "Es accesible (90 o más en Lighthouse)",
+      passed: lab.accessibility === null ? null : lab.accessibility >= 90,
+      points: 25,
+      detail: lab.accessibility === null ? "No se pudo medir." : `${lab.accessibility}/100.`,
+    },
+    {
+      id: "best-practices",
+      label: "Sigue las buenas prácticas web (90 o más en Lighthouse)",
+      passed: lab.bestPractices === null ? null : lab.bestPractices >= 90,
+      points: 15,
+      detail: lab.bestPractices === null ? "No se pudo medir." : `${lab.bestPractices}/100.`,
+    },
+  ];
+
+  return toScore(checks);
+}

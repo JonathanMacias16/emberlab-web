@@ -2,7 +2,9 @@ import { safeFetch, SafeFetchError } from "./safeFetch";
 import type { SafeResponse } from "./safeFetch";
 import { parsePage } from "./parse";
 import { fetchRobots, findSitemap } from "./robots";
-import { EXPERIENCIA_USUARIO_PENDIENTE, scoreConversion, scoreSeoBasico } from "./score";
+import { fetchPageSpeed } from "./pagespeed";
+import { crawlPages } from "./crawl";
+import { scoreConversion, scoreExperienciaUsuario, scoreSeoBasico } from "./score";
 import type { Measured, PageSignals, SiteAudit } from "./types";
 
 /**
@@ -13,6 +15,13 @@ export function normalizeInputUrl(raw: string): { url: URL; schemeGiven: boolean
   const value = raw.trim();
   if (!value || /\s/.test(value)) return null;
   const schemeGiven = /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
+
+  // Hay que revisar lo que se escribió, no lo que quedó normalizado: Node lee
+  // "5" como la IP 0.0.0.5, cuyo hostname sí tiene puntos y colaría como si
+  // fuera un dominio.
+  const host = value.replace(/^[a-z][a-z0-9+.-]*:\/\//i, "").split(/[/?#]/)[0];
+  if (!host.includes(".") && !host.startsWith("[")) return null;
+
   try {
     const url = new URL(schemeGiven ? value : `https://${value}`);
     // "tusitio" sin dominio no es una dirección pública.
@@ -63,10 +72,12 @@ export async function analyzeSite(rawUrl: string): Promise<SiteAudit> {
     page,
     robots: { status: "unavailable", reason: notReached },
     sitemap: { status: "unavailable", reason: notReached },
+    pagespeed: { status: "unavailable", reason: notReached },
+    otherPages: { status: "unavailable", reason: notReached },
     scores: {
       seoBasico: { status: "unavailable", reason: page.status === "unavailable" ? page.reason : notReached },
       conversion: { status: "unavailable", reason: page.status === "unavailable" ? page.reason : notReached },
-      experienciaUsuario: EXPERIENCIA_USUARIO_PENDIENTE,
+      experienciaUsuario: { status: "unavailable", reason: notReached },
     },
   });
 
@@ -96,8 +107,21 @@ export async function analyzeSite(rawUrl: string): Promise<SiteAudit> {
   // robots.txt y sitemap viven en la raíz del dominio final (después de
   // redirects como http→https o sin www→con www).
   const origin = new URL(res.finalUrl).origin;
-  const robots = await fetchRobots(origin);
-  const sitemap = await findSitemap(origin, robots.status === "ok" ? robots.value.sitemaps : []);
+
+  // PageSpeed puede tardar más que todo lo demás junto, así que corre en
+  // paralelo con la cadena robots→sitemap y con la lectura de las demás
+  // páginas, en vez de encadenarlo todo.
+  const [{ robots, sitemap }, pagespeed, otherPages] = await Promise.all([
+    (async () => {
+      const robots = await fetchRobots(origin);
+      const sitemap = await findSitemap(origin, robots.status === "ok" ? robots.value.sitemaps : []);
+      return { robots, sitemap };
+    })(),
+    // Se mide la URL final: la que de verdad ve el visitante.
+    fetchPageSpeed(res.finalUrl),
+    // El home rara vez explica toda la oferta; las otras páginas la completan.
+    crawlPages(res.finalUrl, page.value.internalLinks, []),
+  ]);
 
   return {
     version: 1,
@@ -107,10 +131,12 @@ export async function analyzeSite(rawUrl: string): Promise<SiteAudit> {
     page,
     robots,
     sitemap,
+    pagespeed,
+    otherPages,
     scores: {
       seoBasico: scoreSeoBasico(page, robots, sitemap),
       conversion: scoreConversion(page),
-      experienciaUsuario: EXPERIENCIA_USUARIO_PENDIENTE,
+      experienciaUsuario: scoreExperienciaUsuario(pagespeed),
     },
   };
 }
