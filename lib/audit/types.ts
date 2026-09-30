@@ -82,8 +82,115 @@ export interface PageSignals {
   /** Botones y enlaces cuyo texto es una llamada a la acción. */
   ctas: LinkInfo[];
 
-  /** Copy real para la valoración cualitativa de comunicación. */
-  content: { excerpt: string };
+  /** Enlaces internos, para decidir qué otras páginas vale la pena leer. */
+  internalLinks: LinkInfo[];
+
+  /** El copy real de la página, para poder evaluar qué comunica. */
+  content: { text: string; truncated: boolean };
+}
+
+/** Otra página del mismo sitio, leída para entender qué ofrece en conjunto. */
+export interface CrawledPage {
+  url: string;
+  title: string | null;
+  h1: string[];
+  text: string;
+  wordCount: number;
+}
+
+/**
+ * Un hallazgo de accesibilidad y diseño de Lighthouse. A diferencia de las
+ * observaciones sobre la captura, esto sí está medido: contraste insuficiente,
+ * orden de encabezados, áreas táctiles chicas. Cada uno trae los elementos
+ * concretos donde falla.
+ */
+export interface DesignFinding {
+  id: string;
+  title: string;
+  passed: boolean;
+  /** Los elementos señalados, con el texto que llevan dentro. */
+  items: Array<{ label: string; snippet: string }>;
+}
+
+/** Cómo califica Google una métrica: los umbrales los define él, no nosotros. */
+export type MetricRating = "bueno" | "mejorable" | "malo";
+
+/** Medición de laboratorio: una carga controlada de Lighthouse. */
+export interface LabMetrics {
+  /** Largest Contentful Paint: cuánto tarda en verse el contenido principal. */
+  lcpMs: number | null;
+  /** Speed Index: qué tan rápido se va llenando de contenido la pantalla. */
+  speedIndexMs: number | null;
+  /** Cumulative Layout Shift: cuánto se mueve el contenido mientras carga. */
+  cls: number | null;
+  /** Total Blocking Time: proxy de laboratorio de qué tan pronto responde al toque. */
+  tbtMs: number | null;
+  fcpMs: number | null;
+  /** Scores 0–100 de Lighthouse; `null` si la categoría no se pudo calcular. */
+  performance: number | null;
+  accessibility: number | null;
+  bestPractices: number | null;
+}
+
+export interface FieldMetric {
+  /** Percentil 75 de usuarios reales: ms para tiempos, sin unidad para CLS. */
+  p75: number;
+  rating: MetricRating;
+}
+
+/** Medición de campo (CrUX): usuarios reales de los últimos 28 días. */
+export interface FieldMetrics {
+  /**
+   * `url` = datos de esta página. `origin` = Google no tenía suficientes
+   * visitas de esta página y respondió con las del dominio completo, que es
+   * otra cosa y hay que decirlo.
+   */
+  scope: "url" | "origin";
+  lcp: FieldMetric | null;
+  cls: FieldMetric | null;
+  inp: FieldMetric | null;
+  overall: MetricRating | null;
+}
+
+/** Un cuadro de cómo se veía la página mientras cargaba. */
+export interface Filmstrip {
+  /** Milisegundos desde que empezó la carga. */
+  timingMs: number;
+  /** JPEG en data URI, listo para incrustar. */
+  data: string;
+}
+
+/**
+ * Lo que Chrome vio al cargar la página. Es la evidencia visual del reporte:
+ * no describimos el sitio de oídas, lo mostramos.
+ */
+export interface Screenshots {
+  /** La página ya cargada, en viewport móvil. */
+  final: string | null;
+  /** Los primeros segundos, cuadro por cuadro. */
+  filmstrip: Filmstrip[];
+}
+
+/** Mejora concreta que Lighthouse detectó, con su ahorro estimado. */
+export interface Opportunity {
+  id: string;
+  title: string;
+  savingsMs: number;
+}
+
+export interface PageSpeedInsights {
+  /** Con qué dispositivo se midió. Móvil es el default. */
+  strategy: "mobile" | "desktop";
+  /** La URL que Google terminó midiendo. */
+  analyzedUrl: string;
+  lab: LabMetrics;
+  /** Solo existe si el sitio tiene tráfico suficiente para CrUX. */
+  field: Measured<FieldMetrics>;
+  /** Las de mayor ahorro primero. */
+  opportunities: Opportunity[];
+  screenshots: Screenshots;
+  /** Accesibilidad y diseño medidos: contraste, encabezados, áreas táctiles. */
+  design: DesignFinding[];
 }
 
 export interface RobotsInfo {
@@ -106,11 +213,15 @@ export interface SiteAudit {
   page: Measured<PageSignals>;
   robots: Measured<RobotsInfo>;
   sitemap: Measured<SitemapInfo>;
+  /** Lo medido por Google cargando la página en un navegador real. */
+  pagespeed: Measured<PageSpeedInsights>;
+  /** Otras páginas del sitio, leídas para saber qué ofrece en conjunto. */
+  otherPages: Measured<CrawledPage[]>;
   scores: {
     /** SEO on-page básico, desde el HTML. No es un audit de posicionamiento completo. */
     seoBasico: Score;
     conversion: Score;
-    /** Requiere cargar la página en un navegador (PageSpeed Insights, pendiente). */
+    /** Velocidad, estabilidad visual y accesibilidad, desde PageSpeed Insights. */
     experienciaUsuario: Score;
   };
 }

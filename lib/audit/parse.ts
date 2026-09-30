@@ -17,6 +17,26 @@ function nonEmpty(text: string | undefined | null): string | null {
 }
 
 /**
+ * Saca el texto visible de un fragmento, separando los bloques.
+ *
+ * `cheerio.text()` concatena los nodos sin nada en medio, así que dos bloques
+ * contiguos quedan pegados: "Marca personal" y "con intención" salen como
+ * "Marca personalconintención". Eso no solo se lee mal, hace que la revisión
+ * de ortografía acuse faltas que el sitio no tiene. Por eso se mete un espacio
+ * en cada frontera de bloque antes de concatenar.
+ */
+const BLOCK_TAGS =
+  "p,div,section,article,header,main,aside,h1,h2,h3,h4,h5,h6,li,td,th,tr,blockquote,figcaption,label,button,a,span";
+
+export function extractText($: cheerio.CheerioAPI, root: cheerio.Cheerio<never>): string {
+  const scope = root.clone();
+  scope.find("script, style, noscript, template, svg, nav, footer, iframe").remove();
+  scope.find("br").replaceWith(" ");
+  scope.find(BLOCK_TAGS).append(" ");
+  return $.text(scope).replace(/\s+/g, " ").trim();
+}
+
+/**
  * Decodifica el HTML respetando su charset. Muchos sitios viejos en español
  * siguen en ISO-8859-1; leerlos como UTF-8 rompe acentos y eñes en el reporte.
  */
@@ -50,6 +70,9 @@ const CTA_PATTERN = new RegExp(
     ].join("|") +
     ")\\b"
 );
+
+/** Cuánto copy se conserva por página para el análisis de comunicación. */
+const MAX_TEXT = 12_000;
 
 const EMBEDDED_FORM_PROVIDERS: Array<[RegExp, string]> = [
   [/hsforms\.(net|com)|hubspot\.com\/.*form|share\.hsforms/, "HubSpot"],
@@ -183,10 +206,32 @@ export function parsePage(res: SafeResponse): PageSignals {
 
   // Para contar palabras y sacar el copy se quita lo que no es texto visible y
   // el ruido de navegación/pie, que se repite en todos los sitios.
-  const root = ($("main").first().length ? $("main").first() : $("body")).clone();
-  root.find("script, style, noscript, template, svg, nav, footer, iframe").remove();
-  const bodyText = clean(root.text());
+  const root = $("main").first().length ? $("main").first() : $("body");
+  const bodyText = extractText($, root as never);
   const wordCount = bodyText ? bodyText.split(" ").length : 0;
+
+  // Enlaces a otras páginas del mismo sitio. Sirven para decidir qué más leer
+  // cuando el sitio no tiene sitemap.
+  const origin = new URL(res.finalUrl).origin;
+  const seen = new Set<string>();
+  const internalLinks: LinkInfo[] = [];
+  $("a[href]").each((_, el) => {
+    if (internalLinks.length >= 60) return;
+    const href = $(el).attr("href") ?? "";
+    if (!href || href.startsWith("#") || /^(mailto|tel|javascript):/i.test(href)) return;
+    let resolved: URL;
+    try {
+      resolved = new URL(href, res.finalUrl);
+    } catch {
+      return;
+    }
+    if (resolved.origin !== origin) return;
+    resolved.hash = "";
+    const key = resolved.href;
+    if (seen.has(key)) return;
+    seen.add(key);
+    internalLinks.push({ href: key, text: clean($(el).text()) });
+  });
 
   return {
     finalUrl: res.finalUrl,
@@ -222,6 +267,11 @@ export function parsePage(res: SafeResponse): PageSignals {
     whatsappLinks: whatsappLinks.slice(0, 10),
     ctas: ctas.slice(0, 15),
 
-    content: { excerpt: bodyText.slice(0, 2000) },
+    internalLinks,
+
+    // 12 000 caracteres alcanzan para leer una página completa de venta. Antes
+    // eran 2 000, que sirven para contar palabras pero no para juzgar si el
+    // sitio comunica lo que quiere comunicar.
+    content: { text: bodyText.slice(0, MAX_TEXT), truncated: bodyText.length > MAX_TEXT },
   };
 }

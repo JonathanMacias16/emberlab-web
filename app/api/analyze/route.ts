@@ -3,9 +3,9 @@ import { analyzeSite } from "@/lib/audit/analyzeSite";
 
 // Usa módulos de Node (dns, http, zlib) para el fetch seguro.
 export const runtime = "nodejs";
-// Peor caso: página por https y reintento por http (10 s c/u) + robots.txt (5 s)
-// + hasta 4 candidatos de sitemap (5 s c/u) ≈ 45 s.
-export const maxDuration = 60;
+// Peor caso: página por https y reintento por http (10 s c/u), y después, en
+// paralelo, PageSpeed (75 s) contra robots.txt + sitemap (≈ 25 s) ≈ 95 s.
+export const maxDuration = 120;
 
 /**
  * POST { url } → SiteAudit

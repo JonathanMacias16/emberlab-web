@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type Message = { role: "user" | "assistant"; content: string };
+import { DEMO_TRANSCRIPT } from "./demoTranscript";
+import type { Message } from "./types";
 
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
@@ -23,6 +24,9 @@ function LogoIcon({ size = 32, color = "#E73F40" }: { size?: number; color?: str
     </svg>
   );
 }
+
+// Se resuelve en build: el botón de prueba no llega al bundle de producción.
+const IS_DEV = process.env.NODE_ENV === "development";
 
 function TypingDots() {
   return (
@@ -138,6 +142,15 @@ export default function ChatBubble() {
     el.style.height = `${Math.min(el.scrollHeight, 96)}px`;
   };
 
+  // Atajo de desarrollo: deja la conversación como si ya se hubieran contestado
+  // las ocho preguntas, para poder probar el reporte sin teclearlas de nuevo.
+  const loadDemo = () => {
+    setMessages(DEMO_TRANSCRIPT);
+    setQuickReplies([]);
+    setInput("");
+    setReportReady(true);
+  };
+
   const downloadReport = async () => {
     setIsGeneratingPDF(true);
     try {
@@ -206,6 +219,22 @@ export default function ChatBubble() {
                   </div>
                 </div>
               </div>
+              <div className="flex items-center gap-0.5">
+              {IS_DEV && (
+                <button
+                  onClick={loadDemo}
+                  className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+                  style={{ color: "rgba(255,255,255,0.4)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.08)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                  title="Solo en desarrollo: llenar la conversación de prueba"
+                  aria-label="Cargar conversación de prueba"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+                  </svg>
+                </button>
+              )}
               <button
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
@@ -218,6 +247,7 @@ export default function ChatBubble() {
                   <path d="M11 4L4 11M4 4l7 7" />
                 </svg>
               </button>
+              </div>
             </div>
 
             {/* Messages */}
