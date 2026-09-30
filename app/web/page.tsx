@@ -12,6 +12,7 @@ import CTAFinal from "@/components/sections/CTAFinal";
 import Footer from "@/components/sections/Footer";
 import SplashGate from "@/components/animations/SplashGate";
 import ChatBubble from "@/components/chat/ChatBubble";
+import WhatsAppBubble from "@/components/ui/WhatsAppBubble";
 import BackToTop from "@/components/ui/BackToTop";
 import { sanityFetch } from "@/sanity/lib/live";
 import { LANDING_PAGE_QUERY } from "@/sanity/lib/queries";
@@ -89,6 +90,7 @@ export default async function Home() {
           copyright={page.footerCopyright}
         />
       </div>
+      <WhatsAppBubble />
       <ChatBubble />
       <BackToTop />
     </SplashGate>

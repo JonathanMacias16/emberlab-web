@@ -12,6 +12,8 @@
   --red-light: #f3a5a6;
   --pink: #e87ca0;
   --white: #edeae7;
+  /* Verde oficial de WhatsApp, solo para su botón */
+  --whatsapp: #25d366;
 }
 
 @layer base {

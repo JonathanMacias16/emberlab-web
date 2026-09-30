@@ -4,7 +4,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { DEMO_TRANSCRIPT } from "./demoTranscript";
+import { CHAT_ANCHOR, CHAT_TOGGLE_EVENT, type ChatToggleDetail } from "./events";
 import type { Message } from "./types";
+
+/** Estado del envío del reporte por correo. */
+type ReportStatus = "idle" | "sending" | "sent" | "error";
 
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
@@ -50,11 +54,30 @@ export default function ChatBubble() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [reportReady, setReportReady] = useState(false);
+  const [reportStatus, setReportStatus] = useState<ReportStatus>("idle");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [quickReplies, setQuickReplies] = useState<string[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Un solo reporte por conversación, aunque el modelo repita el marcador.
+  const reportRequested = useRef(false);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent<ChatToggleDetail>(CHAT_TOGGLE_EVENT, { detail: { open: isOpen } }));
+  }, [isOpen]);
+
+  // Cualquier enlace a #diagnostico abre el chat, venga de código o de Sanity.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement | null)?.closest?.(`a[href="${CHAT_ANCHOR}"]`);
+      if (!link) return;
+      e.preventDefault();
+      setIsOpen(true);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -68,6 +91,29 @@ export default function ChatBubble() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  /**
+   * Pide el reporte y no espera a que esté: la ruta responde en cuanto recibe
+   * la conversación y el PDF llega por correo. Analizar el sitio toma hasta
+   * dos minutos, y nadie se queda viendo un spinner tanto tiempo.
+   */
+  const requestReport = useCallback(async (history: Message[]) => {
+    if (reportRequested.current) return;
+    reportRequested.current = true;
+    setReportStatus("sending");
+    try {
+      const res = await fetch("/api/chat/report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+      });
+      if (!res.ok) throw new Error("report failed");
+      setReportStatus("sent");
+    } catch {
+      reportRequested.current = false;
+      setReportStatus("error");
+    }
+  }, []);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -93,12 +139,13 @@ export default function ChatBubble() {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let full = "";
+        let display = "";
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           full += decoder.decode(value, { stream: true });
-          const display = full
+          display = full
             .replace("[DIAGNOSTICO_COMPLETO]", "")
             .replace(/\[OPCIONES:[^\]]*\]/g, "")
             .trim();
@@ -113,7 +160,10 @@ export default function ChatBubble() {
           setQuickReplies(optMatch[1].split("|").map((o) => o.trim()));
         }
 
-        if (full.includes("[DIAGNOSTICO_COMPLETO]")) setReportReady(true);
+        if (full.includes("[DIAGNOSTICO_COMPLETO]")) {
+          setReportReady(true);
+          requestReport([...withUser, { role: "assistant", content: display }]);
+        }
       } catch {
         setMessages((prev) => [
           ...prev.slice(0, -1),
@@ -127,7 +177,7 @@ export default function ChatBubble() {
         setTimeout(() => inputRef.current?.focus(), 100);
       }
     },
-    [messages, isLoading]
+    [messages, isLoading, requestReport]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -144,6 +194,8 @@ export default function ChatBubble() {
 
   // Atajo de desarrollo: deja la conversación como si ya se hubieran contestado
   // las ocho preguntas, para poder probar el reporte sin teclearlas de nuevo.
+  // No pide el envío: el correo de la conversación de prueba es de una persona
+  // real. El PDF se revisa con la descarga de desarrollo.
   const loadDemo = () => {
     setMessages(DEMO_TRANSCRIPT);
     setQuickReplies([]);
@@ -151,15 +203,16 @@ export default function ChatBubble() {
     setReportReady(true);
   };
 
+  // Solo en desarrollo: genera el PDF en la respuesta, sin mandar correos.
   const downloadReport = async () => {
     setIsGeneratingPDF(true);
     try {
       const res = await fetch("/api/chat/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({ messages, delivery: "download" }),
       });
-      if (!res.ok) throw new Error("pdf failed");
+      if (!res.ok) throw new Error(await res.text());
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -169,8 +222,8 @@ export default function ChatBubble() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch {
-      alert("Hubo un error generando el reporte. Por favor intenta de nuevo.");
+    } catch (error) {
+      alert(`No se pudo generar el PDF: ${error instanceof Error ? error.message : error}`);
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -289,42 +342,62 @@ export default function ChatBubble() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Report CTA */}
+            {/* Reporte por correo */}
             <AnimatePresence>
-              {reportReady && (
+              {reportStatus !== "idle" && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="mx-3 mb-2 rounded-xl overflow-hidden flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, var(--red) 0%, #c62e2f 100%)", boxShadow: "0 4px 20px rgba(231,63,64,0.35)" }}
+                  style={
+                    reportStatus === "error"
+                      ? { background: "linear-gradient(135deg, var(--red) 0%, #c62e2f 100%)", boxShadow: "0 4px 20px rgba(231,63,64,0.35)" }
+                      : { backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }
+                  }
                 >
-                  <button
-                    onClick={downloadReport}
-                    disabled={isGeneratingPDF}
-                    className="w-full flex items-center justify-center gap-2.5 px-4 py-3 font-semibold text-sm text-white transition-opacity disabled:opacity-70"
-                  >
-                    {isGeneratingPDF ? (
-                      <>
+                  {reportStatus === "error" ? (
+                    <button
+                      onClick={() => requestReport(messages)}
+                      className="w-full flex items-center justify-center gap-2.5 px-4 py-3 font-semibold text-sm text-white"
+                    >
+                      No pudimos enviarlo. Reintentar
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2.5 px-4 py-3 text-sm text-white">
+                      {reportStatus === "sending" ? (
                         <motion.span
                           animate={{ rotate: 360 }}
                           transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-                          className="block w-4 h-4 border-2 rounded-full"
+                          className="block w-4 h-4 flex-shrink-0 border-2 rounded-full"
                           style={{ borderColor: "rgba(255,255,255,0.3)", borderTopColor: "#fff" }}
                         />
-                        Generando reporte...
-                      </>
-                    ) : (
-                      <>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                          <path d="M20 6L9 17l-5-5" />
                         </svg>
-                        Descargar mi diagnóstico PDF
-                      </>
-                    )}
-                  </button>
+                      )}
+                      <span className="leading-snug">
+                        {reportStatus === "sending"
+                          ? "Enviando tu solicitud…"
+                          : "Estamos analizando tu sitio. Tu diagnóstico llegará a tu correo en unos minutos."}
+                      </span>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Descarga directa del PDF, solo en desarrollo */}
+            {IS_DEV && reportReady && (
+              <button
+                onClick={downloadReport}
+                disabled={isGeneratingPDF}
+                className="mx-3 mb-2 flex-shrink-0 flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs text-white/70 transition-opacity disabled:opacity-60"
+                style={{ border: "1px dashed rgba(255,255,255,0.25)" }}
+              >
+                {isGeneratingPDF ? "Generando PDF (tarda hasta 2 min)…" : "Descargar PDF (solo desarrollo)"}
+              </button>
+            )}
 
             {/* Quick replies */}
             <AnimatePresence>

@@ -17,6 +17,10 @@ export interface Check {
   points: number;
   /** Lo que se encontró. */
   detail: string;
+  /** La misma revisión en lenguaje de dueño de negocio, según el resultado. Va al PDF. */
+  plain: string;
+  /** El dato corto que acompaña a `plain`: "14 caracteres", "HTTPS", "98/100". */
+  badge: string;
 }
 
 export type Score =

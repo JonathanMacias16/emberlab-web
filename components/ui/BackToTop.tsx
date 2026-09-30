@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 export default function BackToTop({
   side = "left",
 }: {
-  /** /web ya tiene el chat bubble en la esquina inferior derecha, así que se
-   * queda a la izquierda; /landing (sin chat bubble) va a la derecha. */
+  /** La esquina inferior derecha la ocupan el chat y WhatsApp, así que por
+   * default va a la izquierda. */
   side?: "left" | "right";
 }) {
   const [visible, setVisible] = useState(false);
