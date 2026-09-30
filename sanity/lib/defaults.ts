@@ -1,4 +1,6 @@
 import type { LandingPageData } from "@/types/sanity";
+// Ruta relativa: `migrate.mjs` importa este archivo fuera de Next, sin el alias @/.
+import { WHATSAPP_URL } from "../../lib/contact";
 
 export const defaultLandingPageData: LandingPageData = {
   // Nav
@@ -13,7 +15,7 @@ export const defaultLandingPageData: LandingPageData = {
     { platform: "ig", url: "https://www.instagram.com/emberlab.mx/" },
     { platform: "in", url: "https://www.linkedin.com/company/emberlabmx/" },
   ],
-  navCta: { text: "Evaluar mi sitio web", variant: "purple", href: "https://wa.me/525554964439", target: "_blank" },
+  navCta: { text: "Evaluar mi sitio web", variant: "purple", href: WHATSAPP_URL, target: "_blank" },
 
   // Hero
   heroHeadline1: "Un sitio web",
@@ -24,14 +26,14 @@ export const defaultLandingPageData: LandingPageData = {
 
   // Problema Intro
   problemaIntroTitle: "El problema no es tu empresa.\nEs tu sitio web.",
-  problemaIntroCta: { text: "Cont\u00e1ctanos", variant: "red", href: "https://wa.me/525554964439", target: "_blank" },
+  problemaIntroCta: { text: "Cont\u00e1ctanos", variant: "red", href: WHATSAPP_URL, target: "_blank" },
 
   // Problema Dark
   problemaDarkTitle: "Muchas empresas crecen, cambian y evolucionan...",
   problemaDarkSubtitle2: "pero sus sitios web se quedan atrás.",
   problemaDarkSubtitle:
     "No comunican lo que son hoy, no ayudan a decidir, y no acompa\u00f1an la transformaci\u00f3n digital que necesitan.",
-  problemaDarkCta: { text: "Hablemos de tu web", variant: "red", href: "https://wa.me/525554964439", target: "_blank" },
+  problemaDarkCta: { text: "Hablemos de tu web", variant: "red", href: WHATSAPP_URL, target: "_blank" },
   problemCards: [
     {
       text: "Olvidate de sitios lentos o poco claros, con estructuras confusas.",
@@ -109,7 +111,7 @@ export const defaultLandingPageData: LandingPageData = {
     { emoji: "\u274c", text: "No tienes objetivos claros" },
     { emoji: "\u274c", text: "Quieres una plantilla sin estrategia" },
   ],
-  paraTiCta: { text: "Evaluar mi sitio web", variant: "purple", href: "https://wa.me/525554964439", target: "_blank" },
+  paraTiCta: { text: "Evaluar mi sitio web", variant: "purple", href: WHATSAPP_URL, target: "_blank" },
 
   // Proceso
   procesoTitle: "Nuestro proceso\nes claro.",
@@ -139,7 +141,7 @@ export const defaultLandingPageData: LandingPageData = {
   ctaFinalTitle: "Empecemos\ncon claridad.",
   ctaFinalDescription:
     "Si tu sitio web ya no acompa\u00f1a el momento de tu empresa, es momento de repensarlo.",
-  ctaFinalButton: { text: "Evaluar mi sitio actual", variant: "red", href: "https://wa.me/525554964439", target: "_blank" },
+  ctaFinalButton: { text: "Evaluar mi sitio actual", variant: "red", href: WHATSAPP_URL, target: "_blank" },
 
   // Footer
   footerTagline:

@@ -13,6 +13,8 @@ import Analyzer from "@/components/sections/landing/Analyzer";
 import TalkToUs from "@/components/sections/landing/TalkToUs";
 import LandingFooter from "@/components/sections/landing/LandingFooter";
 import BackToTop from "@/components/ui/BackToTop";
+import ChatBubble from "@/components/chat/ChatBubble";
+import WhatsAppBubble from "@/components/ui/WhatsAppBubble";
 import { sanityFetch } from "@/sanity/lib/live";
 import { LANDING_WEB_QUERY } from "@/sanity/lib/queries";
 import { defaultLandingWebData } from "@/sanity/lib/landing-web-defaults";
@@ -75,7 +77,9 @@ export default async function LandingWebPage() {
         brandLine2={page.footerBrandLine2}
         copyright={page.footerCopyright}
       />
-      <BackToTop side="right" />
+      <WhatsAppBubble />
+      <ChatBubble variant="modal" />
+      <BackToTop />
     </div>
   );
 }

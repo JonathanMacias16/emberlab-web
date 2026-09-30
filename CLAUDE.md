@@ -47,6 +47,7 @@ Path alias `@/*` maps to the project root (e.g., `@/app/...`, `@/components/...`
 
 - `app/page.tsx` — Coming soon page (root `/`). Dark purple background, BreathingFire animated logo, headline, "coming soon" text.
 - `app/web/page.tsx` — Full EmberLab landing page with all sections (Nav, Hero, Problema, Pilares, ParaTi, Proceso, Resultados, Portfolio, CTAFinal, Footer).
+- `app/landing/page.tsx` — Landing de `tuweb.emberlab.mx` (el middleware reescribe la raíz de ese subdominio a `/landing`).
 - `app/logo-animations/page.tsx` — Internal playground showcasing all 9 animated logo variants (not linked publicly).
 - `app/studio/[[...tool]]/` — Sanity Studio route.
 
@@ -106,10 +107,42 @@ como no medido en vez de inventarse.
   no relajar sus reglas (IPs privadas, puertos, redirects, tamaño, tiempo).
 - `parse.ts` — señales del HTML con `cheerio`. Los patrones de CTA usan formas
   concretas, no raíces sueltas, para evitar falsos positivos.
-- `score.ts` — rúbricas deterministas de `seoBasico` y `conversion`.
-  `experienciaUsuario` queda no medido hasta integrar PageSpeed Insights.
+- `score.ts` — rúbricas deterministas de `seoBasico`, `conversion` y
+  `experienciaUsuario` (esta con PageSpeed Insights, `pagespeed.ts`). Cada
+  check trae además `plain` y `badge`: su frase en lenguaje de cliente para el PDF.
 - Sitios armados con JavaScript en el navegador (SPA) salen como no medidos:
   su HTML no representa lo que ve el visitante.
+
+## Chat de diagnóstico y reporte (`lib/report/`, `POST /api/chat/report`)
+
+`ChatBubble` hace ocho preguntas y pide el correo. En `/web` es burbuja
+flotante; en `/landing` es modal (`variant="modal"`, sin botón flotante) y lo
+abre "Analizar mi sitio".
+Al cerrar la conversación manda el historial a `/api/chat/report`, que responde
+`202` de inmediato y en segundo plano (`after`) analiza el sitio, genera el PDF
+y lo envía por Resend al prospecto, con copia al equipo
+(`BRIEF_NOTIFICATION_EMAIL`, default `hola@emberlab.mx`).
+
+- `questionnaire.ts` — saca las respuestas emparejando cada pregunta del bot
+  con la respuesta siguiente. El correo y la URL se buscan con regex, no se le
+  preguntan al modelo.
+- `prompt.ts` — el prompt del estratega (texto de Ember Lab) y `parseNarrative`,
+  que hace cumplir sus reglas: máximo 5 oportunidades, 3 altas.
+- `pdf.tsx` — el documento con `@react-pdf/renderer`. Helvetica solo tiene
+  WinAnsi: los íconos van en SVG y `pdfText` limpia lo que no se pueda pintar.
+- `deliver.ts` — correos. Si no hay reporte (sitio no medible, error), el
+  prospecto recibe un aviso de seguimiento y el equipo el motivo.
+- Sitio no analizable = sin reporte: el prompt prohíbe redactar sin datos.
+- `delivery: "download"` devuelve el PDF sin mandar correos; solo en
+  desarrollo, con el botón ⚡ del chat (conversación de prueba) y "Descargar PDF".
+
+## Contacto y CTAs
+
+- `lib/contact.ts` — número de WhatsApp (442 676 2707) y correo. Los CTAs
+  editables viven en Sanity; si cambia el número hay que actualizarlos allá.
+- `WhatsAppBubble` se apila sobre el botón del chat con `aboveChat` (`/web`) o
+  va en la esquina (`/landing`); se oculta mientras el chat está abierto.
+- Un enlace a `#diagnostico` abre el chat en vez de navegar (sirve desde Sanity).
 
 ## Component Organization
 

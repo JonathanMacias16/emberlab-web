@@ -1,4 +1,5 @@
 import type { LandingWebData } from "@/types/sanity";
+import { WHATSAPP_URL } from "../../lib/contact";
 
 /**
  * Contenido por defecto de `/landing`, calcado del diseño de Figma
@@ -216,7 +217,8 @@ export const defaultLandingWebData: LandingWebData = {
   analyzerTitle: "¿Ya tienes sitio web y solo quieres saber en qué puede mejorar?",
   analyzerDescription:
     "Prueba nuestro analizador automático. Revisa tu sitio y te da mejoras concretas — sin costos, sin compromiso, sin necesidad de agendar nada.",
-  analyzerCta: { text: "Analizar mi sitio →", variant: "red", href: "/brief-web" },
+  // "#diagnostico" abre el chat de diagnóstico en vez de navegar (ver ChatBubble).
+  analyzerCta: { text: "Analizar mi sitio →", variant: "red", href: "#diagnostico" },
   analyzerNote:
     "Nota: no reemplaza el formulario ni la llamada de diagnóstico. Es solo un primer vistazo automático a lo que ya tienes.",
 
@@ -227,7 +229,7 @@ export const defaultLandingWebData: LandingWebData = {
   contactCta: {
     text: "Agenda una llamada de diagnóstico →",
     variant: "red",
-    href: "https://wa.me/525554964439",
+    href: WHATSAPP_URL,
     target: "_blank",
   },
 
