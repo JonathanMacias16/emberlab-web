@@ -85,6 +85,20 @@ export default function ChatBubble({ variant = "bubble" }: { variant?: "bubble" 
     return () => document.removeEventListener("click", onClick);
   }, []);
 
+  // También con #diagnostico en la URL: un clic que llegó antes de que cargara
+  // el JS (el navegador solo cambió el hash) o un enlace directo desde un
+  // anuncio. Se limpia el hash para que recargar no lo vuelva a abrir.
+  useEffect(() => {
+    const openFromHash = () => {
+      if (window.location.hash !== CHAT_ANCHOR) return;
+      setIsOpen(true);
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
     const t = setTimeout(

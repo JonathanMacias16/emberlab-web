@@ -47,7 +47,7 @@ Path alias `@/*` maps to the project root (e.g., `@/app/...`, `@/components/...`
 
 - `app/page.tsx` — Coming soon page (root `/`). Dark purple background, BreathingFire animated logo, headline, "coming soon" text.
 - `app/web/page.tsx` — Full EmberLab landing page with all sections (Nav, Hero, Problema, Pilares, ParaTi, Proceso, Resultados, Portfolio, CTAFinal, Footer).
-- `app/landing/page.tsx` — Landing de `tuweb.emberlab.mx` (el middleware reescribe la raíz de ese subdominio a `/landing`).
+- `app/landing/page.tsx` — Landing de `tuweb.emberlab.mx` (el middleware reescribe la raíz de ese subdominio a `/landing`, y en ese host redirige `/landing` a `/` para que solo exista una URL).
 - `app/logo-animations/page.tsx` — Internal playground showcasing all 9 animated logo variants (not linked publicly).
 - `app/studio/[[...tool]]/` — Sanity Studio route.
 
@@ -143,6 +143,8 @@ y lo envía por Resend al prospecto, con copia al equipo
 - `WhatsAppBubble` se apila sobre el botón del chat con `aboveChat` (`/web`) o
   va en la esquina (`/landing`); se oculta mientras el chat está abierto.
 - Un enlace a `#diagnostico` abre el chat en vez de navegar (sirve desde Sanity).
+  También se abre si la URL llega con `#diagnostico` (clic antes de hidratar o
+  enlace directo desde un anuncio); la sección del analizador lleva ese id.
 
 ## Component Organization
 

@@ -1,6 +1,7 @@
 import SectionTitle from "@/components/ui/SectionTitle";
 import ButtonBlock from "@/components/ui/ButtonBlock";
 import { FadeIn } from "@/components/animations";
+import { CHAT_ANCHOR } from "@/components/chat/events";
 import { SECTION_Y, TEXT_BODY, TEXT_SMALL, GAP_CTA } from "./styles";
 import type { CtaButtonData } from "@/types/sanity";
 
@@ -13,7 +14,9 @@ interface AnalyzerProps {
 
 export default function Analyzer({ title, description, cta, note }: AnalyzerProps) {
   return (
-    <section className="bg-(--purple)">
+    // El id es el respaldo de #diagnostico: si alguien hace clic antes de que
+    // cargue el JS, el navegador baja aquí y el chat se abre al hidratar.
+    <section id={CHAT_ANCHOR.slice(1)} className="bg-(--purple)">
       <div className={`mx-auto max-w-[1728px] grid grid-cols-1 lg:grid-cols-2 ${SECTION_Y}`}>
         <div className="px-7 sm:px-8 md:px-12 lg:px-20 xl:pl-28 xl:pr-12">
           <FadeIn direction="up">

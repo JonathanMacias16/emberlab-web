@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   title: "Cuéntanos qué necesita tu sitio web | EmberLab",
   description:
     "Responde unas preguntas y te ayudamos a identificar exactamente qué tipo de proyecto web te conviene — sin compromiso.",
+  alternates: { canonical: "https://tuweb.emberlab.mx/" },
 };
 
 export default async function LandingWebPage() {

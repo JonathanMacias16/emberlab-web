@@ -134,7 +134,9 @@ export default function CaseStudies({ title, cases }: CaseStudiesProps) {
                   onClick={() => goTo(i)}
                   aria-label={`Ver caso ${i + 1}: ${c.title}`}
                   aria-current={i === index}
-                  className="group flex h-6 w-6 items-center justify-center cursor-pointer"
+                  // El área táctil (::before) mide 44 px de ancho y llena el
+                  // espacio entre bullets, sin mover el diseño.
+                  className="group relative flex h-6 w-6 items-center justify-center cursor-pointer before:absolute before:-inset-x-2.5 before:-inset-y-1.5 sm:before:-inset-y-2 before:content-['']"
                 >
                   <span
                     className={`block rounded-full transition-all duration-300 ease-out group-hover:scale-150 ${

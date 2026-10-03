@@ -19,7 +19,9 @@ export default function ButtonBlock({
   // comportan igual y el botón conserva su color de marca al pasar el mouse.
   const bg = cta.variant === "red" ? "bg-(--red)" : "bg-(--purple-soft)";
 
-  const classes = `${bg} text-(--white) inline-block whitespace-nowrap text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all duration-200 hover:brightness-125 cursor-pointer ${className}`;
+  // En celular un texto largo ("Agenda una llamada de diagnóstico →") se parte
+  // en dos líneas en vez de desbordar el margen; desde `sm` va en una sola.
+  const classes = `${bg} text-(--white) inline-block max-w-full text-balance sm:whitespace-nowrap text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all duration-200 hover:brightness-125 cursor-pointer ${className}`;
 
   return (
     <a
