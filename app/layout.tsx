@@ -48,7 +48,8 @@ export default async function RootLayout({
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
-gtag('config', 'G-NQ5V8KT8T6');`}
+gtag('config', 'G-NQ5V8KT8T6');
+gtag('config', 'AW-18340989681');`}
         </Script>
         <Script id="facebook-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
