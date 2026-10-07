@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { trackCustomEvent, trackEvent } from "@/lib/analytics";
+import {
+  ADS_CONVERSIONS,
+  trackAdsConversion,
+  trackCustomEvent,
+  trackEvent,
+} from "@/lib/analytics";
 
 /** Links de contacto directo: para Meta valen como `Contact`. */
 const CONTACT_HOSTS = ["wa.me", "api.whatsapp.com", "web.whatsapp.com"];
@@ -22,6 +27,8 @@ function labelFor(el: HTMLElement) {
 
 /**
  * Escucha los clicks de toda la página y los reporta al pixel de Meta y a GA4.
+ * Los de contacto (WhatsApp, tel, mailto) cuentan además como conversión de
+ * Google Ads.
  * Va como listener global (en vez de un onClick por componente) para que
  * cualquier link o botón quede cubierto, incluidos los que se agreguen después.
  *
@@ -46,6 +53,7 @@ export default function ClickTracking() {
         CONTACT_HOSTS.some((h) => href.includes(h))
       ) {
         trackEvent("Contact", { content_name: label, destination: href });
+        trackAdsConversion(ADS_CONVERSIONS.contact);
         return;
       }
 
