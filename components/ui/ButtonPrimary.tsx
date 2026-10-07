@@ -1,3 +1,5 @@
+import { linkTarget } from "@/lib/contact";
+
 export default function ButtonPrimary({
   children,
   variant = "purple",
@@ -18,11 +20,12 @@ export default function ButtonPrimary({
   const classes = `${bg} text-[var(--white)] rounded-[20px] px-[1.96rem] py-[1.4rem] text-[1.36rem] font-bold tracking-[-0.05em] transition-all cursor-pointer inline-block whitespace-nowrap text-center ${className}`;
 
   if (href) {
+    const finalTarget = linkTarget(href, target);
     return (
       <a
         href={href}
-        target={target}
-        rel={target === "_blank" ? "noopener noreferrer" : undefined}
+        target={finalTarget}
+        rel={finalTarget === "_blank" ? "noopener noreferrer" : undefined}
         className={classes}
       >
         {children}

@@ -1,4 +1,5 @@
 import type { CtaButtonData } from "@/types/sanity";
+import { linkTarget } from "@/lib/contact";
 
 /**
  * Botón rectangular (sin radio) de la landing web (`/landing`). El tamaño de texto
@@ -23,11 +24,13 @@ export default function ButtonBlock({
   // en dos líneas en vez de desbordar el margen; desde `sm` va en una sola.
   const classes = `${bg} text-(--white) inline-block max-w-full text-balance sm:whitespace-nowrap text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all duration-200 hover:brightness-125 cursor-pointer ${className}`;
 
+  const target = linkTarget(cta.href, cta.target);
+
   return (
     <a
       href={cta.href || "#"}
-      target={cta.target}
-      rel={cta.target === "_blank" ? "noopener noreferrer" : undefined}
+      target={target}
+      rel={target === "_blank" ? "noopener noreferrer" : undefined}
       className={classes}
     >
       {cta.text}

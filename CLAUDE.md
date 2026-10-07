@@ -140,6 +140,9 @@ y lo envía por Resend al prospecto, con copia al equipo
 
 - `lib/contact.ts` — número de WhatsApp (442 676 2707) y correo. Los CTAs
   editables viven en Sanity; si cambia el número hay que actualizarlos allá.
+- Los enlaces a WhatsApp abren siempre en otra pestaña (`linkTarget`), aunque
+  en Sanity el botón diga "Misma pestaña": así la página alcanza a mandar la
+  conversión de Google Ads.
 - `WhatsAppBubble` se apila sobre el botón del chat con `aboveChat` (`/web`) o
   va en la esquina (`/landing`); se oculta mientras el chat está abierto.
 - Un enlace a `#diagnostico` abre el chat en vez de navegar (sirve desde Sanity).

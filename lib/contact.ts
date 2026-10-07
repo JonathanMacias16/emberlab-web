@@ -15,3 +15,19 @@ export const CONTACT_EMAIL = "hola@emberlab.mx";
 export function whatsappUrl(text?: string): string {
   return text ? `${WHATSAPP_URL}?text=${encodeURIComponent(text)}` : WHATSAPP_URL;
 }
+
+const WHATSAPP_HOSTS = ["wa.me", "api.whatsapp.com", "web.whatsapp.com"];
+
+/**
+ * `target` de un botón. WhatsApp abre siempre en otra pestaña, diga lo que
+ * diga Sanity ("Abrir en" viene en "Misma pestaña" por default): así la página
+ * sigue abierta y alcanza a mandar la conversión de Google Ads.
+ */
+export function linkTarget(href?: string, target?: string): string | undefined {
+  try {
+    if (href && WHATSAPP_HOSTS.includes(new URL(href).hostname)) return "_blank";
+  } catch {
+    // Enlace relativo o ancla (#diagnostico): no es WhatsApp.
+  }
+  return target;
+}
