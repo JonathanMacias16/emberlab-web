@@ -33,6 +33,8 @@ export function trackCustomEvent(name: string, params: EventParams = {}) {
 export const ADS_CONVERSIONS = {
   /** Clic a WhatsApp, teléfono o correo (el mismo `Contact` de Meta y GA4). */
   contact: "AW-18340989681/ycS9CKm0xJQdEPGV1alE",
+  /** Brief completado: se registra al llegar a `/brief-web/gracias`. */
+  brief: "AW-18340989681/Vm6dCPemzJQdEPGV1alE",
 } as const;
 
 /** Conversión de Google Ads, con el valor fijo que definió la cuenta. */

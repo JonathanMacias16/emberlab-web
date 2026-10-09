@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import BriefHeader from "@/components/ui/BriefHeader";
-import { trackEvent } from "@/lib/analytics";
+import { ADS_CONVERSIONS, trackAdsConversion, trackEvent } from "@/lib/analytics";
 import useStaticMotion from "@/components/animations/useStaticMotion";
 
 type Answers = Record<string, string | string[] | undefined>;
@@ -770,6 +770,9 @@ export default function BriefForm() {
       content_name: "Brief web completado",
       value: qualityScore.percent,
     });
+    // Aquí y no al cargar la página de gracias: así abrir o recargar ese link
+    // no cuenta como conversión.
+    trackAdsConversion(ADS_CONVERSIONS.brief);
 
     // El cierre vive en su propia URL para poder medir la conversión por URL.
     router.push("/brief-web/gracias");
