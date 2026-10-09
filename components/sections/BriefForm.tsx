@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import LogoIcon from "@/components/ui/LogoIcon";
+import BriefHeader from "@/components/ui/BriefHeader";
 import { trackEvent } from "@/lib/analytics";
 import useStaticMotion from "@/components/animations/useStaticMotion";
 
@@ -666,6 +666,7 @@ export default function BriefForm() {
   // Con `?noanim=1` las preguntas se montan ya visibles, para que la Event Setup
   // Tool de Meta no escanee el DOM en medio de la transición de entrada.
   const staticMotion = useStaticMotion();
+  const router = useRouter();
   const [answers, setAnswers] = useState<Answers>({});
   const [history, setHistory] = useState<number[]>([0]);
   const [done, setDone] = useState(false);
@@ -769,45 +770,17 @@ export default function BriefForm() {
       content_name: "Brief web completado",
       value: qualityScore.percent,
     });
+
+    // El cierre vive en su propia URL para poder medir la conversión por URL.
+    router.push("/brief-web/gracias");
+
     // Solo debe dispararse una vez, al completar el formulario.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
 
   return (
     <main className="min-h-screen w-full bg-(--purple) flex flex-col">
-      {/* Header */}
-      <div className="flex items-center px-5 sm:px-8 md:px-12 py-5 sm:py-6 flex-shrink-0">
-        <Link
-          href="/landing"
-          aria-label="Volver a EmberLab"
-          className="flex items-center gap-2"
-        >
-          <LogoIcon className="w-8 h-8" />
-        </Link>
-      </div>
-
-      {/* Progress bar */}
-      <div className="flex items-center gap-3 px-5 sm:px-8 md:px-12 flex-shrink-0">
-        <div
-          className="h-1.5 flex-1 rounded-full overflow-hidden"
-          style={{ backgroundColor: "rgba(255,255,255,0.1)" }}
-        >
-          <div
-            className="h-full rounded-full transition-[width] duration-400 ease-out"
-            style={{
-              backgroundColor: done ? "var(--green-light)" : "var(--red)",
-              width: `${progress}%`,
-            }}
-          />
-        </div>
-        <span
-          className={`text-sm font-semibold tabular-nums w-11 text-right flex-shrink-0 transition-colors ${
-            done ? "text-(--green-light)" : "text-(--purple-light)"
-          }`}
-        >
-          {progress}%
-        </span>
-      </div>
+      <BriefHeader progress={progress} done={done} />
 
       {/* Content */}
       <div className="flex-1 flex items-center justify-center px-5 sm:px-8 md:px-12 py-10 sm:py-14">
@@ -846,7 +819,7 @@ export default function BriefForm() {
               Atrás
             </button>
           )}
-          {!done ? (
+          {!done && (
             <StepTransition
               key={currentQuestion.id}
               staticMotion={staticMotion}
@@ -857,14 +830,6 @@ export default function BriefForm() {
                 value={answers[currentQuestion.id]}
                 onAnswer={commit}
               />
-            </StepTransition>
-          ) : (
-            <StepTransition
-              key="summary"
-              staticMotion={staticMotion}
-              direction={direction}
-            >
-              <SummaryScreen />
             </StepTransition>
           )}
         </div>
@@ -1143,43 +1108,6 @@ function QuestionScreen({
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function SummaryScreen() {
-  return (
-    <div>
-      {/* Palomita en verde: el mismo acento afirmativo que usa la marca, para que
-          se lea de inmediato que el formulario ya terminó. */}
-      <div
-        className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full mb-6"
-        style={{
-          backgroundColor: "rgba(199,221,163,0.15)",
-          border: "1px solid var(--green-light)",
-        }}
-      >
-        <svg
-          width="30"
-          height="30"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--green-light)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-        >
-          <path d="M20 6L9 17l-5-5" />
-        </svg>
-      </div>
-      <h1 className="text-(--green-light) text-3xl sm:text-4xl md:text-5xl font-normal tracking-[-0.04em] leading-[1.05]">
-        Gracias por compartirnos esta información.
-      </h1>
-      <p className="text-(--white) text-base sm:text-lg mt-3 font-light">
-        Con tus respuestas revisaremos en qué etapa se encuentra tu proyecto y
-        te contactaremos para recomendarte el mejor camino para tu sitio web.
-      </p>
     </div>
   );
 }
