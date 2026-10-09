@@ -126,7 +126,7 @@ export const defaultLandingWebData: LandingWebData = {
     {
       question: "¿Trabajan con empresas como la mía?",
       answer:
-        "Trabajamos con empresas B2B, de ciclos de venta largos y productos técnicos. No partimos de cero cada vez.",
+        "Trabajamos con marcas de distintas industrias porque creemos que cada proyecto merece una mirada propia. Entendemos tu contexto, tus objetivos y tu audiencia para crear una solución que tenga sentido para tu negocio.",
     },
     {
       question: "¿Qué pasa si no tengo todo listo (marca, contenido, fotos)?",
