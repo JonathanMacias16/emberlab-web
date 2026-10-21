@@ -44,6 +44,7 @@ export default async function LandingWebPage() {
         title={page.heroTitle}
         subtitle={page.heroSubtitle}
         cta={page.heroCta}
+        secondaryCta={page.heroSecondaryCta}
         note={page.heroNote}
         image={page.heroImage}
         imageAlt={page.heroImageAlt}

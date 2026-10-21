@@ -10,6 +10,7 @@ export const LANDING_WEB_QUERY = defineQuery(`
     heroTitle,
     heroSubtitle,
     heroCta,
+    heroSecondaryCta,
     heroNote,
     heroImage{ asset->{ _id, url, metadata } },
     heroImageAlt,

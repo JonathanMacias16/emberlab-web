@@ -12,7 +12,7 @@ export interface SocialLinkData {
 
 export interface CtaButtonData {
   text: string;
-  variant?: "purple" | "red";
+  variant?: "purple" | "red" | "orange";
   href?: string;
   target?: string;
 }
@@ -92,6 +92,7 @@ export interface LandingWebData {
   heroTitle?: string;
   heroSubtitle?: string;
   heroCta?: CtaButtonData;
+  heroSecondaryCta?: CtaButtonData;
   heroNote?: string;
   heroImage?: SanityImageSource;
   heroImageAlt?: string;

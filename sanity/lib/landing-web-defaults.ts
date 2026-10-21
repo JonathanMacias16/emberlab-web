@@ -26,6 +26,8 @@ export const defaultLandingWebData: LandingWebData = {
   heroSubtitle:
     "Responde unas preguntas y te ayudamos a identificar exactamente qué tipo de proyecto te conviene — sin compromiso.",
   heroCta: { text: "Completa el formulario →", variant: "purple", href: "/brief-web" },
+  // "#diagnostico" abre el chat de diagnóstico (ver ChatBubble).
+  heroSecondaryCta: { text: "Analizar mi sitio →", variant: "orange", href: "#diagnostico" },
   heroNote: "Toma 2 minutos.",
   heroImageAlt: "Persona sosteniendo una laptop con la leyenda Creative people",
 

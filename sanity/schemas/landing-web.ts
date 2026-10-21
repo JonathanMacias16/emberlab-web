@@ -42,6 +42,7 @@ export const landingWeb = defineType({
     { name: "heroTitle", title: "Titular", type: "text", rows: 3, fieldset: "hero", group: "hero" },
     { name: "heroSubtitle", title: "Subtítulo (verde)", type: "text", rows: 3, fieldset: "hero", group: "hero" },
     { name: "heroCta", title: "Botón de Acción (CTA)", type: "ctaButton", fieldset: "hero", group: "hero" },
+    { name: "heroSecondaryCta", title: "Segundo botón (junto al CTA)", type: "ctaButton", fieldset: "hero", group: "hero" },
     { name: "heroNote", title: "Nota bajo el botón", type: "string", fieldset: "hero", group: "hero" },
     { name: "heroImage", title: "Imagen Hero", type: "image", options: { hotspot: true }, fieldset: "hero", group: "hero" },
     { name: "heroImageAlt", title: "Texto Alt Imagen Hero", type: "string", fieldset: "hero", group: "hero" },

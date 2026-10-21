@@ -36,7 +36,7 @@ Path alias `@/*` maps to the project root (e.g., `@/app/...`, `@/components/...`
 
 ## Key Conventions
 
-- **Tailwind v4**: No `tailwind.config.js`. Configuration is CSS-first in `globals.css` using `@import "tailwindcss"`. Design tokens are CSS variables: `--purple`, `--red`, `--green-light`, `--purple-light`, `--purple-soft`, `--red-light`, `--white`.
+- **Tailwind v4**: No `tailwind.config.js`. Configuration is CSS-first in `globals.css` using `@import "tailwindcss"`. Design tokens are CSS variables: `--purple`, `--red`, `--green-light`, `--purple-light`, `--purple-soft`, `--red-light`, `--white`, `--orange` (botones naranjas: llevan texto `--purple`, el blanco no se lee).
 - **Fonts**: DM Sans (300, 400, 500, 700, 900 weights) loaded via `next/font/google`, applied as CSS variable `--font-dm-sans` with utility class `.font-dm`.
 - **Images**: Use `next/image` (`<Image>`) for optimized image handling. Images are organized in `public/` with descriptive names.
 - **Color system**: Relies entirely on CSS variables (`var(--colorName)`); no hardcoded colors. All colors defined in `app/globals.css`.

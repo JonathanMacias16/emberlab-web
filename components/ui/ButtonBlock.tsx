@@ -1,6 +1,13 @@
 import type { CtaButtonData } from "@/types/sanity";
 import { linkTarget } from "@/lib/contact";
 
+const VARIANT_COLORS = {
+  purple: "bg-(--purple-soft) text-(--white)",
+  red: "bg-(--red) text-(--white)",
+  // Texto morado: el blanco sobre naranja casi no se lee (contraste 2.4:1).
+  orange: "bg-(--orange) text-(--purple)",
+};
+
 /**
  * Botón rectangular (sin radio) de la landing web (`/landing`). El tamaño de texto
  * y el padding son los de `ButtonPrimary` (usado en `/web`); lo que cambia es la
@@ -16,13 +23,13 @@ export default function ButtonBlock({
 }) {
   if (!cta?.text) return null;
 
-  // El hover es siempre brillo, nunca cambio de color: así las dos variantes se
+  // El hover es siempre brillo, nunca cambio de color: así las variantes se
   // comportan igual y el botón conserva su color de marca al pasar el mouse.
-  const bg = cta.variant === "red" ? "bg-(--red)" : "bg-(--purple-soft)";
+  const colors = VARIANT_COLORS[cta.variant ?? "purple"] ?? VARIANT_COLORS.purple;
 
   // En celular un texto largo ("Agenda una llamada de diagnóstico →") se parte
   // en dos líneas en vez de desbordar el margen; desde `sm` va en una sola.
-  const classes = `${bg} text-(--white) inline-block max-w-full text-balance sm:whitespace-nowrap text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all duration-200 hover:brightness-125 cursor-pointer ${className}`;
+  const classes = `${colors} inline-block max-w-full text-balance sm:whitespace-nowrap text-center px-[1.96rem] py-[1.4rem] text-[1.15rem] md:text-[1.36rem] font-medium tracking-[-0.05em] transition-all duration-200 hover:brightness-125 cursor-pointer ${className}`;
 
   const target = linkTarget(cta.href, cta.target);
 

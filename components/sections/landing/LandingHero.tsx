@@ -11,6 +11,7 @@ interface LandingHeroProps {
   title?: string;
   subtitle?: string;
   cta?: CtaButtonData;
+  secondaryCta?: CtaButtonData;
   note?: string;
   image?: SanityImageSource;
   imageAlt?: string;
@@ -20,6 +21,7 @@ export default function LandingHero({
   title,
   subtitle,
   cta,
+  secondaryCta,
   note,
   image,
   imageAlt,
@@ -47,8 +49,13 @@ export default function LandingHero({
           </FadeIn>
 
           <FadeIn direction="up" delay={0.1}>
-            <div className={GAP_CTA}>
-              <ButtonBlock cta={cta} />
+            {/* En celular, uno sobre otro y del ancho del más largo: a todo lo
+                ancho quedarían bajo la burbuja de WhatsApp. Desde `sm`, lado a
+                lado si caben; si no, el segundo baja y `grow` los iguala (el
+                contenedor mide lo que sus botones, así que juntos no crecen). */}
+            <div className={`${GAP_CTA} grid w-fit max-w-full gap-3 sm:flex sm:flex-wrap sm:gap-4`}>
+              <ButtonBlock cta={cta} className="sm:grow" />
+              <ButtonBlock cta={secondaryCta} className="sm:grow" />
             </div>
           </FadeIn>
 
