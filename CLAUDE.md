@@ -145,6 +145,9 @@ y lo envía por Resend al prospecto, con copia al equipo
 - Los enlaces a WhatsApp abren siempre en otra pestaña (`linkTarget`), aunque
   en Sanity el botón diga "Misma pestaña": así la página alcanza a mandar la
   conversión de Google Ads.
+- Los dos botones "Analizar mi sitio" de `/landing` (hero y analizador) van
+  siempre en verde (`--green-light`, texto `--purple`): el color se fija en
+  código con `ButtonBlock variant="green"` y el que se elija en Sanity se ignora.
 - `WhatsAppBubble` se apila sobre el botón del chat con `aboveChat` (`/web`) o
   va en la esquina (`/landing`); se oculta mientras el chat está abierto.
 - Un enlace a `#diagnostico` abre el chat en vez de navegar (sirve desde Sanity).

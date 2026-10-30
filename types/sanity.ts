@@ -12,7 +12,7 @@ export interface SocialLinkData {
 
 export interface CtaButtonData {
   text: string;
-  variant?: "purple" | "red" | "orange";
+  variant?: "purple" | "red" | "orange" | "green";
   href?: string;
   target?: string;
 }
