@@ -6,6 +6,8 @@ const VARIANT_COLORS = {
   red: "bg-(--red) text-(--white)",
   // Texto morado: el blanco sobre naranja casi no se lee (contraste 2.4:1).
   orange: "bg-(--orange) text-(--purple)",
+  // Verde de marca: también con texto morado, el blanco no se lee.
+  green: "bg-(--green-light) text-(--purple)",
 };
 
 /**
@@ -16,16 +18,19 @@ const VARIANT_COLORS = {
  */
 export default function ButtonBlock({
   cta,
+  variant,
   className = "",
 }: {
   cta?: CtaButtonData;
+  /** Fija el color desde el código e ignora el que venga de Sanity. */
+  variant?: keyof typeof VARIANT_COLORS;
   className?: string;
 }) {
   if (!cta?.text) return null;
 
   // El hover es siempre brillo, nunca cambio de color: así las variantes se
   // comportan igual y el botón conserva su color de marca al pasar el mouse.
-  const colors = VARIANT_COLORS[cta.variant ?? "purple"] ?? VARIANT_COLORS.purple;
+  const colors = VARIANT_COLORS[variant ?? cta.variant ?? "purple"] ?? VARIANT_COLORS.purple;
 
   // En celular un texto largo ("Agenda una llamada de diagnóstico →") se parte
   // en dos líneas en vez de desbordar el margen; desde `sm` va en una sola.

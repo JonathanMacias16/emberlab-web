@@ -14,7 +14,8 @@ export const ctaButton = defineType({
         list: [
           { title: "Morado", value: "purple" },
           { title: "Rojo", value: "red" },
-          { title: "Naranja", value: "orange" }
+          { title: "Naranja", value: "orange" },
+          { title: "Verde", value: "green" }
         ] 
       },
       initialValue: "purple",

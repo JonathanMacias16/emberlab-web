@@ -55,7 +55,8 @@ export default function LandingHero({
                 contenedor mide lo que sus botones, así que juntos no crecen). */}
             <div className={`${GAP_CTA} grid w-fit max-w-full gap-3 sm:flex sm:flex-wrap sm:gap-4`}>
               <ButtonBlock cta={cta} className="sm:grow" />
-              <ButtonBlock cta={secondaryCta} className="sm:grow" />
+              {/* "Analizar mi sitio" va siempre en verde, diga lo que diga Sanity. */}
+              <ButtonBlock cta={secondaryCta} variant="green" className="sm:grow" />
             </div>
           </FadeIn>
 
