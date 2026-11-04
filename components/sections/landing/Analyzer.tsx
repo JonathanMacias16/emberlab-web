@@ -35,7 +35,8 @@ export default function Analyzer({ title, description, cta, note }: AnalyzerProp
             </FadeIn>
             <FadeIn direction="up" delay={0.1}>
               <div className={GAP_CTA}>
-                <ButtonBlock cta={cta} />
+                {/* Verde fijo, igual que el "Analizar mi sitio" del hero. */}
+                <ButtonBlock cta={cta} variant="green" />
               </div>
             </FadeIn>
             {note && (
