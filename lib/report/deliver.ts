@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import type { Message } from "@/components/chat/types";
 import { CONTACT_EMAIL, whatsappUrl } from "@/lib/contact";
 import { generateReport, type Report } from "./generate";
-import { PREGUNTA_TITULO, PREGUNTAS, scoreBand, scoreFor } from "./prompt";
+import { PREGUNTA_TITULO, PREGUNTAS, scoreBand, scoreFor, sintesisText } from "./prompt";
 import { extractQuestionnaire } from "./questionnaire";
 
 const RED = "#e73f40";
@@ -60,7 +60,8 @@ function reportEmail(report: Extract<Report, { ok: true }>) {
   const { questionnaire: q, narrative, audit } = report;
   const name = firstName(q.nombre);
   const host = hostOf(audit.page.status === "ok" ? audit.page.value.finalUrl : q.sitio);
-  const first = narrative.oportunidades[0];
+  const first = narrative.mejoras[0];
+  const sintesis = sintesisText(narrative);
 
   const scoreRows = PREGUNTAS.map((p) => {
     const score = scoreFor(audit, p);
@@ -77,9 +78,9 @@ function reportEmail(report: Extract<Report, { ok: true }>) {
   const body = `
     <p style="margin:0 0 12px 0;">Hola${name ? `, ${escapeHtml(name)}` : ""}:</p>
     <p style="margin:0 0 16px 0;">Te compartimos el diagnóstico de <strong>${escapeHtml(host)}</strong>. Va adjunto en PDF, con lo que medimos en tu sitio y lo que te recomendamos hacer.</p>
-    ${narrative.frase_sintesis ? `<p style="margin:0 0 16px 0;font-size:19px;font-weight:700;line-height:1.3;">${escapeHtml(narrative.frase_sintesis)}</p>` : ""}
+    ${sintesis ? `<p style="margin:0 0 16px 0;font-size:19px;font-weight:700;line-height:1.3;">${escapeHtml(sintesis)}</p>` : ""}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;border-top:1px solid #eee;border-bottom:1px solid #eee;margin:0 0 16px 0;">${scoreRows}</table>
-    ${first ? `<p style="margin:0 0 16px 0;"><strong>Por dónde empezar:</strong> ${escapeHtml(first.titulo)}. ${escapeHtml(first.que_hacer)}</p>` : ""}
+    ${first ? `<p style="margin:0 0 16px 0;"><strong>Por dónde empezar:</strong> ${escapeHtml(first.titulo)}. ${escapeHtml(first.lo_que_vimos)}</p>` : ""}
     <p style="margin:0 0 14px 0;">Si quieres, lo revisamos juntos en una llamada de 20 minutos.</p>
     <p style="margin:0 0 14px 0;">${whatsappButton("Hola, recibí mi diagnóstico digital de Ember Lab.")}</p>
     <p style="margin:0 0 12px 0;font-size:13px;opacity:0.7;">O simplemente responde a este correo.</p>
@@ -88,12 +89,12 @@ function reportEmail(report: Extract<Report, { ok: true }>) {
   const text = [
     `Hola${name ? `, ${name}` : ""}:`,
     `Te compartimos el diagnóstico de ${host}. Va adjunto en PDF.`,
-    narrative.frase_sintesis,
+    sintesis,
     ...PREGUNTAS.map((p) => {
       const score = scoreFor(audit, p);
       return `${PREGUNTA_TITULO[p]} ${score.status === "ok" ? `${score.value}/100` : "No medido"}`;
     }),
-    first ? `Por dónde empezar: ${first.titulo}. ${first.que_hacer}` : "",
+    first ? `Por dónde empezar: ${first.titulo}. ${first.lo_que_vimos}` : "",
     `Si quieres, lo revisamos juntos en una llamada de 20 minutos: ${whatsappUrl()} o responde a este correo.`,
     "Saludos,\nEmber Lab",
   ]
