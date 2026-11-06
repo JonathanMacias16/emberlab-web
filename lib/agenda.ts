@@ -25,6 +25,22 @@ export const SLOT_TIMES = [
 /** Días hábiles que se muestran para elegir. */
 export const BUSINESS_DAYS = 5;
 
+/** Duración de la llamada. */
+export const SLOT_MINUTES = 20;
+
+/** Rango ocupado en el calendario, en ISO. */
+export interface BusyRange {
+  start: string;
+  end: string;
+}
+
+/** ¿La cita que empieza en `iso` se encima con algún rango ocupado? */
+export function overlapsBusy(iso: string, busy: BusyRange[]): boolean {
+  const start = new Date(iso).getTime();
+  const end = start + SLOT_MINUTES * 60_000;
+  return busy.some((b) => new Date(b.start).getTime() < end && new Date(b.end).getTime() > start);
+}
+
 /** Un horario de hoy se ofrece solo si falta al menos este tiempo. */
 const MIN_LEAD_MINUTES = 120;
 
@@ -63,9 +79,14 @@ function toMinutes(hhmm: string): number {
 
 /**
  * Los próximos días hábiles con horario libre, a partir de `nowKey`
- * (`nowInMexico()`). Hoy cuenta si todavía le queda algún horario.
+ * (`nowInMexico()`). Hoy cuenta si todavía le queda algún horario. Los
+ * horarios que se enciman con `busy` (el calendario de Google) no salen.
  */
-export function upcomingDays(nowKey: string, count = BUSINESS_DAYS): AgendaDay[] {
+export function upcomingDays(
+  nowKey: string,
+  count = BUSINESS_DAYS,
+  busy: BusyRange[] = [],
+): AgendaDay[] {
   const [today, nowTime] = nowKey.split("T");
   const nowMin = toMinutes(nowTime);
   // Mediodía UTC: sumar días nunca cruza de fecha por la zona.
@@ -78,10 +99,11 @@ export function upcomingDays(nowKey: string, count = BUSINESS_DAYS): AgendaDay[]
     cursor.setUTCDate(cursor.getUTCDate() + 1);
     if (weekday === 0 || weekday === 6) continue;
 
-    const times =
-      offset === 0
-        ? SLOT_TIMES.filter((t) => toMinutes(t) - nowMin >= MIN_LEAD_MINUTES)
-        : [...SLOT_TIMES];
+    const times = SLOT_TIMES.filter(
+      (t) =>
+        (offset > 0 || toMinutes(t) - nowMin >= MIN_LEAD_MINUTES) &&
+        !overlapsBusy(slotIso(date, t), busy),
+    );
     if (times.length === 0) continue;
 
     days.push({ date, label: dayLabel(date, offset), weekday: shortWeekday(date), short: shortDate(date), times });

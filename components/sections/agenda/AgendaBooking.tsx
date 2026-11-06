@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { trackCustomEvent, trackEvent } from "@/lib/analytics";
 import {
@@ -10,6 +10,7 @@ import {
   slotIso,
   upcomingDays,
   type AgendaRequest,
+  type BusyRange,
 } from "@/lib/agenda";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,7 +39,27 @@ const FIELDS: { id: Field; label: string; type: string; placeholder: string; req
 export default function AgendaBooking() {
   const router = useRouter();
   const nowKey = useSyncExternalStore(noopSubscribe, getNowKey, getServerNowKey);
-  const days = nowKey ? upcomingDays(`${nowKey}0`) : [];
+  // Horas ocupadas en el calendario de Ember Lab. `null` mientras cargan.
+  const [busy, setBusy] = useState<BusyRange[] | null>(null);
+  const loadBusy = useCallback(async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+    try {
+      const res = await fetch("/api/agenda/disponibilidad", { signal: controller.signal, cache: "no-store" });
+      const data = (await res.json()) as { busy?: BusyRange[] };
+      setBusy(data.busy ?? []);
+    } catch {
+      // Sin respuesta se ofrecen todos; el servidor revisa de nuevo al confirmar.
+      setBusy([]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }, []);
+  useEffect(() => {
+    void loadBusy();
+  }, [loadBusy]);
+
+  const days = nowKey && busy ? upcomingDays(`${nowKey}0`, undefined, busy) : [];
 
   const [dayIndex, setDayIndex] = useState(0);
   const [time, setTime] = useState<string | null>(null);
@@ -65,6 +86,7 @@ export default function AgendaBooking() {
   function continueToContact() {
     if (!slot) return;
     trackCustomEvent("AgendaHorarioElegido", { content_name: "Agenda 20 min", slot });
+    setSendError(null);
     setStep("contact");
   }
 
@@ -99,6 +121,16 @@ export default function AgendaBooking() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      if (res.status === 409) {
+        // La hora se ocupó: refrescamos la disponibilidad y regresamos al paso 1.
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        setSending(false);
+        setTime(null);
+        setStep("slot");
+        setSendError(data?.error || "Ese horario ya no está disponible. Elige otro, por favor.");
+        void loadBusy();
+        return;
+      }
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
         throw new Error(data?.error || "No pudimos agendar tu llamada.");
@@ -133,7 +165,7 @@ export default function AgendaBooking() {
             Elige un día
           </h2>
 
-          {!nowKey ? (
+          {!nowKey || !busy ? (
             <div className="mt-4 h-[19rem] rounded-2xl bg-(--purple-pale)/20 animate-pulse" aria-label="Cargando horarios" />
           ) : (
             <>
@@ -188,6 +220,12 @@ export default function AgendaBooking() {
               </div>
               <p className="mt-3 text-xs sm:text-sm text-(--purple-mid)">Hora del centro de México.</p>
             </>
+          )}
+
+          {sendError && (
+            <p role="alert" className="mt-4 text-sm text-(--red)">
+              {sendError}
+            </p>
           )}
 
           <button
@@ -258,7 +296,7 @@ export default function AgendaBooking() {
             {sending ? "Agendando…" : "Confirmar mi llamada"}
           </button>
           <p className="mt-3 text-xs sm:text-sm text-center text-(--purple-mid)">
-            Te confirmamos la cita antes de la llamada.
+            Te llega la invitación con el enlace de Google Meet a tu correo.
           </p>
         </form>
       )}

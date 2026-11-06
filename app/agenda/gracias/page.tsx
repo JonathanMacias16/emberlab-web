@@ -5,7 +5,7 @@ import { formatSlot } from "@/lib/agenda";
 
 export const metadata: Metadata = {
   title: "Tu llamada está agendada — EmberLab",
-  description: "Recibimos tu cita. Te confirmamos antes de la llamada.",
+  description: "Tu llamada de 20 minutos con Ember Lab está agendada.",
   // Solo se llega aquí al agendar: no tiene caso indexarla.
   robots: { index: false, follow: false },
 };
@@ -49,8 +49,9 @@ export default async function AgendaThanksPage({
             </p>
           )}
           <p className="text-(--white) text-base sm:text-lg mt-3 font-light">
-            Te confirmamos la cita y te mandamos el enlace de la videollamada antes de la hora. Si
-            necesitas cambiarla, escríbenos por WhatsApp.
+            Te mandamos a tu correo la invitación con el enlace de Google Meet. Acéptala
+            para que quede en tu calendario. Si necesitas cambiarla, escríbenos por
+            WhatsApp.
           </p>
         </div>
       </div>
