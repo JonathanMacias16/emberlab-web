@@ -1,6 +1,6 @@
 /**
  * Google Calendar para la agenda de 20 minutos: horarios ocupados y alta de
- * citas en el calendario de Ember Lab (hola@emberlab.mx).
+ * citas en el calendario de Ember Lab (la cuenta que autorizó el refresh token).
  *
  * Se autentica con un refresh token de OAuth de esa cuenta (sirve igual para
  * Google Workspace que para Gmail). Variables en Vercel:
