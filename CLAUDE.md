@@ -128,10 +128,16 @@ y lo envía por Resend al prospecto, con copia al equipo
 - `questionnaire.ts` — saca las respuestas emparejando cada pregunta del bot
   con la respuesta siguiente. El correo y la URL se buscan con regex, no se le
   preguntan al modelo.
-- `prompt.ts` — el prompt del estratega (texto de Ember Lab) y `parseNarrative`,
-  que hace cumplir sus reglas: máximo 5 oportunidades, 3 altas.
-- `pdf.tsx` — el documento con `@react-pdf/renderer`. Helvetica solo tiene
-  WinAnsi: los íconos van en SVG y `pdfText` limpia lo que no se pueda pintar.
+- `prompt.ts` — el prompt del estratega ("Diagnóstico Digital v2", Parte A del
+  documento de Ember Lab) y `parseNarrative`, que hace cumplir sus reglas:
+  exactamente 3 mejoras, `esfuerzo` de dos valores y el máximo de caracteres de
+  cada campo (`LIMITS`). Si algo no cumple, `generate.tsx` se lo regresa al
+  modelo y reintenta (3 intentos; en el último acepta 15 % de margen).
+- `pdf.tsx` — el reporte de 2 páginas con `@react-pdf/renderer` (Parte B: copy
+  fijo, colores y etiquetas de rango). Poppins va en `lib/report/fonts/`
+  (subconjunto latino, incluido en la función vía `outputFileTracingIncludes`):
+  las flechas van en SVG y `pdfText` quita lo que la fuente no pueda pintar.
+  Bordes con color hex, no rgba: react-pdf los pinta mal.
 - `deliver.ts` — correos. Si no hay reporte (sitio no medible, error), el
   prospecto recibe un aviso de seguimiento y el equipo el motivo.
 - Sitio no analizable = sin reporte: el prompt prohíbe redactar sin datos.

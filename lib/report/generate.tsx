@@ -55,12 +55,7 @@ export async function generateReport(messages: Message[]): Promise<Report> {
   const narrative = await writeNarrative(questionnaire, audit);
   if (!narrative) return fail("El modelo no devolvió un reporte válido o declaró el sitio como no analizable.", audit);
 
-  const date = new Date().toLocaleDateString("es-MX", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "America/Mexico_City",
-  });
+  const date = shortDate(new Date());
   const pdf = await renderToBuffer(
     <ReportPDF narrative={narrative} audit={audit} questionnaire={questionnaire} date={date} />
   );
@@ -75,28 +70,60 @@ export async function generateReport(messages: Message[]): Promise<Report> {
   return { ok: true, questionnaire, audit, narrative, pdf, filename: `diagnostico-emberlab-${slug || "cliente"}.pdf` };
 }
 
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+/** "18 sep 2026", en hora de México. `toLocaleDateString` da "sept" según la versión de ICU. */
+function shortDate(d: Date): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Mexico_City",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(d);
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  return `${get("day")} ${MONTHS[get("month") - 1]} ${get("year")}`;
+}
+
+/** Intentos para que el modelo respete los largos. El diseño tiene espacios fijos. */
+const MAX_ATTEMPTS = 3;
+
+/**
+ * Pide los textos al modelo y los valida (3 mejoras, largos, esfuerzo). Si algo
+ * no cumple, se le regresa la lista de problemas y se le pide de nuevo.
+ */
 async function writeNarrative(questionnaire: Questionnaire, audit: SiteAudit): Promise<ReportNarrative | null> {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const screenshot = audit.pagespeed.status === "ok" ? audit.pagespeed.value.screenshots.final : null;
-
-  const content: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [
-    { type: "text", text: buildPromptInput(questionnaire, audit, Boolean(screenshot)) },
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: buildPromptInput(questionnaire, audit) },
   ];
-  if (screenshot) content.push({ type: "image_url", image_url: { url: screenshot } });
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o",
-    response_format: { type: "json_object" },
-    temperature: 0.4,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content },
-    ],
-  });
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+      temperature: 0.4,
+      messages,
+    });
+    const content = completion.choices[0].message.content ?? "";
 
-  try {
-    return parseNarrative(JSON.parse(completion.choices[0].message.content ?? ""));
-  } catch {
-    return null;
+    let raw: unknown = null;
+    try {
+      raw = JSON.parse(content);
+    } catch {
+      // Se trata como respuesta inválida: abajo se le pide de nuevo.
+    }
+    const result = parseNarrative(raw, attempt === MAX_ATTEMPTS);
+    if (result.ok) return result.narrative;
+    if (result.fatal) return null;
+
+    messages.push(
+      { role: "assistant", content },
+      {
+        role: "user",
+        content: `Tu respuesta no cumple el formato:\n- ${result.problems.join("\n- ")}\n\nVuelve a escribir el JSON completo. Acorta los campos que se pasan eligiendo la idea más importante, sin cortar a media frase.`,
+      }
+    );
   }
+  return null;
 }

@@ -1,75 +1,72 @@
 /* eslint-disable jsx-a11y/alt-text --
    `Image` aquí es el de @react-pdf/renderer, que pinta dentro de un PDF y no
    acepta `alt`. La regla lo confunde con el <img> del DOM. */
+import path from "node:path";
 import React from "react";
-import { Circle, Document, Font, Image, Link, Page, Path, Svg, Text, View } from "@react-pdf/renderer";
+import { Document, Font, G, Image, Link, Page, Path, Rect, Svg, Text, View } from "@react-pdf/renderer";
 
-import { formatMs } from "@/lib/audit/score";
-import type { Check, Score, SiteAudit } from "@/lib/audit/types";
-import { CONTACT_EMAIL, whatsappUrl } from "@/lib/contact";
-import {
-  PREGUNTA_TITULO,
-  PREGUNTAS,
-  scoreBand,
-  scoreFor,
-  type Oportunidad,
-  type Pregunta,
-  type ReportNarrative,
-} from "./prompt";
+import type { Score, SiteAudit } from "@/lib/audit/types";
+import { CONTACT_EMAIL, WHATSAPP_URL } from "@/lib/contact";
+import { PREGUNTA_TITULO, PREGUNTAS, allChecks, scoreBand, scoreFor, type Mejora, type ReportNarrative } from "./prompt";
 import type { Questionnaire } from "./questionnaire";
+import { EMBER_PATHS, EMBER_WIDTH, LAB_PATHS, LAB_WIDTH } from "./wordmark";
+
+/**
+ * Diagnóstico Digital v2: dos páginas. La 1 dice cómo está el sitio (captura,
+ * síntesis y las tres calificaciones); la 2, las 3 mejoras y la invitación a
+ * la reunión. Los textos variables los escribe el modelo (`prompt.ts`); el
+ * resto del copy es fijo y vive aquí.
+ */
+
+// ── Tipografía ────────────────────────────────────────────────────────────────
+
+// Los archivos van en el repo (subconjunto latino de Google Fonts) para no
+// depender de la red al generar. `next.config.ts` los incluye en la función.
+const FONT_DIR = path.join(process.cwd(), "lib/report/fonts");
+Font.register({
+  family: "Poppins",
+  fonts: [
+    { src: path.join(FONT_DIR, "Poppins-Regular.ttf"), fontWeight: 400 },
+    { src: path.join(FONT_DIR, "Poppins-Medium.ttf"), fontWeight: 500 },
+    { src: path.join(FONT_DIR, "Poppins-SemiBold.ttf"), fontWeight: 600 },
+    { src: path.join(FONT_DIR, "Poppins-Bold.ttf"), fontWeight: 700 },
+  ],
+});
 
 // react-pdf parte palabras con guion por default ("con-tactarte"). En un
 // reporte para leer de corrido eso estorba más de lo que ayuda.
 Font.registerHyphenationCallback((word) => [word]);
 
-// ── Design tokens ──────────────────────────────────────────────────────────────
-const RED = "#E73F40";
-const RED_TINT = "#fde4e4";
-const PURPLE = "#301f4b";
-const PURPLE_PALE = "#aca1c3";
-const LAVENDER = "#ece8f4";
-const CREAM = "#f8f7f4";
-const CREAM_D = "#e8e3dc";
-const WHITE = "#ffffff";
-const T_MID = "#5a4d7a";
-const T_LIGHT = "#9080b0";
-const GREEN = "#1f9d55";
-const GREEN_TINT = "#e4f5ea";
-const AMBER = "#e8900c";
-const WHATSAPP = "#25d366";
+// ── Línea gráfica ─────────────────────────────────────────────────────────────
+// Sin rojo ni rosa: la paleta del diagnóstico es morado, lila, verde y crema.
+const DEEP = "#301F4B"; // morado profundo
+const MID = "#6D59A1"; // morado medio
+const ACCENT = "#6453AD"; // morado acento
+const LILAC = "#CAA4CC";
+const GREEN = "#C7DDA3";
+const CREAM = "#EDEAE7";
 
-const TONE_COLOR = { alto: GREEN, medio: AMBER, bajo: RED } as const;
+const CREAM_SOFT = "rgba(237,234,231,0.72)"; // texto secundario sobre morado
+const CREAM_FAINT = "rgba(237,234,231,0.5)";
+const LINE_DARK = "#524467"; // líneas finas sobre morado (crema al 18 %)
+const LINE_LIGHT = "#CFCACE"; // líneas finas sobre crema (morado al 16 %)
+// Hex y no rgba: react-pdf pinta mal los bordes con transparencia.
+const PHONE = "#1E1330";
 
-function band(n: number): { label: string; color: string } {
-  const { label, tone } = scoreBand(n);
-  return { label, color: TONE_COLOR[tone] };
-}
+const PAD_X = 40;
 
-/** Semáforo con los umbrales de Google: bueno hasta `good`, malo después de `poor`. */
-function metricColor(value: number, good: number, poor: number): string {
-  return value <= good ? GREEN : value <= poor ? AMBER : RED;
-}
-
-const SUBTITLES: Record<Pregunta, string> = {
-  te_encuentran: "Si Google te muestra y tu resultado invita a hacer clic",
-  se_quedan: "Si tu sitio carga rápido y se usa sin fricción",
-  te_contactan: "Si quien llega interesado puede escribirte fácilmente",
-};
-
-// ── Texto seguro para el PDF ───────────────────────────────────────────────────
+// ── Texto seguro para el PDF ──────────────────────────────────────────────────
 
 /**
- * Helvetica es una fuente estándar del PDF y solo trae el juego WinAnsi
- * (Latin-1 más comillas tipográficas, guiones y viñetas). Cualquier otro
- * carácter —una flecha, un emoji que se le escape al modelo— sale como basura,
- * así que se traduce o se quita antes de pintar.
+ * Poppins viene en su subconjunto latino: Latin-1 más comillas tipográficas,
+ * guiones, viñetas y "·". Cualquier otro carácter —una flecha, un emoji que se
+ * le escape al modelo— saldría como un hueco, así que se quita antes de pintar.
  */
-const WIN_ANSI_EXTRA = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ";
-const REPLACEMENTS: Record<string, string> = { "→": "›", "←": "‹", "≤": "<=", "≥": ">=", "−": "-" };
+const EXTRA = "‘’“”•–—…·€";
 
 function pdfText(text: string): string {
   return text
-    .replace(/[^\x20-\x7e\xa0-\xff\n]/gu, (ch) => REPLACEMENTS[ch] ?? (WIN_ANSI_EXTRA.includes(ch) ? ch : ""))
+    .replace(/[^\x20-\x7e\xa0-\xff\n]/gu, (ch) => (EXTRA.includes(ch) ? ch : ""))
     .replace(/ {2,}/g, " ")
     .trim();
 }
@@ -83,32 +80,9 @@ function pdfSafe<T>(value: T): T {
   return value;
 }
 
-/**
- * El resumen llega como un solo párrafo; el diseño lo parte en entrada en
- * negritas, cuerpo y la frase síntesis en rojo, que el prompt pide al final.
- */
-function splitSummary(text: string): { lead: string; body: string; close: string } {
-  const sentences = text.split(/(?<=[.!?…])\s+(?=[¿¡«"“A-ZÁÉÍÓÚÑ0-9])/).filter(Boolean);
-  if (sentences.length <= 2) return { lead: "", body: sentences.join(" "), close: "" };
-  const close = sentences[sentences.length - 1];
-  const rest = sentences.slice(0, -1);
-  const leadCount = rest.length >= 4 ? 2 : 1;
-  return { lead: rest.slice(0, leadCount).join(" "), body: rest.slice(leadCount).join(" "), close };
-}
+// ── Piezas ────────────────────────────────────────────────────────────────────
 
-const NUMBER_WORDS = ["cero", "una", "dos", "tres", "cuatro", "cinco"];
-
-function allChecks(audit: SiteAudit): Check[] {
-  return [
-    ...(audit.scores.seoBasico.checks ?? []),
-    ...(audit.scores.experienciaUsuario.checks ?? []),
-    ...(audit.scores.conversion.checks ?? []),
-  ];
-}
-
-// ── Piezas compartidas ─────────────────────────────────────────────────────────
-
-function EmberLogo({ size = 28, fill = WHITE }: { size?: number; fill?: string }) {
+function EmberIcon({ size, fill }: { size: number; fill: string }) {
   return (
     <Svg viewBox="0 0 118 118" width={size} height={size}>
       <Path fill={fill} d="M90.3317 26.15L89.1355 28.2765L90.3828 30.3724C90.5464 30.6485 90.2397 30.9552 89.9636 30.8018L87.8372 29.6056L85.7414 30.8529C85.4653 31.0165 85.1586 30.7098 85.312 30.4338L86.5081 28.3072L85.2608 26.2113C85.0973 25.9353 85.404 25.6286 85.68 25.7819L87.8065 26.9781L89.9023 25.7308C90.1783 25.5672 90.485 25.874 90.3317 26.15Z" />
@@ -121,603 +95,250 @@ function EmberLogo({ size = 28, fill = WHITE }: { size?: number; fill?: string }
   );
 }
 
-function SecLabel({ text, mt = 18 }: { text: string; mt?: number }) {
+/** "EMBER" en crema y "LAB" en lila, a 40 mm de ancho. */
+function Wordmark() {
+  const gap = 12;
+  const total = EMBER_WIDTH + gap + LAB_WIDTH;
+  const width = 113; // 40 mm
   return (
-    <View style={{ marginTop: mt, marginBottom: 10, paddingBottom: 5, borderBottom: `1px solid ${RED}` }} minPresenceAhead={60}>
-      <Text style={{ fontSize: 7.5, fontFamily: "Helvetica-Bold", color: RED, letterSpacing: 2.2 }}>{text}</Text>
-    </View>
-  );
-}
-
-function Caption({ children, mt = 4 }: { children: React.ReactNode; mt?: number }) {
-  return <Text style={{ fontSize: 6.8, color: T_LIGHT, marginTop: mt, lineHeight: 1.45 }}>{children}</Text>;
-}
-
-function PageStrip({ name }: { name: string }) {
-  return (
-    <View
-      style={{ backgroundColor: PURPLE, padding: "13px 40px", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-      fixed
-    >
-      <Text style={{ fontSize: 8.5, color: "rgba(237,234,231,0.6)" }}>Diagnóstico · {name}</Text>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <EmberLogo size={13} />
-        <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color: RED, marginLeft: 6 }}>Ember Lab</Text>
-        <Text
-          style={{ fontSize: 8.5, color: "rgba(237,234,231,0.45)", marginLeft: 12 }}
-          render={({ pageNumber, totalPages }) => `${pageNumber}/${totalPages}`}
-        />
-      </View>
-    </View>
-  );
-}
-
-function FooterStrip() {
-  return (
-    <View
-      style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: PURPLE, padding: "11px 40px", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-      fixed
-    >
-      <Text style={{ fontSize: 7.5, color: "rgba(237,234,231,0.5)" }}>Reporte confidencial · Ember Lab</Text>
-      <Text style={{ fontSize: 7.5, color: RED, fontFamily: "Helvetica-Bold" }}>{CONTACT_EMAIL}</Text>
-    </View>
-  );
-}
-
-function ContentPage({ name, children }: { name: string; children: React.ReactNode }) {
-  return (
-    <Page size="A4" style={{ backgroundColor: CREAM, fontFamily: "Helvetica", paddingBottom: 50 }}>
-      <PageStrip name={name} />
-      <View style={{ padding: "22px 40px 0 40px" }}>{children}</View>
-      <FooterStrip />
-    </Page>
-  );
-}
-
-// ── Portada ────────────────────────────────────────────────────────────────────
-
-function Cover({ name, giro, site, date, shot }: { name: string; giro: string; site: string; date: string; shot: string | null }) {
-  return (
-    <Page size="A4" style={{ backgroundColor: RED, fontFamily: "Helvetica" }}>
-      <View style={{ flex: 1, padding: "44px 45px", justifyContent: "space-between" }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <EmberLogo size={24} />
-          <Text style={{ fontSize: 11, fontFamily: "Helvetica-Bold", color: WHITE, letterSpacing: 4, marginLeft: 10 }}>EMBER LAB</Text>
-        </View>
-
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={{ flex: 1, paddingRight: 18 }}>
-            <Text style={{ fontSize: 7.5, color: "rgba(255,255,255,0.7)", letterSpacing: 3, marginBottom: 8 }}>
-              DIAGNÓSTICO MEDIDO DE SITIO WEB
-            </Text>
-            {/* Una palabra por línea: partir "DIAGNÓS/TICO" se leía como un
-                error de impresión, no como una decisión tipográfica. */}
-            <Text style={{ fontSize: 44, fontFamily: "Helvetica-Bold", color: WHITE, lineHeight: 1.02 }}>DIAGNÓSTICO</Text>
-            <Text style={{ fontSize: 44, fontFamily: "Helvetica-Bold", color: "rgba(255,255,255,0.35)", lineHeight: 1.02, marginBottom: 14 }}>
-              DIGITAL
-            </Text>
-            <Text style={{ fontSize: 13, color: WHITE, lineHeight: 1.45, marginBottom: 14, maxWidth: 290 }}>
-              Qué está frenando a tu sitio para conseguir clientes, y cómo resolverlo.
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              {PREGUNTAS.map((p) => (
-                <View key={p} style={{ backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 9, padding: "4px 8px", marginRight: 5 }}>
-                  <Text style={{ fontSize: 8, color: WHITE }}>{PREGUNTA_TITULO[p]}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          {shot && (
-            <Image src={shot} style={{ width: 113, height: 226, borderRadius: 5, border: "2px solid rgba(255,255,255,0.9)", objectFit: "cover" }} />
-          )}
-        </View>
-
-        <View>
-          <View style={{ height: 1, backgroundColor: "rgba(255,255,255,0.35)", marginBottom: 22 }} />
-          <Text style={{ fontSize: 9, color: "rgba(255,255,255,0.8)", letterSpacing: 3, marginBottom: 6 }}>PREPARADO PARA</Text>
-          <Text style={{ fontSize: 24, fontFamily: "Helvetica-Bold", color: WHITE, marginBottom: 4 }}>{name}</Text>
-          {!!giro && <Text style={{ fontSize: 11, color: "rgba(255,255,255,0.9)", marginBottom: 1 }}>{giro}</Text>}
-          {!!site && <Text style={{ fontSize: 10, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{site}</Text>}
-          <Text style={{ fontSize: 8, color: "rgba(255,255,255,0.6)" }}>{date}</Text>
-        </View>
-      </View>
-    </Page>
-  );
-}
-
-// ── Tu sitio en tres preguntas ─────────────────────────────────────────────────
-
-function QuestionCard({ pregunta, score, verdict }: { pregunta: Pregunta; score: Score; verdict: string }) {
-  const b = score.status === "ok" ? band(score.value) : null;
-  return (
-    <View style={{ backgroundColor: WHITE, borderRadius: 5, padding: "9px 12px", marginBottom: 7 }} wrap={false}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <View style={{ flex: 1, paddingRight: 8 }}>
-          <Text style={{ fontSize: 12.5, fontFamily: "Helvetica-Bold", color: PURPLE }}>{PREGUNTA_TITULO[pregunta]}</Text>
-          <Text style={{ fontSize: 7, color: T_LIGHT, marginTop: 2 }}>{SUBTITLES[pregunta]}</Text>
-        </View>
-        {score.status === "ok" && b ? (
-          <Text style={{ fontSize: 22, fontFamily: "Helvetica-Bold", color: b.color }}>
-            {score.value}
-            <Text style={{ fontSize: 8, fontFamily: "Helvetica", color: T_LIGHT }}>/100</Text>
-          </Text>
-        ) : (
-          <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color: T_LIGHT }}>No medido</Text>
-        )}
-      </View>
-
-      {score.status === "ok" && b && (
-        <>
-          <View style={{ height: 4, backgroundColor: CREAM_D, borderRadius: 2, marginTop: 5, marginBottom: 6 }}>
-            <View style={{ width: `${Math.max(score.value, 2)}%`, height: 4, backgroundColor: b.color, borderRadius: 2 }} />
-          </View>
-          <View style={{ alignSelf: "flex-start", border: `1px solid ${b.color}`, borderRadius: 8, padding: "2px 6px", marginBottom: 5 }}>
-            <Text style={{ fontSize: 6.8, fontFamily: "Helvetica-Bold", color: b.color }}>{b.label}</Text>
-          </View>
-        </>
-      )}
-
-      <Text style={{ fontSize: 8, color: PURPLE, lineHeight: 1.45, marginTop: score.status === "ok" ? 0 : 5 }}>
-        {score.status === "ok" ? verdict : score.reason}
-      </Text>
-    </View>
-  );
-}
-
-function SpeedCard({ value, suffix, color, children, last }: { value: string; suffix?: string; color: string; children: React.ReactNode; last?: boolean }) {
-  return (
-    <View style={{ flex: 1, backgroundColor: WHITE, borderRadius: 4, borderTop: `3px solid ${color}`, padding: "8px 9px", marginRight: last ? 0 : 6 }}>
-      <Text style={{ fontSize: 16, fontFamily: "Helvetica-Bold", color, marginBottom: 4 }}>
-        {value}
-        {!!suffix && <Text style={{ fontSize: 7, fontFamily: "Helvetica", color: T_LIGHT }}>{suffix}</Text>}
-      </Text>
-      <Text style={{ fontSize: 7.5, color: PURPLE, lineHeight: 1.4 }}>{children}</Text>
-    </View>
-  );
-}
-
-function ThreeQuestionsPage({ narrative, audit, name, shot }: { narrative: ReportNarrative; audit: SiteAudit; name: string; shot: string | null }) {
-  const psi = audit.pagespeed.status === "ok" ? audit.pagespeed.value : null;
-  const lab = psi?.lab ?? null;
-
-  // Seis cuadros repartidos parejo a lo largo de la carga; ocho no caben
-  // legibles, y tomar "uno de cada N" desperdiciaría espacio cuando N no divide.
-  const frames = psi?.screenshots.filmstrip ?? [];
-  const strip =
-    frames.length <= 6
-      ? frames
-      : Array.from({ length: 6 }, (_, i) => frames[Math.round((i * (frames.length - 1)) / 5)]);
-  const stripSeconds = strip.length ? Math.max(1, Math.round(Math.max(...strip.map((f) => f.timingMs)) / 1000)) : 0;
-
-  const analyzedOn = new Date(audit.analyzedAt).toLocaleDateString("es-MX", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "America/Mexico_City",
-  });
-
-  // Solo lo que se midió: una métrica sin dato no se pinta en blanco.
-  const speed: Array<{ key: string; value: string; suffix?: string; color: string; text: React.ReactNode }> = [];
-  if (lab?.lcpMs != null) {
-    speed.push({
-      key: "lcp",
-      value: formatMs(lab.lcpMs),
-      color: metricColor(lab.lcpMs, 2500, 4000),
-      text: (
-        <>
-          {lab.lcpMs <= 2500
-            ? "Tu contenido principal aparece a tiempo. "
-            : "Tu página tarda en terminar de cargar su contenido principal. "}
-          <Text style={{ fontFamily: "Helvetica-Bold" }}>Lo recomendado: 2.5 s o menos.</Text>
-        </>
-      ),
-    });
-  }
-  if (lab?.fcpMs != null) {
-    speed.push({
-      key: "fcp",
-      value: formatMs(lab.fcpMs),
-      color: metricColor(lab.fcpMs, 1800, 3000),
-      text: `Tu página empieza a mostrar algo a los ${formatMs(lab.fcpMs)}.`,
-    });
-  }
-  if (lab?.cls != null) {
-    speed.push({
-      key: "cls",
-      value: lab.cls.toFixed(2),
-      color: metricColor(lab.cls, 0.1, 0.25),
-      text:
-        lab.cls <= 0.1
-          ? "Tu página no se mueve mientras carga. Nada brinca."
-          : "El contenido brinca mientras carga. Lo recomendado: 0.1 o menos.",
-    });
-  }
-  if (lab?.accessibility != null) {
-    speed.push({
-      key: "a11y",
-      value: String(lab.accessibility),
-      suffix: "/100",
-      color: lab.accessibility >= 90 ? GREEN : lab.accessibility >= 50 ? AMBER : RED,
-      text: "En qué tan fácil es de usar para todas las personas.",
-    });
-  }
-
-  return (
-    <ContentPage name={name}>
-      <SecLabel text="TU SITIO EN TRES PREGUNTAS" mt={0} />
-
-      {!!narrative.frase_sintesis && (
-        <View style={{ backgroundColor: PURPLE, borderRadius: 5, padding: "10px 14px", marginBottom: 10 }}>
-          <Text style={{ fontSize: 6.5, color: RED, letterSpacing: 2, marginBottom: 3 }}>EN POCAS PALABRAS</Text>
-          <Text style={{ fontSize: 15, fontFamily: "Helvetica-Bold", color: WHITE }}>{narrative.frase_sintesis}</Text>
-        </View>
-      )}
-
-      <View style={{ flexDirection: "row" }}>
-        {shot && (
-          <View style={{ width: 118, marginRight: 10 }}>
-            <Image src={shot} style={{ width: 118, height: 236, borderRadius: 5, objectFit: "cover", backgroundColor: CREAM_D }} />
-            <Caption mt={5}>Tu sitio como lo ve Google en un celular.</Caption>
-          </View>
-        )}
-        <View style={{ flex: 1 }}>
-          {PREGUNTAS.map((p) => (
-            <QuestionCard key={p} pregunta={p} score={scoreFor(audit, p)} verdict={narrative.veredictos[p]} />
-          ))}
-        </View>
-      </View>
-      <Caption mt={1}>
-        Calculado sobre {allChecks(audit).length} verificaciones hechas a tu sitio el {analyzedOn}.
-      </Caption>
-
-      {speed.length > 0 && (
-        <>
-          <SecLabel text="QUÉ TAN RÁPIDO CARGA" />
-          <View style={{ flexDirection: "row" }}>
-            {speed.map((item, i) => (
-              <SpeedCard key={item.key} value={item.value} suffix={item.suffix} color={item.color} last={i === speed.length - 1}>
-                {item.text}
-              </SpeedCard>
-            ))}
-          </View>
-        </>
-      )}
-
-      {strip.length > 0 && (
-        <View wrap={false}>
-          <SecLabel text={`ASÍ SE VE TU SITIO MIENTRAS CARGA · PRIMEROS ${stripSeconds} SEGUNDO${stripSeconds === 1 ? "" : "S"}`} />
-          <View style={{ flexDirection: "row" }}>
-            {strip.map((frame, i) => (
-              <View key={i} style={{ flex: 1, marginRight: i === strip.length - 1 ? 0 : 5 }}>
-                <Image src={frame.data} style={{ width: "100%", height: 112, borderRadius: 3, objectFit: "cover", backgroundColor: WHITE }} />
-                <Text style={{ fontSize: 6.5, color: T_LIGHT, marginTop: 3, textAlign: "center" }}>
-                  {(frame.timingMs / 1000).toFixed(1)} s
-                </Text>
-              </View>
-            ))}
-          </View>
-          {/* Sin cifras a propósito: PageSpeed simula la red lenta para las
-              métricas, pero los cuadros salen de la carga real, así que sus
-              tiempos no coinciden con los de arriba. */}
-          <Caption>Así va apareciendo tu página, cuadro por cuadro, mientras carga en un celular.</Caption>
-        </View>
-      )}
-    </ContentPage>
-  );
-}
-
-// ── Resumen ejecutivo ──────────────────────────────────────────────────────────
-
-function Arrow() {
-  return (
-    <Svg width={18} height={10} viewBox="0 0 18 10">
-      <Path d="M0 5 H16 M12 1 L16 5 L12 9" stroke={RED} strokeWidth={1.5} fill="none" />
+    <Svg viewBox={`0 0 ${total} 43`} width={width} height={(width * 43) / total}>
+      {EMBER_PATHS.map((d) => (
+        <Path key={d.slice(0, 24)} d={d} fill={CREAM} />
+      ))}
+      <G transform={`translate(${EMBER_WIDTH + gap} 0)`}>
+        {LAB_PATHS.map((d) => (
+          <Path key={d.slice(0, 24)} d={d} fill={LILAC} />
+        ))}
+      </G>
     </Svg>
   );
 }
 
-function SummaryPage({ narrative, audit, name, hasShot }: { narrative: ReportNarrative; audit: SiteAudit; name: string; hasShot: boolean }) {
-  const { lead, body, close } = splitSummary(narrative.resumen_ejecutivo);
-
-  const cruceRows = narrative.cruce.lo_medido.flatMap(({ pregunta, texto }) => {
-    const score = scoreFor(audit, pregunta);
-    return score.status === "ok" ? [{ pregunta, texto, value: score.value }] : [];
-  });
-  const showCruce = narrative.escenario_cruce !== "C" && !!narrative.cruce.nos_dijiste && cruceRows.length > 0;
-  const observations = hasShot ? narrative.observaciones_captura : [];
-
+function Arrow({ color }: { color: string }) {
   return (
-    <ContentPage name={name}>
-      <SecLabel text="RESUMEN EJECUTIVO" mt={0} />
-      {!!lead && (
-        <Text style={{ fontSize: 11.5, fontFamily: "Helvetica-Bold", color: PURPLE, lineHeight: 1.55, marginBottom: 8 }}>{lead}</Text>
-      )}
-      {!!body && <Text style={{ fontSize: 9.5, color: T_MID, lineHeight: 1.7, marginBottom: 8 }}>{body}</Text>}
-      {!!close && <Text style={{ fontSize: 11, fontFamily: "Helvetica-Bold", color: RED, lineHeight: 1.5 }}>{close}</Text>}
-
-      {showCruce && (
-        <View wrap={false}>
-          <SecLabel text="LO QUE NOS DIJISTE VS. LO QUE MEDIMOS" />
-          <View style={{ flexDirection: "row" }}>
-            <View style={{ width: 150, backgroundColor: WHITE, borderRadius: 5, borderLeft: `3px solid ${PURPLE_PALE}`, padding: "10px 12px" }}>
-              <Text style={{ fontSize: 6.5, color: T_LIGHT, letterSpacing: 1.5, marginBottom: 6 }}>NOS DIJISTE</Text>
-              <Text style={{ fontSize: 12, fontFamily: "Helvetica-Bold", color: PURPLE, lineHeight: 1.3 }}>{narrative.cruce.nos_dijiste}</Text>
-            </View>
-            <View style={{ width: 30, alignItems: "center", justifyContent: "center" }}>
-              <Arrow />
-            </View>
-            <View style={{ flex: 1, backgroundColor: PURPLE, borderRadius: 5, padding: "10px 12px" }}>
-              <Text style={{ fontSize: 6.5, color: RED, letterSpacing: 1.5, marginBottom: 6 }}>LO QUE MEDIMOS</Text>
-              {cruceRows.map((row) => (
-                <View key={row.pregunta} style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
-                  <Text style={{ width: 34, fontSize: 18, fontFamily: "Helvetica-Bold", color: band(row.value).color }}>{row.value}</Text>
-                  <Text style={{ flex: 1, fontSize: 8.5, color: WHITE, lineHeight: 1.4 }}>{row.texto}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          {!!narrative.cruce.nota && <Caption>{narrative.cruce.nota}</Caption>}
-        </View>
-      )}
-
-      {observations.length > 0 && (
-        <View wrap={false}>
-          <SecLabel text="LO QUE SE VE AL ABRIR TU SITIO" />
-          <View style={{ flexDirection: "row" }}>
-            {observations.map((text, i) => (
-              <View
-                key={i}
-                style={{ flex: 1, backgroundColor: WHITE, borderRadius: 5, padding: "9px 10px", marginRight: i === observations.length - 1 ? 0 : 6 }}
-              >
-                <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: RED, marginBottom: 4 }}>{String(i + 1).padStart(2, "0")}</Text>
-                <Text style={{ fontSize: 8.5, color: PURPLE, lineHeight: 1.45 }}>{text}</Text>
-              </View>
-            ))}
-          </View>
-          <Caption>Son observaciones de criterio sobre la captura, no mediciones. Se pueden discutir.</Caption>
-        </View>
-      )}
-    </ContentPage>
+    <Svg width={8} height={6} viewBox="0 0 16 12" style={{ marginRight: 4 }}>
+      <Path d="M0 6H14M9 1L14 6L9 11" stroke={color} strokeWidth={1.8} fill="none" />
+    </Svg>
   );
 }
 
-// ── Oportunidades ──────────────────────────────────────────────────────────────
-
-function EffortChip({ esfuerzo }: { esfuerzo: Oportunidad["esfuerzo"] }) {
-  const diy = esfuerzo === "Lo puedes hacer tú";
-  const color = diy ? GREEN : PURPLE;
+/** Etiqueta en versalitas espaciadas: "01 · CÓMO ESTÁ TU SITIO HOY". */
+function Label({ text, color, mb = 8 }: { text: string; color: string; mb?: number }) {
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", alignSelf: "flex-start", backgroundColor: diy ? GREEN_TINT : LAVENDER, borderRadius: 3, padding: "3px 7px", marginTop: 8 }}>
-      {/* Los íconos van en SVG: ✓ y ⚙ no existen en Helvetica. */}
-      <Svg width={8} height={8} viewBox="0 0 10 10">
-        {diy ? (
-          <Path d="M1.5 5.2 L4 7.7 L8.5 2.5" stroke={color} strokeWidth={1.8} fill="none" />
+    <Text style={{ fontSize: 6, fontWeight: 600, letterSpacing: 2, color, marginBottom: mb }}>{text.toUpperCase()}</Text>
+  );
+}
+
+function Rule({ color, mv = 0 }: { color: string; mv?: number }) {
+  return <View style={{ height: 0.75, backgroundColor: color, marginVertical: mv }} />;
+}
+
+function Header({ icon, title, subtitle, subColor }: { icon: string; title: string; subtitle: string; subColor: string }) {
+  return (
+    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 }}>
+      <EmberIcon size={24} fill={icon} />
+      <View style={{ alignItems: "flex-end" }}>
+        <Text style={{ fontSize: 6.5, fontWeight: 700, letterSpacing: 1.8, color: title }}>DIAGNÓSTICO DIGITAL POR EMBER LAB</Text>
+        {!!subtitle && <Text style={{ fontSize: 7.5, color: subColor, marginTop: 2 }}>{subtitle}</Text>}
+      </View>
+    </View>
+  );
+}
+
+function Footer({ left, page, color }: { left: string; page: string; color: string }) {
+  return (
+    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <Text style={{ fontSize: 6.5, color, maxWidth: 420 }}>{left}</Text>
+      <Text style={{ fontSize: 6.5, color }}>{page}</Text>
+    </View>
+  );
+}
+
+// ── Página 1 · Cómo está tu sitio hoy ─────────────────────────────────────────
+
+/** Marco de teléfono con la captura del sitio en celular. */
+function PhoneFrame({ shot, site }: { shot: string | null; site: string }) {
+  const width = 222;
+  const height = 452;
+  const bezel = 9;
+  return (
+    <View style={{ width, height, backgroundColor: PHONE, borderRadius: 26, padding: bezel, border: `1pt solid ${LINE_DARK}` }}>
+      <View style={{ flex: 1, borderRadius: 18, overflow: "hidden", backgroundColor: LILAC }}>
+        {shot ? (
+          <Image src={shot} style={{ width: width - bezel * 2, height: height - bezel * 2, objectFit: "cover", objectPosition: "top" }} />
         ) : (
-          <>
-            <Circle cx={5} cy={5} r={3.4} stroke={color} strokeWidth={1.7} strokeDasharray="1.3 1.1" fill="none" />
-            <Circle cx={5} cy={5} r={1.3} fill={color} />
-          </>
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 18 }}>
+            <Text style={{ fontSize: 11, fontWeight: 700, color: DEEP, textAlign: "center" }}>{site}</Text>
+          </View>
         )}
+      </View>
+      {/* La "isla" del teléfono, encima de la pantalla. */}
+      <Svg width={width} height={20} style={{ position: "absolute", top: bezel + 5, left: 0 }}>
+        <Rect x={width / 2 - 24} y={0} width={48} height={9} rx={4.5} fill={PHONE} />
       </Svg>
-      <Text style={{ fontSize: 7.2, fontFamily: "Helvetica-Bold", color, marginLeft: 4 }}>{esfuerzo}</Text>
     </View>
   );
 }
 
-function OpportunityColumn({ label, text, last }: { label: string; text: string; last?: boolean }) {
+function ScoreBlock({ title, score, verdict, last }: { title: string; score: Score; verdict: string; last?: boolean }) {
+  const measured = score.status === "ok";
   return (
-    <View style={{ flex: 1, marginRight: last ? 0 : 12 }}>
-      <Text style={{ fontSize: 6.2, color: RED, letterSpacing: 1.2, marginBottom: 3 }}>{label}</Text>
-      <Text style={{ fontSize: 8, color: PURPLE, lineHeight: 1.45 }}>{text}</Text>
-    </View>
-  );
-}
-
-function OpportunitiesPage({ narrative, name }: { narrative: ReportNarrative; name: string }) {
-  const opportunities = narrative.oportunidades;
-  const altas = opportunities.filter((o) => o.prioridad === "Alta").length;
-  const medias = opportunities.length - altas;
-  const total = opportunities.length;
-
-  const counts = [altas && `${altas} de prioridad alta`, medias && `${medias} de prioridad media`].filter(Boolean).join(" · ");
-  const objective = narrative.objetivo_corto ? `tu objetivo: ${narrative.objetivo_corto.replace(/[.\s]+$/, "")}` : "tu objetivo";
-
-  return (
-    <ContentPage name={name}>
-      <SecLabel text="LO QUE TE RECOMENDAMOS HACER" mt={0} />
-      <Text style={{ fontSize: 9.5, color: T_MID, lineHeight: 1.55, marginBottom: 10 }}>
-        Agrupamos lo que encontramos en {total === 1 ? "una oportunidad" : `${NUMBER_WORDS[total] ?? total} oportunidades`},
-        ordenadas por lo que más impacta {objective}.{" "}
-        <Text style={{ fontFamily: "Helvetica-Bold", color: PURPLE }}>{counts}.</Text>
-      </Text>
-
-      {opportunities.map((o, i) => (
-        <View key={i} style={{ backgroundColor: WHITE, borderRadius: 6, padding: "11px 13px", marginBottom: 8 }} wrap={false}>
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-            <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: PURPLE, alignItems: "center", justifyContent: "center", marginRight: 8 }}>
-              <Text style={{ fontSize: 9, fontFamily: "Helvetica-Bold", color: WHITE }}>{i + 1}</Text>
-            </View>
-            <Text style={{ flex: 1, fontSize: 12, fontFamily: "Helvetica-Bold", color: PURPLE }}>{o.titulo}</Text>
-            <View style={{ backgroundColor: o.prioridad === "Alta" ? RED : AMBER, borderRadius: 8, padding: "2px 8px", marginLeft: 8 }}>
-              <Text style={{ fontSize: 7, fontFamily: "Helvetica-Bold", color: WHITE }}>{o.prioridad}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <OpportunityColumn label="LO MEDIDO" text={o.lo_medido} />
-            <OpportunityColumn label="QUÉ SIGNIFICA PARA TU NEGOCIO" text={o.que_significa} />
-            <OpportunityColumn label="QUÉ HACER" text={o.que_hacer} last />
-          </View>
-          <EffortChip esfuerzo={o.esfuerzo} />
-        </View>
-      ))}
-    </ContentPage>
-  );
-}
-
-// ── Revisión punto por punto ───────────────────────────────────────────────────
-
-function GroupHeader({ title, count, bg, color }: { title: string; count: number; bg: string; color: string }) {
-  return (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: bg, borderRadius: 3, padding: "6px 9px", marginBottom: 2 }}>
-      <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color }}>{title}</Text>
-      <Text style={{ fontSize: 8.5, fontFamily: "Helvetica-Bold", color }}>{count}</Text>
-    </View>
-  );
-}
-
-function CheckLine({ check, dot }: { check: Check; dot: string }) {
-  return (
-    <View style={{ flexDirection: "row", alignItems: "flex-start", paddingVertical: 5, borderBottom: `1px solid ${CREAM_D}` }} wrap={false}>
-      <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: dot, marginTop: 3, marginRight: 7 }} />
-      <Text style={{ flex: 1, fontSize: 7.8, color: PURPLE, lineHeight: 1.4 }}>{check.plain}</Text>
-      {!!check.badge && (
-        <Text style={{ maxWidth: 78, fontSize: 6.3, color: T_LIGHT, textAlign: "right", marginLeft: 6, marginTop: 1 }}>{check.badge}</Text>
-      )}
-    </View>
-  );
-}
-
-/**
- * La revisión va en su propia página: compartiendo página se partía el
- * contenedor de dos columnas por la mitad y el corte se veía roto. Las
- * columnas llevan `flex: 1` dentro de la fila, que reparte el ancho; dentro
- * de un contenedor en columna ese mismo `flex: 1` las colapsaría.
- */
-function ChecksPage({ audit, name }: { audit: SiteAudit; name: string }) {
-  const checks = allChecks(audit);
-  const failed = checks.filter((c) => c.passed === false);
-  const passed = checks.filter((c) => c.passed === true);
-  const unknown = checks.filter((c) => c.passed === null);
-
-  return (
-    <ContentPage name={name}>
-      <SecLabel text="REVISIÓN PUNTO POR PUNTO" mt={0} />
-      <Text style={{ fontSize: 9.5, color: T_MID, lineHeight: 1.5, marginBottom: 12 }}>
-        Las {checks.length} verificaciones que le hicimos a tu sitio, en lenguaje claro. De aquí salen tus calificaciones.
-      </Text>
-
-      <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-        <View style={{ flex: 1, marginRight: 10 }}>
-          <GroupHeader title="Lo que te está frenando" count={failed.length} bg={RED_TINT} color={RED} />
-          {failed.map((c) => (
-            <CheckLine key={c.id} check={c} dot={RED} />
-          ))}
-          {unknown.length > 0 && (
-            <View style={{ marginTop: 12 }}>
-              <GroupHeader title="Lo que no pudimos medir" count={unknown.length} bg={CREAM_D} color={T_LIGHT} />
-              {unknown.map((c) => (
-                <CheckLine key={c.id} check={c} dot={PURPLE_PALE} />
-              ))}
-            </View>
-          )}
-        </View>
-        <View style={{ flex: 1, marginLeft: 10 }}>
-          <GroupHeader title="Lo que ya haces bien" count={passed.length} bg={GREEN_TINT} color={GREEN} />
-          {passed.map((c) => (
-            <CheckLine key={c.id} check={c} dot={GREEN} />
-          ))}
-        </View>
-      </View>
-
-      <Caption mt={10}>
-        Lo que no se pudo medir no cuenta ni a favor ni en contra: la calificación se calcula solo sobre lo medido.
-      </Caption>
-    </ContentPage>
-  );
-}
-
-// ── Plan y cierre ──────────────────────────────────────────────────────────────
-
-function PillLink({ href, label, bg, color, outline }: { href: string; label: string; bg?: string; color: string; outline?: boolean }) {
-  return (
-    <Link src={href} style={{ textDecoration: "none", marginRight: 6 }}>
-      <View style={{ backgroundColor: bg, borderRadius: 11, padding: "5px 12px", borderWidth: outline ? 1 : 0, borderColor: "#b9b0cc" }}>
-        <Text style={{ fontSize: 8, fontFamily: "Helvetica-Bold", color }}>{label}</Text>
-      </View>
-    </Link>
-  );
-}
-
-function PlanPage({ narrative, audit, name, site }: { narrative: ReportNarrative; audit: SiteAudit; name: string; site: string }) {
-  const phases = [
-    { title: "Esta semana", items: narrative.plan_accion.esta_semana },
-    { title: "Este mes", items: narrative.plan_accion.este_mes },
-    { title: "Próximos 3 meses", items: narrative.plan_accion.proximos_3_meses },
-  ].filter((phase) => phase.items.length > 0);
-  const measuredSpeed = audit.pagespeed.status === "ok";
-
-  return (
-    <ContentPage name={name}>
-      {phases.length > 0 && (
-        <>
-          <SecLabel text="TU PLAN DE ACCIÓN" mt={0} />
-          <View style={{ flexDirection: "row", marginBottom: 14 }} wrap={false}>
-            {phases.map((phase, i) => (
-              <View
-                key={phase.title}
-                style={{ flex: 1, backgroundColor: WHITE, borderRadius: 5, borderTop: `3px solid ${RED}`, padding: "9px 10px", marginRight: i === phases.length - 1 ? 0 : 7 }}
-              >
-                <Text style={{ fontSize: 17, fontFamily: "Helvetica-Bold", color: RED }}>{String(i + 1).padStart(2, "0")}</Text>
-                <Text style={{ fontSize: 10.5, fontFamily: "Helvetica-Bold", color: PURPLE, marginBottom: 6 }}>{phase.title}</Text>
-                {phase.items.map((item, j) => (
-                  <View key={j} style={{ flexDirection: "row", marginBottom: 4 }}>
-                    <Text style={{ fontSize: 8, color: PURPLE, marginRight: 4 }}>•</Text>
-                    <Text style={{ flex: 1, fontSize: 8, color: PURPLE, lineHeight: 1.4 }}>{item}</Text>
-                  </View>
-                ))}
-              </View>
-            ))}
-          </View>
-        </>
-      )}
-
-      <View style={{ backgroundColor: RED, borderRadius: 6, padding: "14px 16px" }} wrap={false}>
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-          <EmberLogo size={18} />
-          <Text style={{ fontSize: 13, fontFamily: "Helvetica-Bold", color: WHITE, marginLeft: 8 }}>Cómo te ayuda Ember Lab</Text>
-        </View>
-        {!!narrative.cierre_ember_lab && (
-          <Text style={{ fontSize: 9.5, color: WHITE, lineHeight: 1.6, marginBottom: 12 }}>{narrative.cierre_ember_lab}</Text>
-        )}
-        <View style={{ backgroundColor: PURPLE, borderRadius: 5, padding: "11px 13px" }}>
-          <Text style={{ fontSize: 11.5, fontFamily: "Helvetica-Bold", color: WHITE, marginBottom: 8 }}>
-            Revisemos tu diagnóstico juntos en una llamada de 20 minutos.
+    <View style={{ paddingVertical: 11, borderBottom: last ? undefined : `0.75pt solid ${LINE_DARK}` }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <View>
+          <Text style={{ fontSize: 12, fontWeight: 700, color: CREAM }}>{title}</Text>
+          <Text style={{ fontSize: 6, fontWeight: 600, color: GREEN, marginTop: 1 }}>
+            {measured ? scoreBand(score.value).label : "No se pudo medir"}
           </Text>
-          <View style={{ flexDirection: "row" }}>
-            <PillLink href={whatsappUrl("Hola, recibí mi diagnóstico digital de Ember Lab.")} label="WhatsApp" bg={WHATSAPP} color={WHITE} />
-            <PillLink
-              href={whatsappUrl("Hola, quiero agendar la llamada de 20 minutos para revisar mi diagnóstico.")}
-              label="Agendar llamada"
-              bg={WHITE}
-              color={PURPLE}
-            />
-            <PillLink
-              href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Mi diagnóstico digital")}`}
-              label={CONTACT_EMAIL}
-              color={WHITE}
-              outline
-            />
-          </View>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+          <Text style={{ fontSize: 30, fontWeight: 700, color: GREEN, lineHeight: 1 }}>{measured ? score.value : "—"}</Text>
+          <Text style={{ fontSize: 7, color: CREAM_FAINT, marginLeft: 2, marginBottom: 3 }}>/100</Text>
         </View>
       </View>
-
-      <SecLabel text="CÓMO HICIMOS ESTE DIAGNÓSTICO" />
-      <Text style={{ fontSize: 7.5, color: T_MID, lineHeight: 1.6 }}>
-        Revisamos el código de {site}
-        {measuredSpeed
-          ? " y medimos su carga con PageSpeed Insights de Google, que abre la página en un Chrome real simulando un celular con red lenta"
-          : ""}
-        . Las calificaciones se calculan con una rúbrica fija sobre lo encontrado; no las decide un modelo de lenguaje. Lo que no se
-        pudo medir aparece marcado como tal.
-        {measuredSpeed
-          ? " Las mediciones de laboratorio pueden variar entre corridas y suelen ser más severas que lo que viven tus visitantes reales."
-          : ""}
-      </Text>
-    </ContentPage>
+      {!!verdict && <Text style={{ fontSize: 8, color: CREAM, lineHeight: 1.55, marginTop: 6 }}>{verdict}</Text>}
+    </View>
   );
 }
 
-// ── Documento ──────────────────────────────────────────────────────────────────
+function StatusPage({
+  narrative,
+  audit,
+  firstName,
+  domain,
+  date,
+  shot,
+}: {
+  narrative: ReportNarrative;
+  audit: SiteAudit;
+  firstName: string;
+  domain: string;
+  date: string;
+  shot: string | null;
+}) {
+  return (
+    <Page size="A4" style={{ backgroundColor: DEEP, fontFamily: "Poppins", color: CREAM, padding: `34px ${PAD_X}px 26px` }}>
+      <Header icon={LILAC} title={CREAM} subtitle={[domain, date].filter(Boolean).join(" · ")} subColor={CREAM_SOFT} />
+
+      <Label text="01 · Cómo está tu sitio hoy" color={GREEN} />
+      <Text style={{ fontSize: 26, fontWeight: 700, color: CREAM, lineHeight: 1.15 }}>
+        {firstName ? `${firstName}, así se ve tu sitio` : "Así se ve tu sitio"}
+      </Text>
+      <Text style={{ fontSize: 26, fontWeight: 700, color: LILAC, lineHeight: 1.15, marginBottom: 26 }}>para quien te busca.</Text>
+
+      <View style={{ flexDirection: "row", flex: 1 }}>
+        <PhoneFrame shot={shot} site={domain} />
+
+        <View style={{ flex: 1, marginLeft: 28, paddingTop: 22 }}>
+          <Label text="En pocas palabras" color={GREEN} mb={4} />
+          <Text style={{ fontSize: 17, fontWeight: 700, color: CREAM, lineHeight: 1.2 }}>{narrative.frase_sintesis.parte_1}</Text>
+          <Text style={{ fontSize: 17, fontWeight: 700, color: LILAC, lineHeight: 1.2, marginBottom: 10 }}>
+            {narrative.frase_sintesis.parte_2}
+          </Text>
+          <Rule color={LINE_DARK} />
+
+          {PREGUNTAS.map((p, i) => (
+            <ScoreBlock
+              key={p}
+              title={PREGUNTA_TITULO[p]}
+              score={scoreFor(audit, p)}
+              verdict={narrative.veredictos[p]}
+              last={i === PREGUNTAS.length - 1}
+            />
+          ))}
+        </View>
+      </View>
+
+      <Rule color={LINE_DARK} mv={14} />
+      <Label text="Lo que ya haces bien" color={GREEN} mb={5} />
+      <Text style={{ fontSize: 8.5, color: CREAM, lineHeight: 1.55, marginBottom: 18 }}>{narrative.lo_que_haces_bien}</Text>
+
+      <Footer left="Ember Lab · creatividad estratégica" page="1 / 2" color={CREAM_FAINT} />
+    </Page>
+  );
+}
+
+// ── Página 2 · 3 mejoras y reunión ────────────────────────────────────────────
+
+function MejoraRow({ n, mejora }: { n: number; mejora: Mejora }) {
+  const column = (label: string, text: string) => (
+    <View style={{ flex: 1, paddingRight: 16 }}>
+      <Label text={label} color={ACCENT} mb={3} />
+      <Text style={{ fontSize: 8.5, color: DEEP, lineHeight: 1.5 }}>{text}</Text>
+    </View>
+  );
+  return (
+    <View wrap={false} style={{ flexDirection: "row", paddingVertical: 12, borderTop: `0.75pt solid ${LINE_LIGHT}` }}>
+      <Text style={{ width: 56, fontSize: 24, fontWeight: 700, color: DEEP, lineHeight: 1 }}>{String(n).padStart(2, "0")}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 11, fontWeight: 700, color: DEEP, marginBottom: 8 }}>{mejora.titulo}</Text>
+        <View style={{ flexDirection: "row" }}>
+          {column("Lo que vimos", mejora.lo_que_vimos)}
+          {column("Lo que significa para ti", mejora.que_significa)}
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 7 }}>
+          <Arrow color={ACCENT} />
+          <Text style={{ fontSize: 6.5, fontWeight: 600, color: ACCENT }}>{mejora.esfuerzo}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function ImprovementsPage({ narrative, name, giro, method }: { narrative: ReportNarrative; name: string; giro: string; method: string }) {
+  return (
+    <Page size="A4" style={{ backgroundColor: CREAM, fontFamily: "Poppins", color: DEEP }}>
+      <View style={{ flex: 1, padding: `34px ${PAD_X}px 6px` }}>
+        <Header icon={MID} title={DEEP} subtitle={[name, giro].filter(Boolean).join(" · ")} subColor={MID} />
+
+        <Label text="02 · 3 mejoras que alcanzamos a ver" color={ACCENT} />
+        <Text style={{ fontSize: 26, fontWeight: 700, color: DEEP, lineHeight: 1.15 }}>Lo que haríamos</Text>
+        <Text style={{ fontSize: 26, fontWeight: 700, color: MID, lineHeight: 1.15, marginBottom: 16 }}>primero en tu sitio.</Text>
+
+        {narrative.mejoras.map((m, i) => (
+          <MejoraRow key={i} n={i + 1} mejora={m} />
+        ))}
+      </View>
+
+      {/* Franja de cierre, a todo lo ancho. */}
+      <View style={{ backgroundColor: DEEP, padding: `24px ${PAD_X}px 26px` }}>
+        <Label text="03 · Agendemos una reunión" color={LILAC} />
+        <Text style={{ fontSize: 22, fontWeight: 700, color: CREAM, lineHeight: 1.15 }}>Revisemos tu diagnóstico,</Text>
+        <Text style={{ fontSize: 22, fontWeight: 700, color: GREEN, lineHeight: 1.15, marginBottom: 10 }}>sin costo.</Text>
+        <Text style={{ fontSize: 8.5, color: CREAM_SOFT, lineHeight: 1.55, marginBottom: 18 }}>
+          En una llamada de 20 minutos te explicamos cada hallazgo, resolvemos tus dudas y te decimos por dónde empezaríamos en
+          tu caso para que tu sitio convierta visitas en conversaciones.
+        </Text>
+
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Link src={WHATSAPP_URL} style={{ textDecoration: "none" }}>
+              <View style={{ backgroundColor: LILAC, borderRadius: 14, paddingVertical: 7, paddingHorizontal: 16 }}>
+                <Text style={{ fontSize: 8, fontWeight: 600, color: DEEP }}>WhatsApp +52 442 676 2707</Text>
+              </View>
+            </Link>
+            <Link src={`mailto:${CONTACT_EMAIL}`} style={{ textDecoration: "none", marginLeft: 18 }}>
+              <Text style={{ fontSize: 8, fontWeight: 600, color: CREAM }}>{CONTACT_EMAIL}</Text>
+            </Link>
+          </View>
+          <Wordmark />
+        </View>
+
+        <Footer left={method} page="2 / 2" color={CREAM_FAINT} />
+      </View>
+    </Page>
+  );
+}
+
+// ── Documento ─────────────────────────────────────────────────────────────────
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
 
 export function ReportPDF({
   narrative: rawNarrative,
@@ -731,19 +352,21 @@ export function ReportPDF({
   date: string;
 }) {
   const narrative = pdfSafe(rawNarrative);
-  const name = pdfText(questionnaire.nombre || "Cliente");
-  const site = pdfText(audit.page.status === "ok" ? audit.page.value.finalUrl : questionnaire.sitio ?? audit.requestedUrl);
-  const giro = narrative.giro_corto || "";
-  const shot = audit.pagespeed.status === "ok" ? audit.pagespeed.value.screenshots.final : null;
+  const name = pdfText(questionnaire.nombre || "");
+  const firstName = name.split(/\s+/)[0] ?? "";
+  const domain = pdfText(hostOf(audit.page.status === "ok" ? audit.page.value.finalUrl : (questionnaire.sitio ?? audit.requestedUrl)));
+  const psi = audit.pagespeed.status === "ok" ? audit.pagespeed.value : null;
+  const shot = psi?.screenshots.final ?? null;
+
+  const checks = allChecks(audit).filter((c) => c.passed !== null).length;
+  const method = psi
+    ? `Medimos tu sitio con ${checks} verificaciones y una prueba de carga en celular con red lenta.`
+    : `Medimos tu sitio con ${checks} verificaciones.`;
 
   return (
-    <Document title={`Diagnóstico digital · ${name}`} author="Ember Lab">
-      <Cover name={name} giro={giro} site={site} date={date} shot={shot} />
-      <ThreeQuestionsPage narrative={narrative} audit={audit} name={name} shot={shot} />
-      <SummaryPage narrative={narrative} audit={audit} name={name} hasShot={!!shot} />
-      <OpportunitiesPage narrative={narrative} name={name} />
-      <ChecksPage audit={audit} name={name} />
-      <PlanPage narrative={narrative} audit={audit} name={name} site={site} />
+    <Document title={`Diagnóstico digital · ${name || domain}`} author="Ember Lab">
+      <StatusPage narrative={narrative} audit={audit} firstName={firstName} domain={domain} date={date} shot={shot} />
+      <ImprovementsPage narrative={narrative} name={name || domain} giro={narrative.giro_corto} method={method} />
     </Document>
   );
 }
