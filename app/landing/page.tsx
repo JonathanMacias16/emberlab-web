@@ -1,24 +1,8 @@
 import type { Metadata } from "next";
 import LandingNav from "@/components/sections/landing/LandingNav";
 import LandingHero from "@/components/sections/landing/LandingHero";
-import LandingIntro from "@/components/sections/landing/LandingIntro";
-import ProjectTypes from "@/components/sections/landing/ProjectTypes";
-import WhyUs from "@/components/sections/landing/WhyUs";
-import HowItWorks from "@/components/sections/landing/HowItWorks";
-import Faq from "@/components/sections/landing/Faq";
-import ServiceIncludes from "@/components/sections/landing/ServiceIncludes";
-import CaseStudies from "@/components/sections/landing/CaseStudies";
-import CtaBand from "@/components/sections/landing/CtaBand";
-import Analyzer from "@/components/sections/landing/Analyzer";
-import TalkToUs from "@/components/sections/landing/TalkToUs";
-import LandingFooter from "@/components/sections/landing/LandingFooter";
-import BackToTop from "@/components/ui/BackToTop";
-import ChatBubble from "@/components/chat/ChatBubble";
-import WhatsAppBubble from "@/components/ui/WhatsAppBubble";
-import { sanityFetch } from "@/sanity/lib/live";
-import { LANDING_WEB_QUERY } from "@/sanity/lib/queries";
-import { defaultLandingWebData } from "@/sanity/lib/landing-web-defaults";
-import type { LandingWebData } from "@/types/sanity";
+import LandingBody from "@/components/sections/landing/LandingBody";
+import { getLandingData } from "@/components/sections/landing/getLandingData";
 
 export const metadata: Metadata = {
   title: "Cuéntanos qué necesita tu sitio web | EmberLab",
@@ -28,14 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingWebPage() {
-  let data: LandingWebData | null = null;
-  try {
-    const result = await sanityFetch({ query: LANDING_WEB_QUERY });
-    data = result.data as LandingWebData | null;
-  } catch {
-    // Sanity not configured yet — use defaults
-  }
-  const page = data ?? defaultLandingWebData;
+  const page = await getLandingData();
 
   return (
     <div id="top" className="min-h-screen w-full bg-(--white)">
@@ -49,39 +26,7 @@ export default async function LandingWebPage() {
         image={page.heroImage}
         imageAlt={page.heroImageAlt}
       />
-      <LandingIntro text={page.introText} cta={page.introCta} />
-      <ProjectTypes
-        title={page.projectTypesTitle}
-        types={page.projectTypes}
-        note={page.projectTypesNote}
-        cta={page.projectTypesCta}
-      />
-      <WhyUs title={page.whyTitle} reasons={page.whyReasons} />
-      <HowItWorks title={page.stepsTitle} steps={page.steps} cta={page.stepsCta} />
-      <Faq title={page.faqTitle} items={page.faqItems} />
-      <ServiceIncludes title={page.includesTitle} items={page.includesItems} />
-      <CaseStudies title={page.casesTitle} cases={page.cases} />
-      <CtaBand text={page.ctaBandText} cta={page.ctaBandButton} />
-      <Analyzer
-        title={page.analyzerTitle}
-        description={page.analyzerDescription}
-        cta={page.analyzerCta}
-        note={page.analyzerNote}
-      />
-      <TalkToUs
-        title={page.contactTitle}
-        description={page.contactDescription}
-        cta={page.contactCta}
-      />
-      <LandingFooter
-        tagline={page.footerTagline}
-        brandLine1={page.footerBrandLine1}
-        brandLine2={page.footerBrandLine2}
-        copyright={page.footerCopyright}
-      />
-      <WhatsAppBubble />
-      <ChatBubble variant="modal" />
-      <BackToTop />
+      <LandingBody page={page} variant="boton" />
     </div>
   );
 }

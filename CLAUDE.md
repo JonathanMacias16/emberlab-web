@@ -48,6 +48,9 @@ Path alias `@/*` maps to the project root (e.g., `@/app/...`, `@/components/...`
 - `app/page.tsx` — Coming soon page (root `/`). Dark purple background, BreathingFire animated logo, headline, "coming soon" text.
 - `app/web/page.tsx` — Full EmberLab landing page with all sections (Nav, Hero, Problema, Pilares, ParaTi, Proceso, Resultados, Portfolio, CTAFinal, Footer).
 - `app/landing/page.tsx` — Landing de `tuweb.emberlab.mx` (el middleware reescribe la raíz de ese subdominio a `/landing`, y en ese host redirige `/landing` a `/` para que solo exista una URL).
+- `app/mejorar-mi-sitio/page.tsx` — Landing de agenda: mismo cuerpo que `/landing` con el calendario de `/agenda` en el banner. CTAs "Agenda una reunión" suben a `#agendar`.
+- `app/hablemos/page.tsx` — Landing de formulario: mismo cuerpo con el formulario corto "Hablemos de tu proyecto" en el banner (`/api/contacto` → correo al equipo, `Lead`, `/hablemos/gracias`).
+  Las tres landings comparten `components/sections/landing/LandingBody.tsx`; `variants.ts` ajusta CTAs, textos y quita analizador y "¿Prefieres hablar directo?" en agenda y formulario. Banners en `components/sections/landing/heroes/` (tomados del Figma).
 - `app/brief-web/page.tsx` — Formulario de brief. Al terminar envía las respuestas, dispara `Lead` y navega a `/brief-web/gracias`.
 - `app/brief-web/gracias/page.tsx` — Cierre del brief con URL propia (noindex), para medir la conversión por URL en Meta y Google Ads.
 - `app/logo-animations/page.tsx` — Internal playground showcasing all 9 animated logo variants (not linked publicly).
