@@ -22,7 +22,7 @@ const CASE_VIDEOS = [
   "/videos/estate-taurus.webm",
   "/videos/grizlie.webm",
   "/videos/Pixeron.webm",
-  "/videos/Batwitz.webm",
+  "/videos/Bawitz.webm",
   "/videos/casa-morgandez.webm",
   "/videos/JCToriz.webm",
   "/videos/LilianCazares.mp4",

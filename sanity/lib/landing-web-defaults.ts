@@ -182,10 +182,10 @@ export const defaultLandingWebData: LandingWebData = {
       linkLabel: "Ver sitio",
     },
     {
-      title: "Batwitz",
+      title: "Bawitz",
       description:
-        "Creamos una experiencia digital para dar vida al universo de Batwitz: un sitio colorido, dinámico y lleno de personajes, con animaciones y materiales descargables. Además, desarrollamos un panel interno para facilitar la carga y actualización de nuevos contenidos.",
-      imageAlt: "Sitio de Batwitz",
+        "Creamos una experiencia digital para dar vida al universo de Bawitz: un sitio colorido, dinámico y lleno de personajes, con animaciones y materiales descargables. Además, desarrollamos un panel interno para facilitar la carga y actualización de nuevos contenidos.",
+      imageAlt: "Sitio de Bawitz",
       linkLabel: "Ver sitio",
     },
     {
