@@ -15,7 +15,14 @@ import {
   TEXT_LEAD,
   GAP_TITLE,
 } from "@/components/sections/landing/styles";
-import { defaultLandingWebData as footer } from "@/sanity/lib/landing-web-defaults";
+import LandingIntro from "@/components/sections/landing/LandingIntro";
+import ProjectTypes from "@/components/sections/landing/ProjectTypes";
+import WhyUs from "@/components/sections/landing/WhyUs";
+import Faq from "@/components/sections/landing/Faq";
+import ServiceIncludes from "@/components/sections/landing/ServiceIncludes";
+import CaseStudies from "@/components/sections/landing/CaseStudies";
+import { getLandingData } from "@/components/sections/landing/getLandingData";
+import { applyVariant } from "@/components/sections/landing/variants";
 
 export const metadata: Metadata = {
   title: "Agenda 20 minutos con un especialista | EmberLab",
@@ -42,7 +49,15 @@ const STEPS = [
   },
 ];
 
-export default function AgendaPage() {
+/**
+ * Banner con el calendario y, debajo, las mismas secciones que las demás
+ * landings (contenido de Sanity, con los CTAs de la variante `agenda`, que
+ * suben a #agendar). Los pasos propios de esta página sustituyen a
+ * "Así de simple" y "No es una llamada de ventas" cierra en lugar de la banda.
+ */
+export default async function AgendaPage() {
+  const page = applyVariant(await getLandingData(), "agenda");
+
   return (
     <div id="top" className="min-h-screen w-full bg-(--white) font-dm">
       <header className="bg-(--white)">
@@ -88,6 +103,15 @@ export default function AgendaPage() {
         </div>
       </section>
 
+      <LandingIntro text={page.introText} />
+      <ProjectTypes
+        title={page.projectTypesTitle}
+        types={page.projectTypes}
+        note={page.projectTypesNote}
+        cta={page.projectTypesCta}
+      />
+      <WhyUs title={page.whyTitle} reasons={page.whyReasons} />
+
       <section className={`bg-(--green-light) ${SECTION_Y}`}>
         <div className={CONTAINER}>
           <FadeIn direction="up">
@@ -113,7 +137,11 @@ export default function AgendaPage() {
         </div>
       </section>
 
-      <section className={`bg-(--white) ${SECTION_Y}`}>
+      <Faq title={page.faqTitle} items={page.faqItems} />
+      <ServiceIncludes title={page.includesTitle} items={page.includesItems} />
+      <CaseStudies title={page.casesTitle} cases={page.cases} />
+
+      <section className={`bg-(--green-light) ${SECTION_Y}`}>
         <div className={`${CONTAINER} text-center`}>
           <FadeIn direction="up">
             <SectionTitle className="text-(--red)">No es una llamada de ventas.</SectionTitle>
@@ -138,10 +166,10 @@ export default function AgendaPage() {
       </section>
 
       <LandingFooter
-        tagline={footer.footerTagline}
-        brandLine1={footer.footerBrandLine1}
-        brandLine2={footer.footerBrandLine2}
-        copyright={footer.footerCopyright}
+        tagline={page.footerTagline}
+        brandLine1={page.footerBrandLine1}
+        brandLine2={page.footerBrandLine2}
+        copyright={page.footerCopyright}
       />
       <WhatsAppBubble />
     </div>
