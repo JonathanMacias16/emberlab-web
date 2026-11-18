@@ -27,7 +27,7 @@ export const defaultLandingWebData: LandingWebData = {
     "Responde unas preguntas y te ayudamos a identificar exactamente qué tipo de proyecto te conviene — sin compromiso.",
   heroCta: { text: "Completa el formulario →", variant: "purple", href: "/brief-web" },
   // "#diagnostico" abre el chat de diagnóstico (ver ChatBubble).
-  heroSecondaryCta: { text: "Analizar mi sitio →", variant: "orange", href: "#diagnostico" },
+  heroSecondaryCta: { text: "Analizar mi sitio →", variant: "green", href: "#diagnostico" },
   heroNote: "Toma 2 minutos.",
   heroImageAlt: "Persona sosteniendo una laptop con la leyenda Creative people",
 
@@ -220,7 +220,7 @@ export const defaultLandingWebData: LandingWebData = {
   analyzerDescription:
     "Prueba nuestro analizador automático. Revisa tu sitio y te da mejoras concretas — sin costos, sin compromiso, sin necesidad de agendar nada.",
   // "#diagnostico" abre el chat de diagnóstico en vez de navegar (ver ChatBubble).
-  analyzerCta: { text: "Analizar mi sitio →", variant: "red", href: "#diagnostico" },
+  analyzerCta: { text: "Analizar mi sitio →", variant: "green", href: "#diagnostico" },
   analyzerNote:
     "Nota: no reemplaza el formulario ni la llamada de diagnóstico. Es solo un primer vistazo automático a lo que ya tienes.",
 

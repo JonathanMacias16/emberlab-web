@@ -5,6 +5,8 @@ const VARIANT_COLORS = {
   red: "bg-[var(--red)] text-[var(--white)] hover:brightness-110",
   // Texto morado: el blanco sobre naranja casi no se lee (contraste 2.4:1).
   orange: "bg-[var(--orange)] text-[var(--purple)] hover:brightness-110",
+  // Verde de marca: también con texto morado, el blanco no se lee.
+  green: "bg-[var(--green-light)] text-[var(--purple)] hover:brightness-110",
 };
 
 export default function ButtonPrimary({
@@ -15,7 +17,7 @@ export default function ButtonPrimary({
   className = "",
 }: {
   children: React.ReactNode;
-  variant?: "purple" | "red" | "orange";
+  variant?: keyof typeof VARIANT_COLORS;
   href?: string;
   target?: string;
   className?: string;
